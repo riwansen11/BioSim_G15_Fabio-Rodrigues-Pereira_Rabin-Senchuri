@@ -74,7 +74,7 @@ if __name__ == '__main__':
     #                                         'DeltaPhiMax': 9.0})
     # sim.set_landscape_parameters('J', {'f_max': 700})
     sim.add_herb()
-    sim.simulate(100, vis_years=1, img_years=2000)
+    sim.simulate(20, vis_years=1, img_years=2000)
 
 #    sim.add_population(list_carn)
     #sim.simulate(50, vis_years=1, img_years=2000)

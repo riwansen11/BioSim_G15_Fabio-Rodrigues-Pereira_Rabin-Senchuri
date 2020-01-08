@@ -1,5 +1,6 @@
 from src.biosim.animals import Animal
 from src.biosim.animalOgen import AnimalObject
+from operator import attrgetter
 
 
 class Tile:
@@ -117,7 +118,7 @@ class Tile:
                 int
                     amount of fodder eaten by herbivore
         """
-        self.list_herb.sort(key=lambda a: a.fitness())
+        self.list_herb.sort(key=lambda a: a.fitness)
         for herb in reversed(self.list_herb):
             eaten = herb.h_eating_rule(self.fodder)
             self.fodder -= eaten

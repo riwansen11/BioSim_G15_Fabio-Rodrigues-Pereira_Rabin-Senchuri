@@ -22,9 +22,10 @@ class Animal:
             self.w = random.gauss(self.w_birth, self.sigma_birth)
         else:
             self.w = weight
+        self.fitness = self.fitness()
 
     @classmethod
-    def set_params(cls, params):
+    def set_params(cls, params=None):
         """
         Sets class parameters
 
@@ -38,10 +39,14 @@ class Animal:
             None
                 None
         """
+        if not isinstance(params, dict):
+            raise TypeError("params must be type 'dict'")
+        for param in params.keys():
+            if param in cls.default_params:
+                raise ValueError(
+                    "unknown parameter: '{}'".format(param))
 
-        for key, val in params.items():
-            if key in cls.default_params:
-                setattr(cls, key, val)
+        cls.default_params.update(params)
 
     def ages(self):
         """
@@ -64,6 +69,7 @@ class Animal:
                 calculate weight the amount of weight decrease
         """
         self.w = self.w - (self.eta * self.w)
+        self.update_fitness()
 
     @staticmethod
     def q(sgn, x, xhalf, phi):
@@ -111,13 +117,22 @@ class Animal:
         """
 
         K = self.zeta * (self.w_birth + self.sigma_birth)
-        a = min(1, self.gamma * self.fitness() * (N - 1))
+        a = min(1, self.gamma * self.fitness * (N - 1))
         if random.random() < a and self.w > K:
             newborn = self.__class__()
             self.w -= (self.xi * newborn.w)  # mother loses weight xi
+            self.update_fitness()
             return newborn
         else:
             return None
+
+
+    def update_fitness(self):
+        """
+        Re-calculates the fitness based on updated values of age and weight.
+
+        """
+        self.fitness = self.fitness
 
     def death(self):
         """
@@ -126,9 +141,9 @@ class Animal:
             True when animal died
             False when animal not died
         """
-        if self.fitness() == 0:
+        if self.fitness == 0:
             return True
-        elif random.random() < self.omega * (1 - self.fitness()):
+        elif random.random() < self.omega * (1 - self.fitness):
             return True
         else:
             return False

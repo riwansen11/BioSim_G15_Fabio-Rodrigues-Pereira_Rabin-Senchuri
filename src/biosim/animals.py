@@ -180,6 +180,7 @@ class Herbivore(Animal):
                       'w_half': 10.,
                       'phi_weight': 0.1,
                       'mu': 0.25,
+                      'lambda': 1,
                       'gamma': 0.2,
                       'zeta': 3.5,
                       'xi': 1.2,

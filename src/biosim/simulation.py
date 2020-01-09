@@ -253,31 +253,15 @@ class BioSim:
             for year in range(num_years):
                 c.grow()
                 c.h_feed()
-                #c.c_feed()
+
                 c.birth()
-                #c.migration()
+
                 c.aging()
                 c.loose_weight()
                 c.death()
                 print(year, c.num_herbs())
 
 
-    def add_population(self, list_carn):
-        """
-           Parameters
-           ----------
-               list_carn: list
-                   list of carnivores
 
-           Returns
-           -------
-               list
-                   new list of carnivores
-
-           """
-        for c in self.cell:
-            if not c.habitable:
-                continue
-            c.add_carn(list_carn)
 
 

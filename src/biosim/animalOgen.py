@@ -34,6 +34,5 @@ class AnimalObject():
                 if animal[a][j]['species'] == "Herbivore":
                     self.animal_pop.append(Herbivore(animal[a][j]['age'],
                                                    animal[a][j]['weight']))
-        print(self.animal_pop)
         return self.animal_pop
 

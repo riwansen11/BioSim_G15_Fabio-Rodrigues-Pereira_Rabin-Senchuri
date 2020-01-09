@@ -21,6 +21,32 @@ class Tile:
         self.herb_pop = []
         self.fodder = 0
 
+    @classmethod
+    def set_landscape_parameters(cls, params=None):
+        """
+        Sets user-defined simulation parameters for all squares pertaining to
+        the Square superclass.
+
+        Parameters
+        ----------
+        params: dict
+            Dictionary with parameters to be changed, must be a subset of
+            default parameters.
+
+        """
+        if not isinstance(params, dict):
+            raise TypeError("'param_dict' must be type 'dict'")
+
+        for parameter in params.keys():
+            if parameter not in cls.default_params.keys():
+                raise ValueError(
+                    "unknown parameter: '{}'".format(parameter))
+        if 'f_max' in params.keys():
+            if not 0 <= params['f_max']:
+                raise ValueError(
+                    "parameter 'f_max' must be non-negative")
+        cls.default_params.update(params)
+
     def num_herbs(self):
         """
             Returns

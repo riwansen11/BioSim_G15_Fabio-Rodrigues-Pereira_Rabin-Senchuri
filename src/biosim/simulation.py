@@ -156,7 +156,7 @@ import matplotlib.pyplot as plt
 from src.biosim.landscape import Tile
 
 
-class Simulation:
+class BioSim:
     """
      Run simulation while visualizing the result.
     """
@@ -189,6 +189,36 @@ class Simulation:
                      colnum, itemvalue in enumerate(row)]
 
 
+    def set_animal_parameters(self, species, params):
+
+        """
+            Set parameters for animal species.
+
+            :param species: String, name of animal species
+            :param params: Dict with valid parameter specification for species
+        """
+
+        if species == "Herbivore":
+            a = Animal()
+
+
+
+    def set_landscape_parameters(self, landscape, params):
+        """
+            Set parameters for landscape type.
+
+            :param landscape: String, code letter for landscape
+            :param params: Dict with valid parameter specification for landscape
+        """
+        if landscape == "J":
+            params = {
+                "f_max": 800
+            }
+        elif landscape == "S":
+            params = {
+                "f_max": 300,
+                "alpha": 0.3
+            }
     def add_herb(self):
         """
         Returns

@@ -1,8 +1,78 @@
 from src.biosim.animals import Animal
 from src.biosim.animalOgen import AnimalObject
 from operator import attrgetter
+from random import random
+import textwrap
 
+class Map:
+    """
+    This is all method useful to identify and organize the
+    landscapes on the map
+    """
+    def __init__(self, geogr=None):
+        """
+        Constructor of the map with all landscapes
+        """
+        if geogr is None:
+            self.geogr = """\
+                   OOOOOOOOOOOOOOOOOOOOO
+                   OOOOOOOOSMMMMJJJJJJJO
+                   OSSSSSJJJJMMJJJJJJJOO
+                   OSSSSSSSSSMMJJJJJJOOO
+                   OSSSSSJJJJJJJJJJJJOOO
+                   OSSSSSJJJDDJJJSJJJOOO
+                   OSSJJJJJDDDJJJSSSSOOO
+                   OOSSSSJJJDDJJJSOOOOOO
+                   OSSSJJJJJDDJJJJJJJOOO
+                   OSSSSJJJJDDJJJJOOOOOO
+                   OOSSSSJJJJJJJJOOOOOOO
+                   OOOSSSSJJJJJJJOOOOOOO
+                   OOOOOOOOOOOOOOOOOOOOO"""
+        else:
+            self.geogr = geogr
 
+    def geolist(self):
+        """
+        Organize the maps and landscapes
+        :return: list with each line of self.geogr
+        """
+        # spaces deleted
+        geogr = textwrap.dedent(self.geogr)
+
+        # creates a list of strings with a line for each element
+        gl = geogr.splitlines()
+
+        # creates a list with each line of geogr
+        return [list(g) for g in gl]
+
+    def coordinations(self):
+        """
+        Create the landscape coordinations of the map
+        :return:
+        """
+        coord = self.geolist()
+        for rownum, row in enumerate(coord):
+            for colnum, itemvalue in enumerate(row):
+                if coord[rownum][colnum] == 'O':
+                    coord[rownum][colnum] = Ocean((rownum, colnum))
+                elif coord[rownum][colnum] == 'M':
+                    coord[rownum][colnum] = Mountain((rownum, colnum))
+                elif coord[rownum][colnum] == 'D':
+                    coord[rownum][colnum] = Desert((rownum, colnum))
+                elif coord[rownum][colnum] == 'J':
+                    coord[rownum][colnum] = Jungle((rownum, colnum))
+                else:
+                    coord[rownum][colnum] = Savannah((rownum, colnum))
+        return coord
+
+    def is_habitable(self):
+        """
+        Check if the landscap is habitable
+        :return: bol True or False
+        """
+        return True
+
+# Tile = single square
 class Tile:
     """
     A single tile representation of whole island
@@ -56,6 +126,21 @@ class Tile:
         """
         return len(self.list_herb)
 
+    @staticmethod
+    def cood_with_restrictions(self):
+        """
+        Filter to not place non allowed coordination for all animals
+        :return: list of allowed coordinate of all animals
+        """
+        cord = []
+        for i in range(50):
+            for j in range(50):
+                cord_i_j = (random.randint(1, 13),
+                            random.randint(1, 21)
+                            )
+                # for _ in
+                # cord.append(cord_i_j)
+        pass
 
     def add_herb(self, animal):
         """Add herbivore to each cell

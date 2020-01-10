@@ -40,8 +40,10 @@ class BioSim:
         random.seed(seed)
         self._final_year = None
         self._year = 0
-        self.cell = [(island_map[rownum][colnum]) for rownum, row in enumerate(island_map) for
-                     colnum, itemvalue in enumerate(row)]
+        self.cell = [(island_map[rownum][colnum])
+                     for rownum, row in enumerate(island_map)
+                     for colnum, itemvalue in enumerate(row)
+                     ]
 
 
     def set_animal_parameters(self, species, params):
@@ -74,13 +76,9 @@ class BioSim:
                 "f_max": 300,
                 "alpha": 0.3
             }
+
     def add_herb(self):
-        """
-        Returns
-        -------
-            list
-                List of Herbivores
-        """
+        """ """
         for c in self.cell:
             if not c.habitable:
                 continue

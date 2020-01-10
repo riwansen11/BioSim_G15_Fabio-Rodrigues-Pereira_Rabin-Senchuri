@@ -163,8 +163,66 @@ class Animal:
         self.w += self.beta * eaten
         return eaten
 
+    def coordinations(self):
+        animals = []
+        for i in range(50):
+            for j in range(50):
+                animals.append((random.randint(1, 22),
+                                random.randint(1, 21)))
+        return animals
+
 
 class Herbivore(Animal):
+    """
+    Sets default parameters for Herbivore animals
+
+    Takes Animal as super-class to calculate different parameters
+    """
+    default_params = {'w_birth': 8.0,
+                      'sigma_birth': 1.5,
+                      'beta': 0.9,
+                      'eta': 0.05,
+                      'a_half': 40.,
+                      'phi_age': 0.2,
+                      'w_half': 10.,
+                      'phi_weight': 0.1,
+                      'mu': 0.25,
+                      'lambda': 1,
+                      'gamma': 0.2,
+                      'zeta': 3.5,
+                      'xi': 1.2,
+                      'omega': 0.4,
+                      'F': 10.0}
+
+    w_birth = default_params['w_birth']
+    sigma_birth = default_params['sigma_birth']
+    beta = default_params['beta']
+    eta = default_params['eta']
+    a_half = default_params['a_half']
+    phi_age = default_params['phi_age']
+    w_half = default_params['w_half']
+    phi_weight = default_params['phi_weight']
+    mu = default_params['mu']
+    gamma = default_params['gamma']
+    zeta = default_params['zeta']
+    xi = default_params['xi']
+    omega = default_params['omega']
+    F = default_params['F']
+
+    def __init__(self, age=0, weight=None):
+        """
+        Constructor for super class
+
+        Parameters
+        ----------
+            age: int
+                age of an animal
+            weight: float
+                weight of an animal
+        """
+        super().__init__(age, weight)
+
+class Carnivores(Animal):
     """
     Sets default parameters for Herbivore animals
 

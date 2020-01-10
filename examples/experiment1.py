@@ -34,10 +34,11 @@ if __name__ == '__main__':
                    OOSSSSJJJJJJJJOOOOOOO
                    OOOSSSSJJJJJJJOOOOOOO
                    OOOOOOOOOOOOOOOOOOOOO"""
-    geogr = textwrap.dedent(geogr)
+    geogr = textwrap.dedent(geogr)  # spaces deleted
+    # creates a list of strings with a line for each element
     gl = geogr.splitlines()
-    geolist = []
-    for g in gl:
+    geolist = []  # creates a empty list
+    for g in gl:  # append a list with each line of geogr
         geolist.append(list(g))
     for rownum, row in enumerate(geolist):
         for colnum, itemvalue in enumerate(row):
@@ -54,8 +55,14 @@ if __name__ == '__main__':
 
     herb_cord = []
     carn_cord = []
+
+    # 2500 random locations of herb with the place restrictions
+    # needs to think about seeding
+    # Use herb_place_restriction to not have coordination where is not
+    # allowed
     for i in range(50):
         for j in range(50):
+<<<<<<< HEAD
             herb_cord.append((random.randint(1,13), random.randint(1,
                                                                   21)))
 
@@ -65,6 +72,29 @@ if __name__ == '__main__':
                                                                   21)))
     print(herb_cord)
     p = Population(random.randint(1, 20), herb_cord, random.randint(1, 10), carn_cord)
+=======
+            herb_cord.append((random.randint(1, 13),
+                              random.randint(1, 21))
+                             )
+    # 2500 random locations of carn with the place restrictions
+    # needs to think about seeding
+    # Use carn_place_restriction to not have coordination where is not
+    # allowed
+    for i in range(50):
+        for j in range(50):
+            carn_cord.append((random.randint(1, 13),
+                              random.randint(1, 21))
+                             )
+
+    # p is an object of the called Population class
+    p = Population(random.randint(1, 20),  # random number of herb
+                   herb_cord,  # all random coordination of herb
+                   random.randint(1, 10),  # random number of carn
+                   carn_cord  # all random coordination of carn
+                   )
+
+    # method of Population.get_animals() called
+>>>>>>> rabin
     list_herb = p.get_animals()
 
     sim = BioSim(island_map=geolist, ini_pop=list_herb,

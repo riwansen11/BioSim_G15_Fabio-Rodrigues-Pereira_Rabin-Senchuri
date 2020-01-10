@@ -39,7 +39,6 @@ if __name__ == '__main__':
     geolist = []
     for g in gl:
         geolist.append(list(g))
-
     for rownum, row in enumerate(geolist):
         for colnum, itemvalue in enumerate(row):
             if geolist[rownum][colnum] == 'O':
@@ -57,11 +56,13 @@ if __name__ == '__main__':
     carn_cord = []
     for i in range(50):
         for j in range(50):
-            herb_cord.append((random.randint(1,22), random.randint(1,21)))
+            herb_cord.append((random.randint(1,13), random.randint(1,
+                                                                  21)))
 
     for i in range(50):
         for j in range(50):
-            carn_cord.append((random.randint(1,22), random.randint(1,21)))
+            carn_cord.append((random.randint(1,13), random.randint(1,
+                                                                  21)))
     print(herb_cord)
     p = Population(random.randint(1, 20), herb_cord, random.randint(1, 10), carn_cord)
     list_herb = p.get_animals()

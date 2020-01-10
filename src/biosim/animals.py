@@ -57,7 +57,6 @@ class Animal:
         """
         self.age += 1
 
-
     def increase_weight(self, feed):
         self.w = self.w + self.beta * feed
 
@@ -102,7 +101,6 @@ class Animal:
             return (self.q(+1, self.age, self.a_half, self.phi_age)
                     * self.q(-1, self.w, self.w_half, self.phi_weight))
 
-
     def birth(self, N):
         """
         Parameters
@@ -126,10 +124,10 @@ class Animal:
         else:
             return None
 
-
     def update_fitness(self):
         """
-        Re-calculates the fitness based on updated values of age and weight.
+        Re-calculates the fitness based on updated values of age and
+        weight.
 
         """
         self.fitness = self.fitness
@@ -152,7 +150,8 @@ class Animal:
         """
             Eating rule for Herbivore Animals
 
-            Compare the available food in the cell and amount of fodder to be eaten
+            Compare the available food in the cell and amount of fodder
+            to be eaten
 
             Returns the amount eaten by a Herbivore
         """

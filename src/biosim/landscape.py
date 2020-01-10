@@ -1,8 +1,20 @@
+# -*- coding: utf-8 -*-
+
+import textwrap
+from random import random
+from operator import attrgetter
+
 from src.biosim.animals import Animal
 from src.biosim.animalOgen import AnimalObject
-from operator import attrgetter
-from random import random
-import textwrap
+
+"""
+This is the landscape model which functions with the biosim package 
+written for the INF200 project January 2019.
+"""
+
+__author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
+__email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
 
 class Map:
     """
@@ -72,6 +84,7 @@ class Map:
         """
         return True
 
+
 # Tile = single square
 class Tile:
     """
@@ -94,14 +107,14 @@ class Tile:
     @classmethod
     def set_landscape_parameters(cls, params=None):
         """
-        Sets user-defined simulation parameters for all squares pertaining to
-        the Square superclass.
+        Sets user-defined simulation parameters for all squares
+        pertaining to the Square superclass.
 
         Parameters
         ----------
         params: dict
-            Dictionary with parameters to be changed, must be a subset of
-            default parameters.
+            Dictionary with parameters to be changed, must be a subset
+            of default parameters.
 
         """
         if not isinstance(params, dict):
@@ -162,7 +175,6 @@ class Tile:
         ao = AnimalObject(self.list_herb)
         self.list_herb = ao.animal_object()
 
-
     def aging(self):
         """
             Returns
@@ -174,7 +186,6 @@ class Tile:
         for a in self.list_herb:
             a.ages()
 
-
     def loose_weight(self):
         """
             Returns
@@ -182,11 +193,8 @@ class Tile:
                 int
                     amount of weight lost
         """
-
         for a in self.list_herb:
             a.weight_decrease()
-
-
 
     def death(self):
         """
@@ -201,7 +209,6 @@ class Tile:
             if not a.death():
                 survivors_herb.append(a)
         self.list_herb = survivors_herb
-
 
     def birth(self):
         """Gives the list of newborn herbivore and carnivore animals
@@ -219,7 +226,6 @@ class Tile:
             if h_baby:
                 newborn_herb.append(h_baby)
         self.list_herb.extend(newborn_herb)
-
 
     def h_feed(self):
         """Gives the amount of food eating by herbivore
@@ -283,7 +289,6 @@ class Savannah(Tile):
         super().__init__(loc)
         self.fodder = self.f_max
 
-
     def grow(self):
         """Gives the amount of food available in Savannah cell
             Returns
@@ -292,7 +297,8 @@ class Savannah(Tile):
                     amount of food available in the cell
 
         """
-        self.fodder = self.fodder + self.alpha * (self.f_max - self.fodder)
+        self.fodder = self.fodder + self.alpha * (self.f_max -
+                                                  self.fodder)
 
 
 class Jungle(Tile):

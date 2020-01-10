@@ -1,22 +1,27 @@
-from src.biosim.animals import Animal
-from src.biosim.animals import Herbivore
-from src.biosim.landscape import Jungle
-from src.biosim.landscape import Ocean
-from src.biosim.landscape import Savannah
-from src.biosim.landscape import Desert
-from src.biosim.landscape import Mountain
+# -*- coding: utf-8 -*-
+
 import random
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-from src.biosim.landscape import Tile
+
+from src.biosim.animals import Animal, Herbivore, Carnivores
+from src.biosim.landscape import Jungle, Ocean, Savannah, Desert, \
+    Mountain, Map, Tile
+
+"""
+This is the simulation model which functions with the biosim package 
+written for the INF200 project January 2019.
+"""
+
+__author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
+__email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
 class BioSim:
     """
      Run simulation while visualizing the result.
     """
-
     def __init__(self, island_map, ini_pop, seed):
 
         """
@@ -45,27 +50,26 @@ class BioSim:
                      for colnum, itemvalue in enumerate(row)
                      ]
 
-
     def set_animal_parameters(self, species, params):
 
         """
             Set parameters for animal species.
 
             :param species: String, name of animal species
-            :param params: Dict with valid parameter specification for species
+            :param params: Dict with valid parameter specification for
+            species
         """
 
         if species == "Herbivore":
             a = Animal()
-
-
 
     def set_landscape_parameters(self, landscape, params):
         """
             Set parameters for landscape type.
 
             :param landscape: String, code letter for landscape
-            :param params: Dict with valid parameter specification for landscape
+            :param params: Dict with valid parameter specification for
+            landscape
         """
         if landscape == "J":
             params = {
@@ -95,7 +99,8 @@ class BioSim:
             vis_years: int
                 years between visualization updates
             img_years: int
-                years between visualizations saved to files (default: vis_years)
+                years between visualizations saved to files (default:
+                vis_years)
 
         """
         for c in self.cell:
@@ -113,8 +118,3 @@ class BioSim:
                 c.loose_weight()
                 c.death()
                 print(year, c.num_herbs())
-
-
-
-
-

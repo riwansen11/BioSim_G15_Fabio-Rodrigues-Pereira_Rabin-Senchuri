@@ -12,8 +12,7 @@ from src.biosim.landscape import Map, Tile, Ocean, Desert, Mountain, \
 
 if __name__ == '__main__':
     c = Map()
-    cood = c.coordinations()
-
+    cood = c.geolist()
     herb = Herbivore()
     carn = Carnivores()
 
@@ -27,7 +26,7 @@ if __name__ == '__main__':
     # method of Population.get_animals() called
     list_herb = p.get_animals()
 
-    sim = BioSim(island_map=c.coordinations(), ini_pop=list_herb, seed=123456)
+    sim = BioSim(island_map=c.geolist(), ini_pop=list_herb, seed=123456)
 
     # Animal.Herbivore.set_animal_params("Herbivore", {"zeta": 3.2,
     #                                                 "xi": 1.8})

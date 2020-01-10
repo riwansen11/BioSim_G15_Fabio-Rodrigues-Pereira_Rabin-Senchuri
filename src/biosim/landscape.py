@@ -17,9 +17,9 @@ class Tile:
                     tuple with two coordinates
         """
         self.loc = loc
-        self.list_herb = []
-        self.herb_pop = []
-        self.fodder = 0
+        self.list_herb = []  # missing to create for carn
+        self.herb_pop = []  # herb + carn
+        self.fodder = 0  # food
 
     @classmethod
     def set_landscape_parameters(cls, params=None):

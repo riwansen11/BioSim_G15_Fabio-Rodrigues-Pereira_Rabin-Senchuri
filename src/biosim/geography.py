@@ -22,7 +22,7 @@ class Geography:
     """
 
     def __init__(self):
-        self.cells = None
+        self.cells = []
         self.jungle_params = {'f_max': 800.0, 'alpha': None}
         self.savannah_params = {'f_max': 300.0, 'alpha': 0.3}
         self.desert_params = {'f_max': None, 'alpha': None}
@@ -81,8 +81,10 @@ class Geography:
         self.has_same_line_lengths(geogr)
         self.has_invalid_boundary(geogr)
 
-        self.cells = np.array([list(line.strip()) for line in
-                               geogr.splitlines()])
+        for row in geogr.splitlines():
+            self.cells.append(list(row.strip()))
+        """self.cells = np.array([list(line.strip()) for line in
+                               geogr.splitlines()])"""
 
     def is_habitable(self, loc):
         """
@@ -91,7 +93,7 @@ class Geography:
         :param loc: tuple
         :return: True if habitable or False if not habitable
         """
-        return True if self.cells()[loc] in ('J', 'S', 'D') \
+        return True if self.cells[loc[0]][loc[1]] in ('J', 'S', 'D') \
             else False
 
     def find_landscape_param(self, landscape):

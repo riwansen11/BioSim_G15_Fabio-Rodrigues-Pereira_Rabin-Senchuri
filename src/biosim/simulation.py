@@ -62,7 +62,7 @@ class BioSim:
         island_map = self.example_geogr if island_map is None \
             else island_map
         self.geography.get_cells(island_map)
-        self.fauna = Fauna()
+        self.fauna = Fauna(self.geography)
         self.fauna.get_population(ini_pop)
         self.seed = rd.seed(seed)
         self.ymax_animals = ymax_animals

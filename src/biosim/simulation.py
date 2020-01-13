@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import random
-import numpy as np
-import time
-import matplotlib.pyplot as plt
-
-from src.biosim.animals import Animal, Herbivore, Carnivores
-from src.biosim.landscape import Jungle, Ocean, Savannah, Desert, \
-    Mountain, Map, Tile
+import pandas as pd
+import random as rd
+from src.biosim.geography import Geography
+from src.biosim.fauna import Fauna
 
 """
-This is the simulation model which functions with the biosim package 
+This is the simulation model which functions with the BioSim package 
 written for the INF200 project January 2019.
 """
 
@@ -19,102 +15,143 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
 class BioSim:
-    """
-     Run simulation while visualizing the result.
-    """
-    def __init__(self, island_map, ini_pop, seed):
+    example_geogr = """\
+                       OOOOOOOOOOOOOOOOOOOOO
+                       OOOOOOOOSMMMMJJJJJJJO
+                       OSSSSSJJJJMMJJJJJJJOO
+                       OSSSSSSSSSMMJJJJJJOOO
+                       OSSSSSJJJJJJJJJJJJOOO
+                       OSSSSSJJJDDJJJSJJJOOO
+                       OSSJJJJJDDDJJJSSSSOOO
+                       OOSSSSJJJDDJJJSOOOOOO
+                       OSSSJJJJJDDJJJJJJJOOO
+                       OSSSSJJJJDDJJJJOOOOOO
+                       OOSSSSJJJJJJJJOOOOOOO
+                       OOOSSSSJJJJJJJOOOOOOO
+                       OOOOOOOOOOOOOOOOOOOOO"""
 
+    def __init__(self, island_map, ini_pop, seed, ymax_animals=None,
+                 cmax_animals=None, img_base=None, img_fmt='png'):
         """
-        Parameters
-        ----------
-            island_map: string
-                Multi-line string specifying island geography
-            ini_pop: list
-                list of dictionaries specifying initial population
-            seed: int
-                Integer used as random number seed
+        :param island_map: Multi-line string specifying island geography.
+        :param ini_pop: List of dictionaries specifying initial
+        population.
+        :param seed: Integer used as random number seed.
+        :param ymax_animals: Number specifying y-axis limit for graph
+        showing animal numbers.
+        :param cmax_animals: Dict specifying color-code limits for
+        animal densities.
+        :param img_base: String with beginning of file name for figures,
+        including path.
+        :param img_fmt: String with file type for figures, e.g. ’png’.
 
-        Returns
-        -------....
-            int
-                simulate cells
+        If ymax_animals is None, the y-axis limit should be adjusted
+        automatically.
 
+        If cmax_animals is None, sensible, fixed default values should
+        be used. cmax_animals is a dict mapping species names to numbers,
+        e.g., {’Herbivore’: 50, ’Carnivore’: 20}.
+
+        If img_base is None, no figures are written to file. Filenames
+        are formed as ’{}_{:05d}.{}’.format(img_base, img_no, img_fmt)
+        where img_no are consecutive image numbers starting from 0.
+
+        img_base should contain a path and beginning of a file name.
         """
-        self.island_map = island_map
-        self.list_herb = ini_pop
-        random.seed(seed)
-        self._final_year = None
-        self._year = 0
-        self.cell = [(island_map[rownum][colnum])
-                     for rownum, row in enumerate(island_map)
-                     for colnum, itemvalue in enumerate(row)
-                     ]
+        self.geography = Geography()
+        island_map = self.example_geogr if island_map is None \
+            else island_map
+        self.geography.get_cells(island_map)
+        self.fauna = Fauna()
+        self.fauna.get_population(ini_pop)
+        self.seed = rd.seed(seed)
+        self.ymax_animals = ymax_animals
+        self.cmax_animals = cmax_animals
+        self.img_base = img_base
+        self.img_fmt = img_fmt
 
     def set_animal_parameters(self, species, params):
-
         """
             Set parameters for animal species.
 
-            :param species: String, name of animal species
+            :param species: String, name of animal species.
             :param params: Dict with valid parameter specification for
-            species
+            species.
         """
-
-        if species == "Herbivore":
-            a = Animal()
+        self.fauna.get_parameters(species, params)
 
     def set_landscape_parameters(self, landscape, params):
         """
             Set parameters for landscape type.
 
-            :param landscape: String, code letter for landscape
+            :param landscape: String, code letter for landscape.
             :param params: Dict with valid parameter specification for
-            landscape
+            landscape.
         """
-        if landscape == "J":
-            params = {
-                "f_max": 800
-            }
-        elif landscape == "S":
-            params = {
-                "f_max": 300,
-                "alpha": 0.3
-            }
+        self.geography.get_parameters(landscape, params)
 
-    def add_herb(self):
-        """ """
-        for c in self.cell:
-            if not c.habitable:
-                continue
-            c.add_herb(self.list_herb)
+    def add_population(self, population):
+        """
+
+        :param population: List of dictionaries specifying population:
+        [{ "loc": (10, 10),
+           "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+           "loc": (10, 10),
+           "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
+        """
+        self.fauna.get_population(population)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
-         Run simulation while visualizing the result.
+        Run simulation while visualizing the result.
 
-         Parameters
-         ----------
-            num_years: int
-                number of years to simulate
-            vis_years: int
-                years between visualization updates
-            img_years: int
-                years between visualizations saved to files (default:
-                vis_years)
+        :param num_years: int number of years to simulate.
+        :param vis_years: int years between visualization updates.
+        :param img_years: int years between visualizations saved to files
+        (default: vis_years).
 
+        Image files will be numbered consecutively.
+        """
         """
         for c in self.cell:
-            #print(len(c))
             if not c.habitable:
                 continue
-            # c.add_herb(self.list_herb)
             for year in range(num_years):
-                c.grow()
-                c.h_feed()
+                c.grow(), c.h_feed(), c.birth(), c.aging()
+                c.loose_weight(), c.death()
+                print(year, c.num_herbs())"""
+        pass
 
-                c.birth()
+    @property
+    def year(self):
+        """Last year simulated."""
+        pass
 
-                c.aging()
-                c.loose_weight()
-                c.death()
-                print(year, c.num_herbs())
+    @property
+    def num_animals(self):
+        """Total number of animals on island."""
+        pass
+
+    @property
+    def num_animals_per_species(self):
+        """Number of animals per species in island, as dictionary."""
+        pass
+
+    @property
+    def animal_distribution(self):
+        """Pandas DataFrame with animal count per species for each cell
+        on island.
+
+        return pd.DataFrame(animals_count = [ {'Herbivore': 33,
+                                               'Carnivore': 10},
+                                              {'Herbivore': 50,
+                                               'Carnivore': 1} ],
+                            index = ['Herbivore', 'Carnivore'],
+                            columns =['(0, 0)', '(0, 1)', ...]
+                            )
+        """
+        pass
+
+    def make_movie(self):
+        """Create MPEG4 movie from visualization images saved."""
+        pass

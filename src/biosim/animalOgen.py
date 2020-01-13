@@ -1,9 +1,6 @@
-from src.biosim.animals import Herbivore
-
 
 
 class AnimalObject():
-
     """Creates herbivore and carnivore animals object
        """
     def __init__(self, list_herb):
@@ -16,7 +13,6 @@ class AnimalObject():
         """
         self.list_herb = list_herb
         self.animal_pop = []
-
 
     def animal_object(self):
 

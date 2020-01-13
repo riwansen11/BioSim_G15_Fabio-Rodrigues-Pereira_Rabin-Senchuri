@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import random, pytest, math
+import random
+import pytest
+import math
 import numpy as np
 # from pytest import approx
-from src.biosim.animals import Animal, Herbivore, Carnivores
+from src.biosim.fauna import Fauna
 
 """
-This is the animals pytest model which functions with the tests and 
-biosim packages written for the INF200 project January 2019.
+This is the fauna pytest package which is a test package for the 
+BioSim packages written for the INF200 project January 2019.
 """
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
 
 
 def test_create_animal():

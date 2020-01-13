@@ -4,7 +4,7 @@ import textwrap
 from random import random
 from operator import attrgetter
 
-from src.biosim.animals import Animal
+from src.biosim.fauna import Fauna
 from src.biosim.animalOgen import AnimalObject
 
 """

@@ -1,2 +1,5 @@
+matplotlib
+pandas
+numpy
 pytest
 tox

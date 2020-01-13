@@ -1,9 +1,20 @@
+# -*- coding: utf-8 -*-
+
 import random
 import pytest
 import math
 import numpy as np
-from pytest import approx
-from src.biosim.animals import Animal, Herbivore
+# from pytest import approx
+from src.biosim.fauna import Fauna
+
+"""
+This is the fauna pytest package which is a test package for the 
+BioSim packages written for the INF200 project January 2019.
+"""
+
+__author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
+__email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
 
 
 def test_create_animal():
@@ -57,7 +68,7 @@ def test_default_paraemters():
                          indirect=True)
 def test_fitness_range(set_params):
     """
-    test fitness value is between 0 and 1 
+    test fitness value is between 0 and 1
     """
     a = Animal
     a.w = np.random.randint(0, 100)
@@ -81,7 +92,7 @@ def test_fitness_value(set_params):
 def test_fitness_update():
     """
     test fitness is updated when weight is changed
-     
+
     """
     pass
 

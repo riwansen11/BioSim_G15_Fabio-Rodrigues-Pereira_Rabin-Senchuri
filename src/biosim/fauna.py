@@ -13,12 +13,16 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
-class Fauna(Geography):
+class Fauna:
     """Creates the fauna object and its parameters"""
 
-    def __init__(self):
-        super().__init__()
-        self.fauna = []
+    def __init__(self, geography):
+        """
+
+        :param geography: class Geography()
+        """
+        self.geo = geography
+        self.population = []
         self.herbivore_params = {'w_birth': 8.0,
                                  'sigma_birth': 1.5,
                                  'beta': 0.9,
@@ -93,12 +97,7 @@ class Fauna(Geography):
            "loc": (10, 10),
            "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
         """
-        pass
-        """
         for i in population:
-            loc, pop = i['Loc'], i['pop']
-            for pop_data in pop:
-                if pop_data['species'] is 'Herbivore':
-                    Herbivore.population(loc, pop_data)
-                else:
-                    Carnivore.population(loc, pop_data)"""
+            loc = i['loc']
+            if self.geo.is_habitable(loc):
+                self.population.append(i)

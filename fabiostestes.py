@@ -1,11 +1,24 @@
 from src.biosim.simulation import BioSim
 import numpy as np
 
-loc = (10, 10)
-a = BioSim(None, None, None)
-print(a.geography.cells)
-print(loc)
-print(a.geography.cells[loc[0]][loc[1]])
+ini_herbs = [
+        {
+            "loc": (10, 10),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 20}
+                for _ in range(150)
+            ],
+        }
+    ]
 
-if a.geography.cells[loc[0]][loc[1]] in ('J', 'S', 'D'):
-    print('True')
+a = BioSim(None, ini_herbs, None)
+b = a.geography.cells
+
+for element in b:
+    print(element[0])
+    if element[0] != 'O':
+        raise ValueError('error')
+
+
+
+

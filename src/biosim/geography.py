@@ -61,30 +61,45 @@ class Geography:
                 raise ValueError('Different line lengths detected')
 
     @staticmethod
-    def has_invalid_boundary(geogr):
+    def has_invalid_boundary(cells):
         """
         Searches for invalid non-ocean boundary character  and raise a
         ValueError if necessary.
 
-        :param geogr: Multi-line string
+        :param cells: list of lists
         """
-        pass
+        for element in cells[0]:
+            if element is not 'O':
+                raise ValueError('Invalid Boundary')
+
+        for element in cells[-1]:
+            if element is not 'O':
+                raise ValueError('Invalid Boundary')
+
+        for element in cells:
+            if element[0] is not 'O':
+                raise ValueError('Invalid Boundary')
+
+            elif element[-1] is not 'O':
+                raise ValueError('Invalid Boundary')
 
     def get_cells(self, geogr):
         """
         Transforms a multi-line string in numpy's array.
 
         :param geogr: Multi-line string
+        :return: list of lists self.cells
         """
         geogr = textwrap.dedent(geogr)
         self.has_invalid_character(geogr)
         self.has_same_line_lengths(geogr)
-        self.has_invalid_boundary(geogr)
 
         for row in geogr.splitlines():
             self.cells.append(list(row.strip()))
         """self.cells = np.array([list(line.strip()) for line in
-                               geogr.splitlines()])"""
+                                       geogr.splitlines()])"""
+
+        self.has_invalid_boundary(self.cells)
 
     def is_habitable(self, loc):
         """

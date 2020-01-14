@@ -2,8 +2,7 @@
 
 import pandas as pd
 import random as rd
-from src.biosim.geography import Geography
-from src.biosim.fauna import Fauna
+from src.biosim.island import Island
 
 """
 This is the simulation model which functions with the BioSim package 
@@ -60,10 +59,9 @@ class BioSim:
         """
         island_map = self.example_geogr if island_map is None \
             else island_map
-        self.geography = Geography()
-        self.geography.get_cells(island_map)
-        self.fauna = Fauna(self.geography.cells)
-        self.fauna.get_population(ini_pop)
+
+        self.island = Island(island_map)
+        self.island.add_population(ini_pop)
         self.seed = rd.seed(seed)
         self.ymax_animals = ymax_animals
         self.cmax_animals = cmax_animals
@@ -78,7 +76,7 @@ class BioSim:
             :param params: Dict with valid parameter specification for
             species.
         """
-        self.fauna.get_parameters(species, params)
+        self.island.set_parameters(species, params)
 
     def set_landscape_parameters(self, landscape, params):
         """
@@ -88,7 +86,7 @@ class BioSim:
             :param params: Dict with valid parameter specification for
             landscape.
         """
-        self.geography.get_parameters(landscape, params)
+        self.island.set_parameters(landscape, params)
 
     def add_population(self, population):
         """
@@ -99,7 +97,7 @@ class BioSim:
            "loc": (10, 10),
            "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
         """
-        self.fauna.get_population(population)
+        self.island.add_population(population)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
@@ -112,14 +110,6 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        """
-        for c in self.cell:
-            if not c.habitable:
-                continue
-            for year in range(num_years):
-                c.grow(), c.h_feed(), c.birth(), c.aging()
-                c.loose_weight(), c.death()
-                print(year, c.num_herbs())"""
         pass
 
     @property

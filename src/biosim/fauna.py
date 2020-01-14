@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import random
-from src.biosim.geography import Geography
-
 """
 This is the fauna model which functions with the BioSim package 
 written for the INF200 project January 2019.
@@ -23,39 +19,6 @@ class Fauna:
         """
         self.geo_cells = geography_cells
         self.population = []
-        self.herbivore_params = {'w_birth': 8.0,
-                                 'sigma_birth': 1.5,
-                                 'beta': 0.9,
-                                 'eta': 0.05,
-                                 'a_half': 40.,
-                                 'phi_age': 0.2,
-                                 'w_half': 10.,
-                                 'phi_weight': 0.1,
-                                 'mu': 0.25,
-                                 'lambda': 1,
-                                 'gamma': 0.2,
-                                 'zeta': 3.5,
-                                 'xi': 1.2,
-                                 'omega': 0.4,
-                                 'F': 10.0,
-                                 'DeltaPhiMax': None}
-
-        self.carnivore_params = {'w_birth': 8.0,
-                                 'sigma_birth': 1.5,
-                                 'beta': 0.9,
-                                 'eta': 0.05,
-                                 'a_half': 40.,
-                                 'phi_age': 0.2,
-                                 'w_half': 10.,
-                                 'phi_weight': 0.1,
-                                 'mu': 0.25,
-                                 'lambda': 1,
-                                 'gamma': 0.2,
-                                 'zeta': 3.5,
-                                 'xi': 1.2,
-                                 'omega': 0.4,
-                                 'F': 10.0,
-                                 'DeltaPhiMax': 10.0}
 
     def find_specie_param(self, species):
         """
@@ -111,3 +74,46 @@ class Fauna:
             loc = i['loc']
             if self.is_habitable(loc):
                 self.population.append(i)
+
+
+class Herbivore:
+    def __init__(self):
+        self.herbivore_params = {'w_birth': 8.0,
+                                 'sigma_birth': 1.5,
+                                 'beta': 0.9,
+                                 'eta': 0.05,
+                                 'a_half': 40.,
+                                 'phi_age': 0.2,
+                                 'w_half': 10.,
+                                 'phi_weight': 0.1,
+                                 'mu': 0.25,
+                                 'lambda': 1,
+                                 'gamma': 0.2,
+                                 'zeta': 3.5,
+                                 'xi': 1.2,
+                                 'omega': 0.4,
+                                 'F': 10.0,
+                                 'DeltaPhiMax': None}
+
+
+class Carnivore:
+    def __init__(self):
+        self.carnivore_params = {'w_birth': 8.0,
+                                 'sigma_birth': 1.5,
+                                 'beta': 0.9,
+                                 'eta': 0.05,
+                                 'a_half': 40.,
+                                 'phi_age': 0.2,
+                                 'w_half': 10.,
+                                 'phi_weight': 0.1,
+                                 'mu': 0.25,
+                                 'lambda': 1,
+                                 'gamma': 0.2,
+                                 'zeta': 3.5,
+                                 'xi': 1.2,
+                                 'omega': 0.4,
+                                 'F': 10.0,
+                                 'DeltaPhiMax': 10.0}
+
+
+

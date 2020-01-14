@@ -101,16 +101,6 @@ class Geography:
 
         self.has_invalid_boundary(self.cells)
 
-    def is_habitable(self, loc):
-        """
-        Checks if the cell is habitable.
-
-        :param loc: tuple
-        :return: True if habitable or False if not habitable
-        """
-        return True if self.cells[loc[0]][loc[1]] in ('J', 'S', 'D') \
-            else False
-
     def find_landscape_param(self, landscape):
         """
         Finds any landscape default parameter.

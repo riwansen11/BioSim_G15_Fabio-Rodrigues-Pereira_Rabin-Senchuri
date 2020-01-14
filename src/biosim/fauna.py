@@ -16,12 +16,12 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 class Fauna:
     """Creates the fauna object and its parameters"""
 
-    def __init__(self, geography):
+    def __init__(self, geography_cells):
         """
 
-        :param geography: class Geography()
+        :param geography_cells: list of lists
         """
-        self.geo = geography
+        self.geo_cells = geography_cells
         self.population = []
         self.herbivore_params = {'w_birth': 8.0,
                                  'sigma_birth': 1.5,
@@ -88,6 +88,16 @@ class Fauna:
                         "unknown parameter: '{}'".format(param))
             self.find_specie_param(species).update(params)
 
+    def is_habitable(self, loc):
+        """
+        Checks if the cell is habitable.
+
+        :param loc: tuple
+        :return: True if habitable or False if not habitable
+        """
+        return True if self.geo_cells[loc[0]][loc[1]] \
+                       in ('J', 'S', 'D') else False
+
     def get_population(self, population):
         """
 
@@ -99,5 +109,5 @@ class Fauna:
         """
         for i in population:
             loc = i['loc']
-            if self.geo.is_habitable(loc):
+            if self.is_habitable(loc):
                 self.population.append(i)

@@ -58,11 +58,11 @@ class BioSim:
 
         img_base should contain a path and beginning of a file name.
         """
-        self.geography = Geography()
         island_map = self.example_geogr if island_map is None \
             else island_map
+        self.geography = Geography()
         self.geography.get_cells(island_map)
-        self.fauna = Fauna(self.geography)
+        self.fauna = Fauna(self.geography.cells)
         self.fauna.get_population(ini_pop)
         self.seed = rd.seed(seed)
         self.ymax_animals = ymax_animals

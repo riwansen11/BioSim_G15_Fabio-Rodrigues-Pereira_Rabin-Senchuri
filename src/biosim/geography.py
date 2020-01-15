@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
-import textwrap
-import numpy as np
-import random as rd
+from src.biosim.fauna import Population
 
 """
 This is the geography model which functions with the BioSim package 
@@ -14,118 +11,14 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
 class Geography:
-    """
-    Here there are methods useful to identify and organize and check
-    restrictions when a geography of any region is given.
 
-    Also creates geography parameters objects
-    """
+    geo_types = {'O': 'Ocean', 'S': 'Savannah', 'M': 'Mountain',
+                 'J': 'Jungle', 'D': 'Desert'}
 
-    def __init__(self):
-        self.cells = []
-        self.jungle_params = {'f_max': 800.0, 'alpha': None}
-        self.savannah_params = {'f_max': 300.0, 'alpha': 0.3}
-        self.desert_params = {'f_max': None, 'alpha': None}
-        self.ocean_params = {'f_max': None, 'alpha': None}
-        self.mountain_params = {'f_max': None, 'alpha': None}
+    parameters = {}
 
-    @staticmethod
-    def has_invalid_character(geogr):
-        """
-        Searches for invalid character and raise a ValueError if
-        necessary.
-
-        :param geogr: Multi-line string
-        """
-        geogr = textwrap.dedent(geogr)
-        geos_detected = ''.join(set(''.join(geogr.splitlines())))
-        for letter in geos_detected:
-            if letter not in ('O', 'S', 'M', 'J', 'D'):
-                raise ValueError('Invalid character {} '
-                                 'identified'.format('< ' + letter +
-                                                     ' >'))
-
-    @staticmethod
-    def has_same_line_lengths(geogr):
-        """
-        Checks if the lengths of the lines are equal and raise a
-        ValueError if necessary.
-
-        :param geogr: Multi-line string
-        """
-        line_length, geogr = None, textwrap.dedent(geogr)
-        for element in geogr.splitlines():
-            if line_length in (None, len(element)):
-                line_length = len(element)
-            else:
-                raise ValueError('Different line lengths detected')
-
-    @staticmethod
-    def has_invalid_boundary(cells):
-        """
-        Searches for invalid non-ocean boundary character  and raise a
-        ValueError if necessary.
-
-        :param cells: list of lists
-        """
-        for element in cells[0]:
-            if element is not 'O':
-                raise ValueError('Invalid Boundary')
-
-        for element in cells[-1]:
-            if element is not 'O':
-                raise ValueError('Invalid Boundary')
-
-        for element in cells:
-            if element[0] is not 'O':
-                raise ValueError('Invalid Boundary')
-
-            elif element[-1] is not 'O':
-                raise ValueError('Invalid Boundary')
-
-    def get_cells(self, geogr):
-        """
-        Transforms a multi-line string in numpy's array.
-
-        :param geogr: Multi-line string
-        :return: list of lists self.cells
-        """
-        geogr = textwrap.dedent(geogr)
-        self.has_invalid_character(geogr)
-        self.has_same_line_lengths(geogr)
-
-        for row in geogr.splitlines():
-            self.cells.append(list(row.strip()))
-        """self.cells = np.array([list(line.strip()) for line in
-                                       geogr.splitlines()])"""
-
-        self.has_invalid_boundary(self.cells)
-
-    def find_landscape_param(self, landscape):
-        """
-        Finds any landscape default parameter.
-
-        :param landscape: string
-        """
-        if landscape in ('J', 'Jungle', 'jungle', 'j'):
-            return self.jungle_params
-
-        elif landscape in ('S', 'Savannah', 'savannah', 's'):
-            return self.savannah_params
-
-        elif landscape in ('D', 'Desert', 'desert', 'd'):
-            return self.desert_params
-
-        elif landscape in ('O', 'Ocean', 'ocean', 'o'):
-            return self.savannah_params
-
-        elif landscape in ('M', 'Mountain', 'mountain', 'm'):
-            return self.desert_params
-
-        else:
-            raise ValueError('Landscape {} not found'.format(landscape))
-
-    def get_parameters(self, landscape=None, params=None):
+    @classmethod
+    def set_parameters(cls, landscape=None, params=None):
         """
         Updates any landscape parameter.
 
@@ -134,13 +27,69 @@ class Geography:
         """
         if not isinstance(params, dict):
             raise TypeError("'param_dict' must be type 'dict'")
+
         else:
+            geo = self.find_landscape_type(landscape)
             for parameter in params.keys():
                 if 'f_max' is parameter and params['f_max'] <= 0:
                     raise ValueError(
                         "parameter 'f_max' must be non-negative")
-                elif parameter not in \
-                        self.find_landscape_param(landscape).keys():
+                elif parameter not in geo.parameters.keys():
                     raise ValueError(
                         "unknown parameter: '{}'".format(parameter))
-            self.find_landscape_param(landscape).update(params)
+            geo.parameters.update(params)
+
+    def __init__(self, geographies):
+        self.geos = geographies  # list of cells received
+
+        self.pop = Population(self.geos)  # send
+        self.population = self.pop.create_cells()
+
+    def create_cells(self):
+        loc = [(i, j) for i in range(len(self.geos))
+               for j in range(len(self.geos[0]))]
+        geo = [geo for i in range(len(self.geos))
+               for geo in self.geos[i]]
+        return dict(zip(loc, geo))
+
+    def find_landscape_type(self, landscape):
+        """
+        Finds any landscape default parameter.
+
+        :param landscape: string
+        """
+        if landscape in self.geo_types.keys():
+            return self.geo_types[landscape]
+        else:
+            raise ValueError('Geography {} not found'.format(landscape))
+
+
+
+class Jungle(Geography):
+    def __init__(self):
+        super().__init__()
+        self.parameters = {'f_max': 800.0, 'alpha': None}
+
+
+class Savannah(Geography):
+    def __init__(self):
+        super().__init__()
+        self.parameters = {'f_max': 300.0, 'alpha': 0.3}
+
+
+class Desert(Geography):
+    def __init__(self):
+        super().__init__()
+        self.parameters = {'f_max': None, 'alpha': None}
+
+
+class Ocean(Geography):
+    def __init__(self):
+        super().__init__()
+        self.parameters = {'f_max': None, 'alpha': None}
+
+
+class Mountain(Geography):
+    def __init__(self):
+        super().__init__()
+        self.parameters = {'f_max': None, 'alpha': None}

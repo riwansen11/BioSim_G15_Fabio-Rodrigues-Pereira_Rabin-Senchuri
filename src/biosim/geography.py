@@ -18,31 +18,29 @@ class Geography:
     parameters = {}
 
     @classmethod
-    def set_parameters(cls, landscape=None, params=None):
-        """
-        Updates any landscape parameter.
+    def check_unknown_parameter(cls, params):
+        for parameter in cls.parameters.keys():
+            if parameter not in cls.parameters.keys():
+                raise ValueError("Unknown parameter provided: "
+                                 "'{}'".format(parameter))
 
-        :param landscape: string
-        :param params: dict
-        """
-        if not isinstance(params, dict):
-            raise TypeError("'param_dict' must be type 'dict'")
+    @classmethod
+    def check_non_negative_f_max_parameter(cls, params):
+        for parameter in cls.parameters.keys():
+            if 'f_max' is parameter and cls.parameters['f_max'] <= 0:
+                raise ValueError("The parameter 'f_max' must be "
+                                 "non-negative")
 
-        else:
-            geo = self.find_landscape_type(landscape)
-            for parameter in params.keys():
-                if 'f_max' is parameter and params['f_max'] <= 0:
-                    raise ValueError(
-                        "parameter 'f_max' must be non-negative")
-                elif parameter not in geo.parameters.keys():
-                    raise ValueError(
-                        "unknown parameter: '{}'".format(parameter))
-            geo.parameters.update(params)
+    @classmethod
+    def set_parameters(cls, params):
+        cls.check_unknown_parameter(params)
+        cls.check_non_negative_f_max_parameter(params)
+        cls.parameters.update(params)
 
     def __init__(self, geographies):
-        self.geos = geographies  # list of cells received
+        self.geos = geographies
 
-        self.pop = Population(self.geos)  # send
+        self.pop = Population(self.geos)
         self.population = self.pop.create_cells()
 
     def create_cells(self):
@@ -52,44 +50,32 @@ class Geography:
                for geo in self.geos[i]]
         return dict(zip(loc, geo))
 
-    def find_landscape_type(self, landscape):
-        """
-        Finds any landscape default parameter.
-
-        :param landscape: string
-        """
-        if landscape in self.geo_types.keys():
-            return self.geo_types[landscape]
-        else:
-            raise ValueError('Geography {} not found'.format(landscape))
-
-
 
 class Jungle(Geography):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, geographies):
+        super().__init__(geographies)
         self.parameters = {'f_max': 800.0, 'alpha': None}
 
 
 class Savannah(Geography):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, geographies):
+        super().__init__(geographies)
         self.parameters = {'f_max': 300.0, 'alpha': 0.3}
 
 
 class Desert(Geography):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, geographies):
+        super().__init__(geographies)
         self.parameters = {'f_max': None, 'alpha': None}
 
 
 class Ocean(Geography):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, geographies):
+        super().__init__(geographies)
         self.parameters = {'f_max': None, 'alpha': None}
 
 
 class Mountain(Geography):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, geographies):
+        super().__init__(geographies)
         self.parameters = {'f_max': None, 'alpha': None}

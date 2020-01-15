@@ -16,6 +16,8 @@ class Island:
     geo_types = {'O': 'Ocean', 'S': 'Savannah', 'M': 'Mountain',
                  'J': 'Jungle', 'D': 'Desert'}
 
+    param_types = ['O', 'S', 'M', 'J', 'D', 'Herbivore', 'Carnivore']
+
     def __init__(self, island_map):
         self.island_map = island_map
         self.geos = self.list_geo_cells()
@@ -55,13 +57,35 @@ class Island:
             if west is not 'O' or east is not 'O':
                 raise ValueError('The boundary is not Ocean')
 
-    def set_parameters(self, species, params):
+    def check_param_keys(self, param_key):
+        if param_key not in self.param_key:
+            raise ValueError('Parameter type *{}* not '
+                             'found'.format(param_key))
+
+    @staticmethod
+    def check_param_instance(params):
+        if not isinstance(params, dict):
+            raise TypeError('params variable must be provided as '
+                            'dictionary')
+
+    def set_parameters(self, param_key, params):
+        param_key = self.check_param_keys(param_key)
+        params = self.check_param_instance(params)
+
+        param_key(self.geos).set_parameters(params)
+        if landscape in self.geo_types.keys():
+            return self.geo_types[landscape]
+        else:
+            raise ValueError('Geography {} not found'.format(landscape))
         pass
 
     def add_population(self, population):
+        """[{ "loc": (10, 10),
+           "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+           "loc": (10, 10),
+           "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
+        """
         pass
 
     def yearly_cycle(self):
         pass
-
-

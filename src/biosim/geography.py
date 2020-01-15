@@ -22,10 +22,9 @@ class Cells:
 
     @classmethod
     def check_non_negative_f_max_parameter(cls, params):
-        for parameter in params.keys():
-            if parameter is 'f_max' and parameter['f_max'] <= 0:
-                raise ValueError("The parameter 'f_max' must be "
-                                 "non-negative")
+        if params['f_max'] <= 0:
+            raise ValueError("The parameter 'f_max' must be "
+                             "non-negative")
 
     @classmethod
     def set_parameters(cls, params):
@@ -34,12 +33,12 @@ class Cells:
         cls.parameters.update(params)
 
     def __init__(self):
-        self.pop_per_species = {Herbivore: [], Carnivore: []}
-        self.new_pop_per_species = {Herbivore: [], Carnivore: []}
+        self.population = {Herbivore: [], Carnivore: []}
+        self.new_population = {Herbivore: [], Carnivore: []}
 
-    def add_pop(self, individuals):
+    def add_population(self, individuals):
         for animal in individuals:  # [ Carnivore(age, weight), ...]
-            self.pop_per_species[type(animal)].append(animal)
+            self.population[type(animal)].append(animal)
 
 
 class Jungle(Cells):

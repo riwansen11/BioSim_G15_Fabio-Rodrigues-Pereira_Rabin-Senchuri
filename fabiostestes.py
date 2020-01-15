@@ -3,7 +3,7 @@ from src.biosim.simulation import BioSim
 
 ini_pop = [
         {
-            "loc": (2, 1),
+            "loc": (1, 14),
             "pop": [
                 {"species": "Herbivore", "age": 5, "weight": 20}
             ],
@@ -12,5 +12,5 @@ ini_pop = [
 
 a = BioSim(None, ini_pop, None)
 
-
-print(a.island.cells)
+loc = (1, 14)
+print(a.island.cells[loc].pop_per_species)

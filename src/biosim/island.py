@@ -65,15 +65,9 @@ class Island:
     def create_cells(self):
         loc = [(i, j) for i in range(len(self.geos))
                for j in range(len(self.geos[0]))]
-        geo = [self.geo_objects[geo] for j in range(len(self.geos))
+        geo = [self.geo_objects[geo]() for j in range(len(self.geos))
                for geo in self.geos[j]]
         return dict(zip(loc, geo))
-
-    @classmethod
-    def check_param_keys(cls, param_key):
-        if param_key not in cls.fauna_or_geos_objects[param_key]:
-            raise ValueError('Parameter Key *{}* not '
-                             'found'.format(param_key))
 
     @staticmethod
     def check_dict_instance(argument):
@@ -81,10 +75,10 @@ class Island:
             raise TypeError('Argument *{}* must be provided as '
                             'dictionary'.format(argument))
 
-    def set_parameters(self, param_key, params):
-        param_key = self.check_param_keys(param_key)
-        params = self.check_dict_instance(params)
-        param_key(self.geos).set_parameters(params)  # **check this
+    def set_parameters(self, param_key, params):  # 'J'
+        self.check_dict_instance(params)
+        self.fauna_or_geos_objects[param_key].set_parameters(params)
+        #  Check if it stays for all animal created afterwards
 
     @staticmethod
     def check_list_instance(argument):
@@ -107,19 +101,19 @@ class Island:
         self.check_list_instance(given_pop)
 
         for population in given_pop:
-            individuals = []  # [ Carnivore(age, weight), ...]
+            individuals = []
             coordinates = population['loc']
             self.check_coordinates_exists(coordinates)
             self.check_habitability(coordinates)
 
-            for individual in population['pop']:  # 'loc' and 'pop' keys
+            for individual in population['pop']:
                 species = individual['species']
                 age = individual['age']
                 weight = individual['weight']
                 new_individual = self.fauna_objects[species](age, weight)
                 individuals.append(new_individual)
             cell = self.cells[coordinates]
-            cell.add_pop(individuals)
+            cell.add_population(individuals)
 
     def yearly_cycle(self, num_years, vis_years, img_years):
         pass

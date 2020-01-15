@@ -14,13 +14,42 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
 class Island:
-
     habitable_geos = {'S': Savannah, 'J': Jungle, 'D': Desert}
 
     fauna_classes = {'Herbivore': Herbivore, 'Carnivore': Carnivore}
 
     geo_classes = {'O': Ocean, 'S': Savannah, 'M': Mountain,
                    'J': Jungle, 'D': Desert}
+
+    @staticmethod
+    def list_geo_cells(island_map):
+        geos = textwrap.dedent(island_map).splitlines()
+        return [list(row.strip()) for row in geos]
+
+    @staticmethod
+    def check_line_lengths(geos):
+        length_count = [len(row) for row in geos]
+        for i in length_count:
+            if i is not length_count[0]:
+                raise ValueError('Different line lengths detected')
+
+    @staticmethod
+    def check_invalid_boundary(geos):
+        for north in geos[0]:
+            for south in geos[-1]:
+                if north is not 'O' or south is not 'O':
+                    raise ValueError('The boundary is not Ocean')
+        for row in geos:
+            west, east = row[0], row[-1]
+            if west is not 'O' or east is not 'O':
+                raise ValueError('The boundary is not Ocean')
+
+    @classmethod
+    def check_invalid_character(cls, geos):
+        for row in geos:
+            for letter in row:
+                if letter not in cls.geo_classes.keys():
+                    raise ValueError('Invalid character identified')
 
     @staticmethod
     def check_dict_instance(argument):
@@ -35,39 +64,12 @@ class Island:
                             'list'.format(argument))
 
     def __init__(self, island_map):
-        self.island_map = island_map
-        self.geos = self.list_geo_cells()
-        self.check_line_lengths()
-        self.check_invalid_character()
-        self.check_invalid_boundary()
+        self.geos = self.list_geo_cells(island_map)
+        self.check_line_lengths(self.geos)
+        self.check_invalid_character(self.geos)
+        self.check_invalid_boundary(self.geos)
 
         self.cells = self.create_cells()
-
-    def list_geo_cells(self):
-        geogr = textwrap.dedent(self.island_map).splitlines()
-        return [list(row.strip()) for row in geogr]
-
-    def check_line_lengths(self):
-        length_count = [len(row) for row in self.geos]
-        for i in length_count:
-            if i is not length_count[0]:
-                raise ValueError('Different line lengths detected')
-
-    def check_invalid_character(self):
-        for row in self.geos:
-            for letter in row:
-                if letter not in self.geo_classes.keys():
-                    raise ValueError('Invalid character identified')
-
-    def check_invalid_boundary(self):
-        for north in self.geos[0]:
-            for south in self.geos[-1]:
-                if north is not 'O' or south is not 'O':
-                    raise ValueError('The boundary is not Ocean')
-        for row in self.geos:
-            west, east = row[0], row[-1]
-            if west is not 'O' or east is not 'O':
-                raise ValueError('The boundary is not Ocean')
 
     def create_cells(self):
         loc = [(i, j) for i in range(len(self.geos))
@@ -108,14 +110,13 @@ class Island:
                 new_individual = \
                     self.fauna_classes[species](age, weight)
                 individuals.append(new_individual)
-            # geo_object.add_population(individuals)
             for animal in individuals:
                 geo_object.population[type(animal)].append(animal)
             
     def yearly_cycle(self):
         for coordinates, geo_object in self.cells.items():
             if type(geo_object) in self.habitable_geos.values():
-                geo_object.feed(), geo_object.procreate()
-        # self.migrate()
+                geo_object.feeding(), geo_object.procreation()
+        # self.migration()
         # self.add_newborns()
         # self.weight_loss(), self.aging(), self.death()

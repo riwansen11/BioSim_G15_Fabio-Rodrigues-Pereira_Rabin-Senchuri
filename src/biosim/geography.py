@@ -64,7 +64,6 @@ class Geography:
             raise ValueError('Geography {} not found'.format(landscape))
 
 
-
 class Jungle(Geography):
     def __init__(self):
         super().__init__()

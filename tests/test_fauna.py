@@ -5,7 +5,7 @@ import pytest
 import math
 import numpy as np
 # from pytest import approx
-from src.biosim.fauna import Fauna
+from src.biosim.fauna import Population, Herbivore, Carnivore
 
 """
 This is the fauna pytest package which is a test package for the 

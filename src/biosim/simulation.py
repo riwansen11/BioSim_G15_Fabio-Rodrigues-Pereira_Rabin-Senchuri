@@ -61,7 +61,7 @@ class BioSim:
             else island_map
 
         self.island = Island(island_map)
-        self.island.give_population(ini_pop)
+        self.island.add_population(ini_pop)
         self.seed = rd.seed(seed)
         self.ymax_animals = ymax_animals
         self.cmax_animals = cmax_animals
@@ -97,7 +97,7 @@ class BioSim:
            "loc": (10, 10),
            "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
         """
-        self.island.give_population(population)
+        self.island.add_population(population)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
         """
@@ -110,7 +110,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        self.island.yearly_cycle(num_years, vis_years, img_years)
+        # self.island.yearly_cycle()
 
     @property
     def year(self):

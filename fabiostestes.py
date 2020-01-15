@@ -1,5 +1,6 @@
 import textwrap
 from src.biosim.simulation import BioSim
+from src.biosim.fauna import Herbivore, Carnivore
 
 ini_pop = [
         {
@@ -13,4 +14,4 @@ ini_pop = [
 a = BioSim(None, ini_pop, None)
 
 loc = (1, 14)
-print(a.island.cells[loc].pop_per_species)
+print(a.island.habitable_geos.values())

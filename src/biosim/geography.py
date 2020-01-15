@@ -36,9 +36,15 @@ class Cells:
         self.population = {Herbivore: [], Carnivore: []}
         self.new_population = {Herbivore: [], Carnivore: []}
 
-    def add_population(self, individuals):
-        for animal in individuals:  # [ Carnivore(age, weight), ...]
-            self.population[type(animal)].append(animal)
+    '''def add_population(self, individuals):
+        for animal in individuals:  # [Carnivore(age, weight), ...]
+            self.population[type(animal)].append(animal)'''
+
+    def feed(self):
+        pass
+
+    def procreate(self):
+        pass
 
 
 class Jungle(Cells):

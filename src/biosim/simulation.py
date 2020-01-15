@@ -110,6 +110,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
+        self.island.yearly_cycle()
         pass
 
     @property

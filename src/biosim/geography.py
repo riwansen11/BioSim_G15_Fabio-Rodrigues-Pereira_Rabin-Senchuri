@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from src.biosim.fauna import Population
 
 """
 This is the geography model which functions with the BioSim package 
@@ -10,66 +11,14 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
 class Geography:
-    """
-    Here there are methods useful to identify and organize and check
-    restrictions when a geography of any region is given.
 
-    Also creates geography parameters objects
-    """
     geo_types = {'O': 'Ocean', 'S': 'Savannah', 'M': 'Mountain',
                  'J': 'Jungle', 'D': 'Desert'}
 
-    @staticmethod
-    def list_geo_cells(geogr):
-        return [list(row.strip()) for row in geogr]
+    parameters = {}
 
-    def __init__(self, geogr):
-        self.geogr = self.list_geo_cells(geogr)
-        self.check_line_lengths()
-        self.check_invalid_character()
-        self.check_invalid_boundary()
-
-    def check_line_lengths(self):
-        length_count = [len(row) for row in self.geogr]
-        for i in length_count:
-            if i is not length_count[0]:
-                raise ValueError('Different line lengths detected')
-
-    def check_invalid_character(self):
-        for row in self.geogr:
-            for letter in row:
-                if letter not in self.geo_types.keys():
-                    raise ValueError('Invalid character identified')
-
-    def check_invalid_boundary(self):
-        for north in self.geogr[0]:
-            for south in self.geogr[-1]:
-                if north is not 'O' or south is not 'O':
-                    raise ValueError('The boundary is not Ocean')
-        for row in self.geogr:
-            west, east = row[0], row[-1]
-            if west is not 'O' or east is not 'O':
-                raise ValueError('The boundary is not Ocean')
-
-    def cells(self):
-        loc = [(i, j) for i in range(len(self.geogr))
-               for j in range(len(self.geogr[0]))]
-        geo = [geo for i in range(len(self.geogr))
-               for geo in self.geogr[i]]
-        return dict(zip(loc, geo))
-
-    def find_landscape_type(self, landscape):
-        """
-        Finds any landscape default parameter.
-
-        :param landscape: string
-        """
-        if landscape in self.geo_types.keys():
-            return self.geo_types[landscape]
-        else:
-            raise ValueError('Geography {} not found'.format(landscape))
-
-    def set_parameters(self, landscape=None, params=None):
+    @classmethod
+    def set_parameters(cls, landscape=None, params=None):
         """
         Updates any landscape parameter.
 
@@ -89,6 +38,31 @@ class Geography:
                     raise ValueError(
                         "unknown parameter: '{}'".format(parameter))
             geo.parameters.update(params)
+
+    def __init__(self, geographies):
+        self.geos = geographies  # list of cells received
+
+        self.pop = Population(self.geos)  # send
+        self.population = self.pop.create_cells()
+
+    def create_cells(self):
+        loc = [(i, j) for i in range(len(self.geos))
+               for j in range(len(self.geos[0]))]
+        geo = [geo for i in range(len(self.geos))
+               for geo in self.geos[i]]
+        return dict(zip(loc, geo))
+
+    def find_landscape_type(self, landscape):
+        """
+        Finds any landscape default parameter.
+
+        :param landscape: string
+        """
+        if landscape in self.geo_types.keys():
+            return self.geo_types[landscape]
+        else:
+            raise ValueError('Geography {} not found'.format(landscape))
+
 
 
 class Jungle(Geography):

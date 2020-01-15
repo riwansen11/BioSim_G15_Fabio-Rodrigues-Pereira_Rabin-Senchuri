@@ -9,16 +9,16 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
-class Fauna:
-    """Creates the fauna object and its parameters"""
+class Population:
+    def __init__(self, geographies):
+        self.geos = geographies
 
-    def __init__(self, geography_cells):
-        """
-
-        :param geography_cells: list of lists
-        """
-        self.geo_cells = geography_cells
-        self.population = []
+    def create_cells(self):
+        loc = [(i, j) for i in range(len(self.geos))
+               for j in range(len(self.geos[0]))]
+        geo = ['' for i in range(len(self.geos))
+               for i in self.geos[i]]
+        return dict(zip(loc, geo))
 
     def find_specie_param(self, species):
         """

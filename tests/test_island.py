@@ -66,6 +66,10 @@ def test_island_character():
         Island(island_map)
 
 
+def test_island_parameter():
+    pass
+
+
 def test_add_population_in_island():
     pass
 

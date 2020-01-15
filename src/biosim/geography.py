@@ -11,7 +11,6 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
 class Geography:
-
     geo_types = {'O': 'Ocean', 'S': 'Savannah', 'M': 'Mountain',
                  'J': 'Jungle', 'D': 'Desert'}
 
@@ -19,15 +18,15 @@ class Geography:
 
     @classmethod
     def check_unknown_parameter(cls, params):
-        for parameter in cls.parameters.keys():
+        for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
                                  "'{}'".format(parameter))
 
     @classmethod
     def check_non_negative_f_max_parameter(cls, params):
-        for parameter in cls.parameters.keys():
-            if 'f_max' is parameter and cls.parameters['f_max'] <= 0:
+        for parameter in params.keys():
+            if parameter is 'f_max' and parameter['f_max'] <= 0:
                 raise ValueError("The parameter 'f_max' must be "
                                  "non-negative")
 
@@ -52,15 +51,26 @@ class Geography:
 
 
 class Jungle(Geography):
+    parameters = {'f_max': 800.0, 'alpha': None}
+
     def __init__(self, geographies):
         super().__init__(geographies)
-        self.parameters = {'f_max': 800.0, 'alpha': None}
+        self.fodder = self.parameters['f_max']
+
+    def grow_fodder(self):
+        self.fodder = self.parameters['f_max']  # ****check
 
 
 class Savannah(Geography):
+    parameters = {'f_max': 300.0, 'alpha': 0.3}
+
     def __init__(self, geographies):
         super().__init__(geographies)
-        self.parameters = {'f_max': 300.0, 'alpha': 0.3}
+        self.fodder = self.parameters['f_max']
+
+    def grow_fodder(self):
+        self.fodder += self.parameters['alpha'] * (
+                self.parameters['f_max'] - self.fodder)  # ****check
 
 
 class Desert(Geography):

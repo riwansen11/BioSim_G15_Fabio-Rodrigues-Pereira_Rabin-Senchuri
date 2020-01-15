@@ -16,7 +16,7 @@ class Island:
     geo_types = {'O': 'Ocean', 'S': 'Savannah', 'M': 'Mountain',
                  'J': 'Jungle', 'D': 'Desert'}
 
-    param_types = ['O', 'S', 'M', 'J', 'D', 'Herbivore', 'Carnivore']
+    param_keys = ['O', 'S', 'M', 'J', 'D', 'Herbivore', 'Carnivore']
 
     def __init__(self, island_map):
         self.island_map = island_map
@@ -58,7 +58,7 @@ class Island:
                 raise ValueError('The boundary is not Ocean')
 
     def check_param_keys(self, param_key):
-        if param_key not in self.param_key:
+        if param_key not in self.param_keys:
             raise ValueError('Parameter type *{}* not '
                              'found'.format(param_key))
 
@@ -71,13 +71,7 @@ class Island:
     def set_parameters(self, param_key, params):
         param_key = self.check_param_keys(param_key)
         params = self.check_param_instance(params)
-
         param_key(self.geos).set_parameters(params)
-        if landscape in self.geo_types.keys():
-            return self.geo_types[landscape]
-        else:
-            raise ValueError('Geography {} not found'.format(landscape))
-        pass
 
     def add_population(self, population):
         """[{ "loc": (10, 10),

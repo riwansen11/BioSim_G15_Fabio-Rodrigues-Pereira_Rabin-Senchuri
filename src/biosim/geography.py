@@ -57,15 +57,8 @@ class Jungle(Geography):
         super().__init__(geographies)
         self.fodder = self.parameters['f_max']
 
-<<<<<<< HEAD
-class Jungle(Geography):
-    def __init__(self):
-        super().__init__()
-        self.parameters = {'f_max': 800.0, 'alpha': None}
-=======
     def grow_fodder(self):
         self.fodder = self.parameters['f_max']  # ****check
->>>>>>> fabio2
 
 
 class Savannah(Geography):

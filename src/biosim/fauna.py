@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import numpy as np
 
 """
 This is the fauna model which functions with the BioSim package 
@@ -24,39 +25,33 @@ class Population:
         cls.check_unknown_parameter(params)
         cls.parameters.update(params)
 
-    def __init__(self, geographies):
-        self.geos = geographies
+    @classmethod
+    def _weight_at_birth(cls, p):
+        return np.random.normal(p['w_birth'], p['sigma_birth'])
 
-    def create_cells(self):
-        loc = [(i, j) for i in range(len(self.geos))
-               for j in range(len(self.geos[0]))]
-        geo = ['' for i in range(len(self.geos))
-               for i in self.geos[i]]
-        return dict(zip(loc, geo))
+    def __init__(self, age=0, weight=None):
+        if age and (weight is None):
+            raise ValueError("cannot set 'age' without passing 'weight'")
 
-    def is_habitable(self, loc):
-        """
-        Checks if the cell is habitable.
+        if not isinstance(age, int):
+            raise TypeError("'age' must be type: 'int'")
 
-        :param loc: tuple
-        :return: True if habitable or False if not habitable
-        """
-        """return True if self.geo_cells[loc[0]][loc[1]] \
-                       in ('J', 'S', 'D') else False"""
+        if weight is not None:
+            if not isinstance(weight, (int, float)):
+                raise TypeError(
+                    "'weight' must be type: 'int' or 'float'")
 
-    def get_population(self, population):
-        """
+        if weight is not None:
+            if (not 0 < weight) or (not 0 < age):
+                raise ValueError("'weight' and 'age' must be a "
+                                 "non-negative 'int' or 'float'")
 
-        :param population: List of dictionaries specifying population:
-        [{ "loc": (10, 10),
-           "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
-           "loc": (10, 10),
-           "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
-        """
-        for i in population:
-            loc = i['loc']
-            if self.is_habitable(loc):
-                """self.population.append(i)"""
+        self.age = age
+        self.weight = self._weight_at_birth(self.parameters) \
+            if self.age is 0 else weight
+
+        '''self.fitness = self._compute_fitness(self.age, self.weight,
+                                             self.parameters)'''
 
 
 class Herbivore(Population):
@@ -77,8 +72,8 @@ class Herbivore(Population):
                   'F': 10.0,
                   'DeltaPhiMax': None}
 
-    def __init__(self, geographies):
-        super().__init__(geographies)
+    def __init__(self, age=0, weight=None):
+        super().__init__()
 
 
 class Carnivore(Population):
@@ -99,8 +94,5 @@ class Carnivore(Population):
                   'F': 10.0,
                   'DeltaPhiMax': 10.0}
 
-    def __init__(self, geographies):
-        super().__init__(geographies)
-
-
-
+    def __init__(self, age=0, weight=None):
+        super().__init__()

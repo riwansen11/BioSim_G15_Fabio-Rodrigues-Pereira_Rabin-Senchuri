@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import textwrap
-from src.biosim.geography import Geography
-from src.biosim.fauna import Population
+from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
+    Desert
+from src.biosim.fauna import Herbivore, Carnivore
 
 """
 This is the Island model which functions with the BioSim package 
@@ -16,7 +17,16 @@ class Island:
     geo_types = {'O': 'Ocean', 'S': 'Savannah', 'M': 'Mountain',
                  'J': 'Jungle', 'D': 'Desert'}
 
-    param_keys = ['O', 'S', 'M', 'J', 'D', 'Herbivore', 'Carnivore']
+    habitable_geos = ['S', 'J', 'D']
+
+    fauna_or_geos_objects = {'O': Ocean, 'S': Savannah, 'M': Mountain,
+                             'J': Jungle, 'D': Desert, 'Herbivore':
+                                 Herbivore, 'Carnivore': Carnivore}
+
+    fauna_objects = {'Herbivore': Herbivore, 'Carnivore': Carnivore}
+
+    geo_objects = {'O': Ocean, 'S': Savannah, 'M': Mountain,
+                   'J': Jungle, 'D': Desert}
 
     def __init__(self, island_map):
         self.island_map = island_map
@@ -24,12 +34,7 @@ class Island:
         self.check_line_lengths()
         self.check_invalid_character()
         self.check_invalid_boundary()
-
-        self.geo = Geography(self.geos)
-        self.geographies = self.geo.create_cells()
-
-        self.pop = Population(self.geos)
-        self.population = self.pop.create_cells()
+        self.cells = self.create_cells()
 
     def list_geo_cells(self):
         geogr = textwrap.dedent(self.island_map).splitlines()
@@ -57,29 +62,64 @@ class Island:
             if west is not 'O' or east is not 'O':
                 raise ValueError('The boundary is not Ocean')
 
-    def check_param_keys(self, param_key):
-        if param_key not in self.param_keys:
-            raise ValueError('Parameter type *{}* not '
+    def create_cells(self):
+        loc = [(i, j) for i in range(len(self.geos))
+               for j in range(len(self.geos[0]))]
+        geo = [self.geo_objects[geo] for j in range(len(self.geos))
+               for geo in self.geos[j]]
+        return dict(zip(loc, geo))
+
+    @classmethod
+    def check_param_keys(cls, param_key):
+        if param_key not in cls.fauna_or_geos_objects[param_key]:
+            raise ValueError('Parameter Key *{}* not '
                              'found'.format(param_key))
 
     @staticmethod
-    def check_param_instance(params):
-        if not isinstance(params, dict):
-            raise TypeError('params variable must be provided as '
-                            'dictionary')
+    def check_dict_instance(argument):
+        if not isinstance(argument, dict):
+            raise TypeError('Argument *{}* must be provided as '
+                            'dictionary'.format(argument))
 
     def set_parameters(self, param_key, params):
         param_key = self.check_param_keys(param_key)
-        params = self.check_param_instance(params)
-        param_key(self.geos).set_parameters(params)
+        params = self.check_dict_instance(params)
+        param_key(self.geos).set_parameters(params)  # **check this
 
-    def add_population(self, population):
-        """[{ "loc": (10, 10),
-           "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
-           "loc": (10, 10),
-           "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
-        """
-        pass
+    @staticmethod
+    def check_list_instance(argument):
+        if not isinstance(argument, list):
+            raise TypeError('Argument *{}* must be provided as '
+                            'list'.format(argument))
 
-    def yearly_cycle(self):
+    def check_coordinates_exists(self, coordinates):
+        if coordinates not in self.cells.keys():
+            raise ValueError('These *{}* coordinates are not '
+                             'found'.format(coordinates))
+
+    def check_habitability(self, coordinates):
+        if self.geos[coordinates[0]][coordinates[1]] not in \
+                self.habitable_geos:
+            raise TypeError('This *{}* area is not '
+                            'habitable'.format(coordinates))
+
+    def give_population(self, given_pop):
+        self.check_list_instance(given_pop)
+
+        for population in given_pop:
+            individuals = []  # [ Carnivore(age, weight), ...]
+            coordinates = population['loc']
+            self.check_coordinates_exists(coordinates)
+            self.check_habitability(coordinates)
+
+            for individual in population['pop']:  # 'loc' and 'pop' keys
+                species = individual['species']
+                age = individual['age']
+                weight = individual['weight']
+                new_individual = self.fauna_objects[species](age, weight)
+                individuals.append(new_individual)
+            cell = self.cells[coordinates]
+            cell.add_pop(individuals)
+
+    def yearly_cycle(self, num_years, vis_years, img_years):
         pass

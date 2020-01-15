@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from src.biosim.fauna import Population
+from src.biosim.fauna import Herbivore, Carnivore
 
 """
 This is the geography model which functions with the BioSim package 
@@ -10,10 +10,7 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
-class Geography:
-    geo_types = {'O': 'Ocean', 'S': 'Savannah', 'M': 'Mountain',
-                 'J': 'Jungle', 'D': 'Desert'}
-
+class Cells:
     parameters = {}
 
     @classmethod
@@ -36,36 +33,31 @@ class Geography:
         cls.check_non_negative_f_max_parameter(params)
         cls.parameters.update(params)
 
-    def __init__(self, geographies):
-        self.geos = geographies
+    def __init__(self):
+        self.pop_per_species = {Herbivore: [], Carnivore: []}
+        self.new_pop_per_species = {Herbivore: [], Carnivore: []}
 
-        self.pop = Population(self.geos)
-        self.population = self.pop.create_cells()
-
-    def create_cells(self):
-        loc = [(i, j) for i in range(len(self.geos))
-               for j in range(len(self.geos[0]))]
-        geo = [geo for i in range(len(self.geos))
-               for geo in self.geos[i]]
-        return dict(zip(loc, geo))
+    def add_pop(self, individuals):
+        for animal in individuals:  # [ Carnivore(age, weight), ...]
+            self.pop_per_species[type(animal)].append(animal)
 
 
-class Jungle(Geography):
-    parameters = {'f_max': 800.0, 'alpha': None}
+class Jungle(Cells):
+    parameters = {'f_max': 800.0}
 
-    def __init__(self, geographies):
-        super().__init__(geographies)
+    def __init__(self):
+        super().__init__()
         self.fodder = self.parameters['f_max']
 
     def grow_fodder(self):
         self.fodder = self.parameters['f_max']  # ****check
 
 
-class Savannah(Geography):
+class Savannah(Cells):
     parameters = {'f_max': 300.0, 'alpha': 0.3}
 
-    def __init__(self, geographies):
-        super().__init__(geographies)
+    def __init__(self):
+        super().__init__()
         self.fodder = self.parameters['f_max']
 
     def grow_fodder(self):
@@ -73,19 +65,16 @@ class Savannah(Geography):
                 self.parameters['f_max'] - self.fodder)  # ****check
 
 
-class Desert(Geography):
-    def __init__(self, geographies):
-        super().__init__(geographies)
-        self.parameters = {'f_max': None, 'alpha': None}
+class Desert(Cells):
+    def __init__(self):
+        super().__init__()
 
 
-class Ocean(Geography):
-    def __init__(self, geographies):
-        super().__init__(geographies)
-        self.parameters = {'f_max': None, 'alpha': None}
+class Ocean(Cells):
+    def __init__(self):
+        super().__init__()
 
 
-class Mountain(Geography):
-    def __init__(self, geographies):
-        super().__init__(geographies)
-        self.parameters = {'f_max': None, 'alpha': None}
+class Mountain(Cells):
+    def __init__(self):
+        super().__init__()

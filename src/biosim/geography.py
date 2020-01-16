@@ -19,49 +19,23 @@ class Cells:
         for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
-                                 "'{}'".format(parameter))
+                                 "*{}*".format(parameter))
 
     @classmethod
-    def check_non_negative_f_max_parameter(cls, params):
-        if params['f_max'] <= 0:
-            raise ValueError("The parameter 'f_max' must be "
-                             "non-negative")
+    def check_non_negative_parameter(cls, param_key, params):
+        if params[param_key] < 0:  # check here and others restrictions
+            raise ValueError("The parameter *{}* must be "
+                             "non-negative".format(param_key))
 
     @classmethod
     def set_parameters(cls, params):
         cls.check_unknown_parameter(params)
-        cls.check_non_negative_f_max_parameter(params)
+        cls.check_non_negative_parameter('f_max', params)
         cls.parameters.update(params)
 
     def __init__(self):
         self.population = {Herbivore: [], Carnivore: []}
         self.new_population = {Herbivore: [], Carnivore: []}
-
-    @classmethod
-    def set_landscape_parameters(cls, params=None):
-        """
-        Sets user-defined simulation parameters for all squares
-        pertaining to the Square superclass.
-
-        Parameters
-        ----------
-        params: dict
-            Dictionary with parameters to be changed, must be a subset
-            of default parameters.
-
-        """
-        if not isinstance(params, dict):
-            raise TypeError("'param_dict' must be type 'dict'")
-
-        for parameter in params.keys():
-            if parameter not in cls.default_params.keys():
-                raise ValueError(
-                    "unknown parameter: '{}'".format(parameter))
-        if 'f_max' in params.keys():
-            if not 0 <= params['f_max']:
-                raise ValueError(
-                    "parameter 'f_max' must be non-negative")
-        cls.default_params.update(params)
 
     def num_herbs(self):
         """

@@ -22,12 +22,30 @@ class Island:
                    'J': Jungle, 'D': Desert}
 
     @staticmethod
+    def check_string_instance(argument):
+        if not isinstance(argument, str):
+            raise TypeError('Argument *{}* must be provided as '
+                            'string'.format(argument))
+
+    @staticmethod
+    def check_list_instance(argument):
+        if not isinstance(argument, list):
+            raise TypeError('Argument *{}* must be provided as '
+                            'list'.format(argument))
+
+    @staticmethod
+    def check_dict_instance(argument):
+        if not isinstance(argument, dict):
+            raise TypeError('Argument *{}* must be provided as '
+                            'dictionary'.format(argument))
+
+    @staticmethod
     def list_geo_cells(island_map):
         geos = textwrap.dedent(island_map).splitlines()
         return [list(row.strip()) for row in geos]
 
     @staticmethod
-    def check_line_lengths(geos):
+    def check_invalid_line_lengths(geos):
         length_count = [len(row) for row in geos]
         for i in length_count:
             if i is not length_count[0]:
@@ -51,24 +69,26 @@ class Island:
                 if letter not in cls.geo_classes.keys():
                     raise ValueError('Invalid character identified')
 
-    @staticmethod
-    def check_dict_instance(argument):
-        if not isinstance(argument, dict):
-            raise TypeError('Argument *{}* must be provided as '
-                            'dictionary'.format(argument))
+    @classmethod
+    def check_coordinates_exists(cls, coordinates, cells):
+        cls.check_dict_instance(cells)
+        if coordinates not in cells.keys():
+            raise ValueError('These *{}* coordinates are not '
+                             'found'.format(coordinates))
 
-    @staticmethod
-    def check_list_instance(argument):
-        if not isinstance(argument, list):
-            raise TypeError('Argument *{}* must be provided as '
-                            'list'.format(argument))
+    @classmethod
+    def check_habitability(cls, coordinates, cells):
+        cls.check_dict_instance(cells)
+        if type(cells[coordinates]) not in \
+                cls.habitable_geos.values():
+            raise TypeError('This *{}* area is not '
+                            'habitable'.format(coordinates))
 
     def __init__(self, island_map):
         self.geos = self.list_geo_cells(island_map)
-        self.check_line_lengths(self.geos)
-        self.check_invalid_character(self.geos)
+        self.check_invalid_line_lengths(self.geos)
         self.check_invalid_boundary(self.geos)
-
+        self.check_invalid_character(self.geos)
         self.cells = self.create_cells()
 
     def create_cells(self):
@@ -79,20 +99,10 @@ class Island:
         return dict(zip(loc, geo))
 
     def set_parameters(self, param_key, params):
+        self.check_string_instance(param_key)
         self.check_dict_instance(params)
         merged_classes = dict(**self.fauna_classes, **self.geo_classes)
         merged_classes[param_key].set_parameters(params)
-
-    def check_coordinates_exists(self, coordinates):
-        if coordinates not in self.cells.keys():
-            raise ValueError('These *{}* coordinates are not '
-                             'found'.format(coordinates))
-
-    def check_habitability(self, coordinates):
-        if type(self.cells[coordinates]) not in \
-                self.habitable_geos.values():
-            raise TypeError('This *{}* area is not '
-                            'habitable'.format(coordinates))
 
     def add_population(self, given_pop):
         self.check_list_instance(given_pop)
@@ -129,13 +139,8 @@ class Island:
         # self.death()
 
     def feeding(self):
-        for tile in self.island_tiles:
-            # print(tile)
-            # print(self.habitable_landscape.values())
-            if isinstance(tile, self.liveable_landscape):
-                # if tile in self.habitable_landscape.values():
-
-                tile.h_feed()
+        for tile in self.cells:
+            tile.h_feed()
 
     def migration(self):
         for loc in self.island_cord:

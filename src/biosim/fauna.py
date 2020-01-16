@@ -20,7 +20,7 @@ class Population:
         for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
-                                 "'{}'".format(parameter))
+                                 "*{}*".format(parameter))
 
     @classmethod
     def set_parameters(cls, params):
@@ -30,30 +30,6 @@ class Population:
     def __init__(self, age=0, weight=None):
         self.age = age
         self.weight = weight
-
-    @classmethod
-    def set_params(cls, params=None):
-        """
-        Sets class parameters
-
-        Parameters
-        ----------
-            params: dict
-                parameter dictionary {'param':value}
-
-        Returns
-        -------
-            None
-                None
-        """
-        if not isinstance(params, dict):
-            raise TypeError("params must be type 'dict'")
-        for param in params.keys():
-            if param not in cls.default_params:
-                raise ValueError(
-                    "unknown parameter: '{}'".format(param))
-
-        cls.default_params.update(params)
 
     def ages(self):
         """

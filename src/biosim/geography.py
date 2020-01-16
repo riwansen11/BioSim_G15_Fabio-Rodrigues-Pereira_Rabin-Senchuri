@@ -48,68 +48,44 @@ class Cells:
         self.new_population = {Herbivore: [], Carnivore: []}
         self.fodder = 0
 
-    def feeding(self):
+    def feed(self):
+        # self.grow_fodder()
         self.herbivore_feed()
         self.carnivore_feed()
 
     def herbivore_feed(self):
-        self.population[Herbivore].sort(key=lambda a: a.fitness)
-        for herb in reversed(self.population[Herbivore]):
-            eaten = herb.h_eating_rule(self.fodder)
-            self.fodder -= eaten
+        self.population[Herbivore].sort(key=lambda h: h.fitness)
+        for herbivore_object in reversed(self.population[Herbivore]):
+            fodder_eaten = herbivore_object.eating_rule(self.fodder)
+            self.fodder -= fodder_eaten
 
     def carnivore_feed(self):
         pass
 
-    def number_species(self, specie):
-        return len(self.population[Herbivore]) if specie is Herbivore \
-            else len(self.population[Carnivore])
-
-    def total_herbivore_mass(self):
-        herb_mass = 0
-        for herb in self.population[Herbivore]:
-            herb_mass += herb.weight
-        return herb_mass
-
-    def aging(self):
-        for specie_objects in self.population.values():
-            for animal_object in specie_objects:
-                animal_object.ages()
-
-    def loose_weight(self):
-        for specie_objects in self.population.values():
-            for animal_object in specie_objects:
-                animal_object.weight_decreases()
-
-    def death(self):
-        for specie_type in self.population.keys():
-            survivors = []
-            for animal_object in self.population[specie_type]:
-                if not animal_object.death():
-                    survivors.append(animal_object)
-            self.population[specie_type] = survivors
-
-    def birth(self):
+    def add_newborns(self):
         for specie_objects in self.population.values():
             newborns = []
             for animal_object in specie_objects:
-                if animal_object.birth(len(specie_objects)):
+                if animal_object.add_newborns(len(specie_objects)):
                     newborn = type(animal_object)()
                     animal_object.update_weight_after_birth(
                         newborn.weight)
                     newborns.append(newborn)
             specie_objects.extend(newborns)
 
-    '''def make_migration(self, neighbour_cells):
-        for species in self.popilation.keys():
+    def migrate(self, neighbour_cells):
+        pass
+
+        '''for species in self.popilation.keys():
             for animal in species:
                 if animal:
                     neighbour_cell_props = [neighbour.neighbour_cell_prospensity(animal) for neighbour in
                                             neighbour_cells]
-                    print(neighbour_cell_props)
+                    print(neighbour_cell_props)'''
 
-    def neighbour_cell_prospensity(self, species):
-        relevant_fodder = self.fodder if species.__class__.__name__ == "Herbivore" \
+    def neighbour_cell_propensity(self, species):
+        pass
+        '''relevant_fodder = self.fodder if species.__class__.__name__ == "Herbivore" \
             else self.total_herbivore_mass()
         h_relevant_abundance = self.herbivor_relevant_abundance(len(self.animal_pop[0]),
                                                                 species.default_params["F"],
@@ -121,6 +97,34 @@ class Cells:
         c_propensity = np.exp(species.default_params["lambda"] * c_relevant_abundance)
 
         return tuple([h_propensity, c_propensity])'''
+
+    def get_old(self):
+        for specie_objects in self.population.values():
+            for animal_object in specie_objects:
+                animal_object.get_old()
+
+    def lose_weight(self):
+        for specie_objects in self.population.values():
+            for animal_object in specie_objects:
+                animal_object.lose_weight()
+
+    def die(self):
+        for specie_type in self.population.keys():
+            survivors = []
+            for animal_object in self.population[specie_type]:
+                if not animal_object.die():
+                    survivors.append(animal_object)
+            self.population[specie_type] = survivors
+
+    def population_number(self, specie):
+        return len(self.population[Herbivore]) if specie is Herbivore \
+            else len(self.population[Carnivore])
+
+    def total_herbivore_mass(self):
+        herb_mass = 0
+        for herb in self.population[Herbivore]:
+            herb_mass += herb.weight
+        return herb_mass
 
 
 class Jungle(Cells):
@@ -142,8 +146,8 @@ class Savannah(Cells):
         self.fodder = self.parameters['f_max']
 
     def grow_fodder(self):
-        self.fodder += self.parameters['alpha'] * (
-                self.parameters['f_max'] - self.fodder)  # ****check
+        self.fodder += self.parameters['alpha'] \
+                       * (self.parameters['f_max'] - self.fodder)
 
 
 class Desert(Cells):

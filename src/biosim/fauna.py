@@ -38,13 +38,13 @@ class Population:
 
         self.fitness = self.fitness()
 
-    def ages(self):
+    def get_old(self):
         self.age += 1
 
     def gain_weight(self, feed):
         self.weight = self.weight + self.parameters["beta"] * feed
 
-    def loose_weight(self):
+    def lose_weight(self):
         self.weight = self.weight - (self.parameters["eta"] *
                                      self.weight)
         self.update_fitness()
@@ -58,15 +58,7 @@ class Population:
                                   self.parameters['w_half'],
                                   self.parameters['phi_weight']))
 
-    def birth(self, number_specie_objects):
-        """
-        k = formula with the probability of birth
-
-        a = the probability to give birth to an offspring in a year
-
-        :param number_specie_objects:
-        :return:
-        """
+    def add_newborns(self, number_specie_objects):
         k = self.parameters['zeta'] * (self.parameters['w_birth'] +
                                        self.parameters['sigma_birth'])
 
@@ -82,7 +74,7 @@ class Population:
     def update_fitness(self):
         self.fitness = self.fitness(self.age, self.weight)
 
-    def death(self):
+    def die(self):
         if self.fitness is 0:
             return True
         elif random.random() < self.parameters['omega'] * \
@@ -90,19 +82,6 @@ class Population:
             return True
         else:
             return False
-
-    def herbivore_eating_rule(self, f):
-        eaten = f if f <= self.parameters['F'] else self.parameters['F']
-        self.weight += self.parameters['beta'] * eaten
-        return eaten
-
-    '''def coordinations(self):
-        animals = []
-        for i in range(50):
-            for j in range(50):
-                animals.append((random.randint(1, 22),
-                                random.randint(1, 21)))
-        return animals'''
 
     def migration_chances(self):
         return random.random() < self.parameters['mu'] * self.fitness()
@@ -128,6 +107,11 @@ class Herbivore(Population):
 
     def __init__(self, age=0, weight=None):
         super().__init__()
+
+    def eating_rule(self, f):
+        eaten = f if f <= self.parameters['F'] else self.parameters['F']
+        self.weight += self.parameters['beta'] * eaten
+        return eaten
 
 
 class Carnivore(Population):

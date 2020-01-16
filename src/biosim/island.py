@@ -120,3 +120,26 @@ class Island:
         # self.migration()
         # self.add_newborns()
         # self.weight_loss(), self.aging(), self.death()
+
+        self.feeding()
+        # self.procreation()
+        self.migration()
+        # self.do_aging()
+        # self.loose_of_weight()
+        # self.death()
+
+    def feeding(self):
+        for tile in self.island_tiles:
+            # print(tile)
+            # print(self.habitable_landscape.values())
+            if isinstance(tile, self.liveable_landscape):
+                # if tile in self.habitable_landscape.values():
+
+                tile.h_feed()
+
+    def migration(self):
+        for loc in self.island_cord:
+            tile = self.island_tiles[loc]
+            if isinstance(tile, self.liveable_landscape):
+                neighbour_cell = self.neighbour_cell(loc)
+                tile.make_migration(neighbour_cell)

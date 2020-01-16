@@ -123,7 +123,7 @@ class Island:
             for animal in individuals:
                 geo_object.population[type(animal)].append(animal)
 
-    def neighbour_cell(self, loc):
+    def neighbour_cell(self, loc):  # returns the geo_objects
         neighbours = [(loc[0], loc[1] - 1),
                       (loc[0] - 1, loc[1]),
                       (loc[0] + 1, loc[1]),
@@ -150,9 +150,14 @@ class Island:
         for cell in self.cells.values():
             cell.feeding()
 
-    '''def migration(self):
+    def migration(self):
         for loc in self.cells.keys():
-            cell = self.cells[loc]
-            if isinstance(cell, type(self.habitable_geos.values())):
+            cell_object = self.cells[loc]
+            # <class 'src.biosim.geography.Jungle'>
+            '''(<class 'src.biosim.geography.Savannah'>, 
+            <class 'src.biosim.geography.Jungle'>, 
+            <class 'src.biosim.geography.Desert'>)'''
+            if isinstance(cell_object,
+                          tuple(self.habitable_geos.values())):
                 neighbour_cell = self.neighbour_cell(loc)
-                cell.make_migration(neighbour_cell)'''
+                cell_object.make_migration(neighbour_cell)

@@ -24,23 +24,23 @@ class Cells:
                                      relevant_fodder):
         return relevant_fodder / ((animal_number + 1) * appetite)
 
-    @classmethod
-    def check_unknown_parameter(cls, params):
+    @classmethod  # tested
+    def check_unknown_parameters(cls, params):
         for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
                                  "*{}*".format(parameter))
 
-    @classmethod
-    def check_non_negative_parameter(cls, param_key, params):
+    @classmethod  # tested
+    def check_non_negative_parameters(cls, param_key, params):
         if params[param_key] < 0:  # check here and others restrictions
             raise ValueError("The parameter *{}* must be "
                              "non-negative".format(param_key))
 
     @classmethod
     def set_parameters(cls, params):
-        cls.check_unknown_parameter(params)
-        cls.check_non_negative_parameter('f_max', params)
+        cls.check_unknown_parameters(params)
+        cls.check_non_negative_parameters('f_max', params)
         cls.parameters.update(params)
 
     def __init__(self):
@@ -124,7 +124,7 @@ class Cells:
 
 
 class Jungle(Cells):
-    parameters = {'f_max': 800.0}
+    parameters = {'f_max': 800.0, 'alpha': None}
 
     def __init__(self):
         super().__init__()

@@ -1,19 +1,33 @@
 from src.biosim.simulation import BioSim
 
+island_map = "OOOOO\nOJJJO\nOJJJO\nOJJJO\nOOOOO"
 ini_pop = [
-        {
-            "loc": (1, 14),
-            "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 20},
-                {"species": "Herbivore", "age": 10, "weight": 20},
-                {"species": "Carnivore", "age": 2, "weight": 20}
-            ],
-        }
-    ]
+    {
+        "loc": (2, 2),
+        "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (2, 3),
+        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (2, 1),
+        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (1, 2),
+        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (3, 2),
+        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
+    }
+]
 
-a = BioSim(None, ini_pop, None)
+a = BioSim(island_map, ini_pop, None)
+loc = (2, 2)
+print(a.island.habitable_geos.values())
+'''[<src.biosim.geography.Jungle object at 0x10d696a90>, ...,
+<src.biosim.geography.Jungle object at 0x10d696b10>]'''
 
-loc = (1, 14)
-b = a.island.cells[loc].population
-for species in b.values():
-    print(species)
+

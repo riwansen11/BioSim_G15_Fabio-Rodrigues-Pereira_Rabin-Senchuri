@@ -21,37 +21,37 @@ class Island:
     geo_classes = {'O': Ocean, 'S': Savannah, 'M': Mountain,
                    'J': Jungle, 'D': Desert}
 
-    @staticmethod
+    @staticmethod  # tested
     def check_string_instance(argument):
         if not isinstance(argument, str):
             raise TypeError('Argument *{}* must be provided as '
                             'string'.format(argument))
 
-    @staticmethod
+    @staticmethod  # tested
     def check_list_instance(argument):
         if not isinstance(argument, list):
             raise TypeError('Argument *{}* must be provided as '
                             'list'.format(argument))
 
-    @staticmethod
+    @staticmethod  # tested
     def check_dict_instance(argument):
         if not isinstance(argument, dict):
             raise TypeError('Argument *{}* must be provided as '
                             'dictionary'.format(argument))
 
-    @staticmethod
+    @staticmethod  # tested
     def list_geo_cells(island_map):
         geos = textwrap.dedent(island_map).splitlines()
         return [list(row.strip()) for row in geos]
 
-    @staticmethod
+    @staticmethod  # tested
     def check_invalid_line_lengths(geos):
         length_count = [len(row) for row in geos]
         for i in length_count:
             if i is not length_count[0]:
                 raise ValueError('Different line lengths detected')
 
-    @staticmethod
+    @staticmethod  # tested
     def check_invalid_boundary(geos):
         for north in geos[0]:
             for south in geos[-1]:
@@ -62,7 +62,7 @@ class Island:
             if west is not 'O' or east is not 'O':
                 raise ValueError('The boundary is not Ocean')
 
-    @classmethod
+    @classmethod  # tested
     def check_invalid_character(cls, geos):
         for row in geos:
             for letter in row:
@@ -123,7 +123,7 @@ class Island:
             for animal in individuals:
                 geo_object.population[type(animal)].append(animal)
 
-    def neighbour_cell(self, loc):
+    def neighbour_cell(self, loc):  # tested - returns the geo_objects
         neighbours = [(loc[0], loc[1] - 1),
                       (loc[0] - 1, loc[1]),
                       (loc[0] + 1, loc[1]),
@@ -150,9 +150,14 @@ class Island:
         for cell in self.cells.values():
             cell.feeding()
 
-    '''def migration(self):
+    def migration(self):
         for loc in self.cells.keys():
-            cell = self.cells[loc]
-            if isinstance(cell, type(self.habitable_geos.values())):
+            cell_object = self.cells[loc]
+            # <class 'src.biosim.geography.Jungle'>
+            '''(<class 'src.biosim.geography.Savannah'>, 
+            <class 'src.biosim.geography.Jungle'>, 
+            <class 'src.biosim.geography.Desert'>)'''
+            if isinstance(cell_object,
+                          tuple(self.habitable_geos.values())):
                 neighbour_cell = self.neighbour_cell(loc)
-                cell.make_migration(neighbour_cell)'''
+                cell_object.make_migration(neighbour_cell)

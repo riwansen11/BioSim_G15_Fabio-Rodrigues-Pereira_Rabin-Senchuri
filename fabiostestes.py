@@ -3,7 +3,51 @@ from src.biosim.simulation import BioSim
 from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
 
-island_map = "OOOOO\nOJJJO\nOJJJO\nOJJJO\nOOOOO"
+ini_pop = [
+    {
+        "loc": (5, 7),
+        "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (5, 7),
+        "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (5, 7),
+        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (5, 7),
+        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
+    },
+    {
+        "loc": (5, 7),
+        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
+    }
+]
+a = BioSim(None, ini_pop, None)
+loc = (5, 7)
+'''for a, b in enumerate(a.island.cells.items()):
+    print(a)
+    print(b)'''
+a.island.feeding()
+print(a.island.cells.items())
+print(a.island.cells.keys())
+print(a.island.cells.values())
+print(a.island.habitable_cells)
+
+
+
+
+
+
+''' >> dict.items()
+dict_items([((0, 0), 
+<src.biosim.geography.Ocean object at 0x10f697c90>), ...
+>> for coordinates, geo_object in dict.items():
+(0, 0) <src.biosim.geography.Ocean object at 0x10f697c90>'''
+
+'''island_map = "OOOOO\nOJJJO\nOJJJO\nOJJJO\nOOOOO"
 ini_pop = [
     {
         "loc": (2, 2),
@@ -29,11 +73,16 @@ ini_pop = [
 
 a = BioSim(island_map, ini_pop, None)
 loc = (2, 2)
-neighbours = a.island.neighbour_cell(loc)
-for n in neighbours:
-    b = type(n).__name__
-    print(b)
-    print(Jungle.__name__)
+b = tuple(a.island.habitable_geos.values())
+c = a.island.cells.items()
+print(c)
+
+for coordinates, geo_object in c:
+    print(coordinates, geo_object)
+    if isinstance(geo_object, b):
+        print(b)
+        print(geo_object)
+        print(True)'''
 
 # print(Herbivore)
 '''<class 'src.biosim.fauna.Herbivore'>'''

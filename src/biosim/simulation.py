@@ -110,7 +110,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        self.island.yearly_cycle()
+        # self.island.yearly_cycle()
 
     @property
     def year(self):
@@ -120,12 +120,15 @@ class BioSim:
     @property
     def num_animals(self):
         """Total number of animals on island."""
-        pass
+        population_total = 0
+        for population in self.island.get_population_numbers().values():
+            population_total += population
+        return population_total
 
     @property
     def num_animals_per_species(self):
         """Number of animals per species in island, as dictionary."""
-        pass
+        return self.island.get_population_numbers()
 
     @property
     def animal_distribution(self):

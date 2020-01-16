@@ -98,6 +98,15 @@ class Island:
                for geo in self.geos[j]]
         return dict(zip(loc, geo))
 
+    @property
+    def habitable_cells(self):
+        coordinates, geo_objects = [], []
+        for coordinate, geo_object in self.cells.items():
+            if type(geo_object) in self.habitable_geos.values():
+                coordinates.append(coordinate)
+                geo_objects.append(geo_object)
+        return dict(zip(coordinates, geo_objects))
+
     def set_parameters(self, param_key, params):
         self.check_string_instance(param_key)
         self.check_dict_instance(params)
@@ -106,58 +115,46 @@ class Island:
 
     def add_population(self, given_pop):
         self.check_list_instance(given_pop)
-
         for population in given_pop:
-            coordinates = population['loc']
-            self.check_coordinates_exists(coordinates, self.cells)
-            self.check_habitability(coordinates, self.cells)
-            geo_object = self.cells[coordinates]
-
-            individuals = []
+            coordinate = population['loc']
+            self.check_coordinates_exists(coordinate, self.cells)
+            self.check_habitability(coordinate, self.cells)
+            geo_object = self.cells[coordinate]
+            individual_objects = []
             for individual in population['pop']:
                 species = individual['species']
                 age, weight = individual['age'], individual['weight']
-                new_individual = \
+                individual_object = \
                     self.fauna_classes[species](age, weight)
-                individuals.append(new_individual)
-            for animal in individuals:
-                geo_object.population[type(animal)].append(animal)
+                individual_objects.append(individual_object)
+            for animal_object in individual_objects:
+                geo_object.population[type(animal_object)].append(
+                    animal_object)
 
-    def neighbour_cell(self, loc):  # tested - returns the geo_objects
+    def neighbour_cell(self, loc):  # returns the habitable geo_objects
         neighbours = [(loc[0], loc[1] - 1),
                       (loc[0] - 1, loc[1]),
                       (loc[0] + 1, loc[1]),
                       (loc[0], loc[1] + 1)]
-        return [self.cells[n] for n in neighbours
-                if n in self.cells.keys()]
-            
+        return [self.habitable_cells[coordinates] for coordinates in
+                neighbours if coordinates in self.habitable_cells.keys()]
+
     def yearly_cycle(self):
-        '''for coordinates, geo_object in self.cells.items():
-            if type(geo_object) in self.habitable_geos.values():
-                geo_object.feeding(), geo_object.procreation()
-        # self.migration()
-        # self.add_newborns()
-        # self.weight_loss(), self.aging(), self.death()
+        for coordinate, geo_object in self.habitable_cells.items():
+            geo_object.feed()
+            geo_object.add_newborns()
+            neighbour_cell = self.neighbour_cell(coordinate)
+            geo_object.migrate(neighbour_cell)
+            geo_object.get_old()
+            geo_object.lose_weight()
+            geo_object.die()
 
-        # self.feeding()
-        # self.migration()
-        # self.do_aging()
-        # self.loose_of_weight()
-        # self.death()'''
-        pass
-
-    def feeding(self):
-        for cell in self.cells.values():
-            cell.feeding()
-
-    def migration(self):
-        for loc in self.cells.keys():
-            cell_object = self.cells[loc]
-            # <class 'src.biosim.geography.Jungle'>
-            '''(<class 'src.biosim.geography.Savannah'>, 
-            <class 'src.biosim.geography.Jungle'>, 
-            <class 'src.biosim.geography.Desert'>)'''
-            if isinstance(cell_object,
-                          tuple(self.habitable_geos.values())):
-                neighbour_cell = self.neighbour_cell(loc)
-                cell_object.make_migration(neighbour_cell)
+    def get_population_numbers(self):
+        population_herbivore, population_carnivore = 0, 0
+        for geo_object in self.habitable_cells.values():
+            population_herbivore += geo_object.population_number(
+                Herbivore)
+            population_carnivore += geo_object.population_number(
+                Carnivore)
+        return {'Herbivore': population_herbivore,
+                'Carnivore': population_carnivore}

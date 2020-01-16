@@ -110,7 +110,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        # self.island.yearly_cycle()
+        self.island.yearly_cycle()
 
     @property
     def year(self):

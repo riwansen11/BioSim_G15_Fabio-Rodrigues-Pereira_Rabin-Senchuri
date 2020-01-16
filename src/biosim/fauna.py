@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import random
-
 import numpy as np
 
 """
@@ -14,6 +13,10 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 class Population:
     parameters = {}
+
+    @staticmethod
+    def fitness_formula(sgn, x, xhalf, phi):
+        return 1. / (1. + np.exp(sgn * phi * (x - xhalf)))
 
     @classmethod
     def check_unknown_parameter(cls, params):
@@ -29,132 +32,80 @@ class Population:
 
     def __init__(self, age=0, weight=None):
         self.age = age
-        self.weight = weight
+        self.weight = random.gauss(self.parameters['w_birth'],
+                                   self.parameters['sigma_birth']) \
+            if weight is None else weight
+
+        self.fitness = self.fitness()
 
     def ages(self):
-        """
-        Returns
-        -------
-            int
-                updated age after each year
-        """
         self.age += 1
 
-    def increase_weight(self, feed):
-        self.w = self.w + self.default_params["beta"] * feed
+    def gain_weight(self, feed):
+        self.weight = self.weight + self.parameters["beta"] * feed
 
-    def weight_decrease(self):
-        """
-        Returns
-        -------
-            float
-                calculate weight the amount of weight decrease
-        """
-        self.w = self.w - (self.default_params["eta"] * self.w)
+    def loose_weight(self):
+        self.weight = self.weight - (self.parameters["eta"] *
+                                     self.weight)
         self.update_fitness()
 
-    @staticmethod
-    def q(sgn, x, xhalf, phi):
-        """
-
-        Parameters
-        ----------
-        sgn
-        x
-        xhalf
-        phi
-
-        Returns
-        -------
-            float
-                method to calculate fitness
-        """
-        return 1. / (1. + np.exp(sgn * phi * (x - xhalf)))
-
     def fitness(self):
-        """
-        Returns
-        -------
-            float
-                Calculated fitness of an animal
-        """
-        if self.w == 0:
-            return 0
-        else:
-            return (self.q(+1, self.age, self.default_params["a_half"], self.default_params["phi_age"])
-                    * self.q(-1, self.w, self.default["w_half"], self.default_params["phi_weight"]))
+        return 0 if self.weight is 0 else \
+            (self.fitness_formula(+1, self.age,
+                                  self.parameters['a_half'],
+                                  self.parameters['phi_age']) *
+             self.fitness_formula(-1, self.weight,
+                                  self.parameters['w_half'],
+                                  self.parameters['phi_weight']))
 
-    def birth(self, N):
+    def birth(self, number_specie_objects):
         """
-        Parameters
-        ----------
-            N: int
-             number of animals present
+        k = formula with the probability of birth
 
-        Returns
-        -------
-            int
-                number of newborns
+        a = the probability to give birth to an offspring in a year
+
+        :param number_specie_objects:
+        :return:
         """
+        k = self.parameters['zeta'] * (self.parameters['w_birth'] +
+                                       self.parameters['sigma_birth'])
 
-        K = self.zeta * (self.default_params["w_birth"] + self.default_params["sigma_birth"])
-        a = min(1, self.default_params["gamma"] * self.fitness * (N - 1))
-        return random.random() < a and self.w > K
+        a = min(1, self.parameters['gamma'] * self.fitness *
+                (number_specie_objects - 1))
+
+        return random.random() < a and self.weight > k
 
     def update_weight_after_birth(self, weight):
-        self.w = self.default_params["xi"] * weight
+        self.weight = self.parameters['xi'] * weight
         self.update_fitness()
 
     def update_fitness(self):
-        """
-        Re-calculates the fitness based on updated values of age and
-        weight.
-
-        """
-        self.fitness = self.fitness(self.age, self.w)
+        self.fitness = self.fitness(self.age, self.weight)
 
     def death(self):
-        """
-        Returns
-        -------
-            True when animal died
-            False when animal not died
-        """
-        if self.fitness == 0:
+        if self.fitness is 0:
             return True
-        elif random.random() < self.default_params["omega"] * (1 - self.fitness):
+        elif random.random() < self.parameters['omega'] * \
+                (1 - self.fitness):
             return True
         else:
             return False
 
-    def h_eating_rule(self, f):
-        """
-            Eating rule for Herbivore Animals
-
-            Compare the available food in the cell and amount of fodder
-            to be eaten
-
-            Returns the amount eaten by a Herbivore
-        """
-        if f <= self.F:
-            eaten = f
-        else:
-            eaten = self.F
-
-        self.w += self.beta * eaten
+    def herbivore_eating_rule(self, f):
+        eaten = f if f <= self.parameters['F'] else self.parameters['F']
+        self.weight += self.parameters['beta'] * eaten
         return eaten
 
-    def coordinations(self):
+    '''def coordinations(self):
         animals = []
         for i in range(50):
             for j in range(50):
                 animals.append((random.randint(1, 22),
                                 random.randint(1, 21)))
-        return animals
+        return animals'''
 
     def migration_chances(self):
-        migrate_chances = random.random() < self.default_params["mu"] * self.fitness()
-        return migrate_chances
+        return random.random() < self.parameters['mu'] * self.fitness()
 
 
 class Herbivore(Population):

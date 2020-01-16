@@ -14,6 +14,16 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 class Cells:
     parameters = {}
 
+    @staticmethod
+    def herbivore_relevant_abundance(animal_number, appetite,
+                                     relevant_fodder):
+        return relevant_fodder / ((animal_number + 1) * appetite)
+
+    @staticmethod
+    def carnivore_relevant_abundance(animal_number, appetite,
+                                     relevant_fodder):
+        return relevant_fodder / ((animal_number + 1) * appetite)
+
     @classmethod
     def check_unknown_parameter(cls, params):
         for parameter in params.keys():
@@ -36,128 +46,62 @@ class Cells:
     def __init__(self):
         self.population = {Herbivore: [], Carnivore: []}
         self.new_population = {Herbivore: [], Carnivore: []}
+        self.fodder = 0
 
-    def num_herbs(self):
-        """
-            Returns
-            -------
-                int
-                    Number of herbivores in each cell
-        """
-        return len(self.animal_pop[0])
+    def feeding(self):
+        self.herbivore_feed()
+        self.carnivore_feed()
 
-    def num_carn(self):
-        """
-            Returns
-            -------
-                int
-                    Number of carnivores in each cell
-        """
-        return len(self.animal_pop[1])
-
-    def total_herbivore_mass(self):
-        herb_mass = 0
-        for herb in self.animal_pop[0]:
-            herb_mass += herb.w
-        return herb_mass
-
-    def add_animal(self, animals):
-        """Add animal to each cell
-
-            Parameters
-            ----------
-                animal: list
-                    list of animals
-
-        """
-
-        for animal in animals:
-            age = animal["age"]
-            weight = animal["weight"]
-            if animal["species"] is "Herbivore":
-                self.animal_pop[0].append(Herbivore(age, weight))
-            else:
-                self.animal_pop[1].append(Carnivore(age, weight))
-
-    def aging(self):
-        """
-            Returns
-            -------
-                int
-                    age of each animal
-
-        """
-        for animals_species in self.animal_pop:
-            for animal in animals_species:
-                animal.ages()
-
-    def loose_weight(self):
-        """
-            Returns
-            -------
-                int
-                    amount of weight lost
-        """
-        for animals_species in self.animal_pop:
-            for animal in animals_species:
-                animal.weight_decrease()
-
-    def death(self):
-        """
-             Returns
-             -------
-                list
-                    Survivors list of animals for each species
-        """
-
-        survivors_herb = []
-        for animal in self.animal_pop[0]:
-            if not animal.death():
-                survivors_herb.append(animal)
-        self.animal_pop[0] = survivors_herb
-
-        survivors_carn = []
-        for animal in self.animal_pop[1]:
-            if not animal.death():
-                survivors_carn.append(animal)
-        self.animal_pop[1] = survivors_carn
-
-    def birth(self):
-        """Gives the list of newborn herbivore and carnivore animals
-
-            Returns
-            -------
-                list
-                    list newborn herbivore and carnivore animals
-
-        """
-        for animal_species in self.animal_pop:
-            newborn_animal = []
-            for animal in animal_species:
-                if animal.birth(len(animal_species)):
-                    newborn = type(animal)()
-                    animal.update_weight_after_birth(newborn.weight)
-                    newborn_animal.append(newborn)
-            animal_species.extend(newborn_animal)
-
-    def herb_feed(self):
-        """Gives the amount of food eating by herbivore
-
-            Returns
-            -------
-                int
-                    amount of fodder eaten by herbivore
-        """
-        self.animal_pop[0].sort(key=lambda a: a.fitness)
-        for herb in reversed(self.animal_pop[0]):
+    def herbivore_feed(self):
+        self.population[Herbivore].sort(key=lambda a: a.fitness)
+        for herb in reversed(self.population[Herbivore]):
             eaten = herb.h_eating_rule(self.fodder)
             self.fodder -= eaten
 
-    def carn_feed(self):
+    def carnivore_feed(self):
         pass
 
-    def make_migration(self, neighbour_cells):
-        for species in self.animal_pop:
+    def number_species(self, specie):
+        return len(self.population[Herbivore]) if specie is Herbivore \
+            else len(self.population[Carnivore])
+
+    def total_herbivore_mass(self):
+        herb_mass = 0
+        for herb in self.population[Herbivore]:
+            herb_mass += herb.weight
+        return herb_mass
+
+    def aging(self):
+        for specie_objects in self.population.values():
+            for animal_object in specie_objects:
+                animal_object.ages()
+
+    def loose_weight(self):
+        for specie_objects in self.population.values():
+            for animal_object in specie_objects:
+                animal_object.weight_decreases()
+
+    def death(self):
+        for specie_type in self.population.keys():
+            survivors = []
+            for animal_object in self.population[specie_type]:
+                if not animal_object.death():
+                    survivors.append(animal_object)
+            self.population[specie_type] = survivors
+
+    def birth(self):
+        for specie_objects in self.population.values():
+            newborns = []
+            for animal_object in specie_objects:
+                if animal_object.birth(len(specie_objects)):
+                    newborn = type(animal_object)()
+                    animal_object.update_weight_after_birth(
+                        newborn.weight)
+                    newborns.append(newborn)
+            specie_objects.extend(newborns)
+
+    '''def make_migration(self, neighbour_cells):
+        for species in self.popilation.keys():
             for animal in species:
                 if animal:
                     neighbour_cell_props = [neighbour.neighbour_cell_prospensity(animal) for neighbour in
@@ -176,26 +120,11 @@ class Cells:
         h_propensity = np.exp(species.default_params["lambda"] * h_relevant_abundance)
         c_propensity = np.exp(species.default_params["lambda"] * c_relevant_abundance)
 
-        return tuple([h_propensity, c_propensity])
-
-    @staticmethod
-    def herbivor_relevant_abundance(animal_number, appetite, relevant_fodder):
-        return relevant_fodder / ((animal_number + 1) * appetite)
-
-    @staticmethod
-    def carnivore_relevant_abundance(animal_number, appetite, relevant_fodder):
-        return relevant_fodder / ((animal_number + 1) * appetite)
-
-
-    def procreation(self):
-        pass
-
-    def feeding(self):
-        pass
+        return tuple([h_propensity, c_propensity])'''
 
 
 class Jungle(Cells):
-    default_params = {'f_max': 800.0}
+    parameters = {'f_max': 800.0}
 
     def __init__(self):
         super().__init__()
@@ -206,7 +135,7 @@ class Jungle(Cells):
 
 
 class Savannah(Cells):
-    default_params = {'f_max': 300.0, 'alpha': 0.3}
+    parameters = {'f_max': 300.0, 'alpha': 0.3}
 
     def __init__(self):
         super().__init__()

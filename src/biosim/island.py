@@ -109,8 +109,8 @@ class Island:
 
         for population in given_pop:
             coordinates = population['loc']
-            self.check_coordinates_exists(coordinates)
-            self.check_habitability(coordinates)
+            self.check_coordinates_exists(coordinates, self.cells)
+            self.check_habitability(coordinates, self.cells)
             geo_object = self.cells[coordinates]
 
             individuals = []
@@ -122,29 +122,37 @@ class Island:
                 individuals.append(new_individual)
             for animal in individuals:
                 geo_object.population[type(animal)].append(animal)
+
+    def neighbour_cell(self, loc):
+        neighbours = [(loc[0], loc[1] - 1),
+                      (loc[0] - 1, loc[1]),
+                      (loc[0] + 1, loc[1]),
+                      (loc[0], loc[1] + 1)]
+        return [self.cells[n] for n in neighbours
+                if n in self.cells.keys()]
             
     def yearly_cycle(self):
-        for coordinates, geo_object in self.cells.items():
+        '''for coordinates, geo_object in self.cells.items():
             if type(geo_object) in self.habitable_geos.values():
                 geo_object.feeding(), geo_object.procreation()
         # self.migration()
         # self.add_newborns()
         # self.weight_loss(), self.aging(), self.death()
 
-        self.feeding()
-        # self.procreation()
-        self.migration()
+        # self.feeding()
+        # self.migration()
         # self.do_aging()
         # self.loose_of_weight()
-        # self.death()
+        # self.death()'''
+        pass
 
     def feeding(self):
-        for tile in self.cells:
-            tile.h_feed()
+        for cell in self.cells.values():
+            cell.feeding()
 
-    def migration(self):
-        for loc in self.island_cord:
-            tile = self.island_tiles[loc]
-            if isinstance(tile, self.liveable_landscape):
+    '''def migration(self):
+        for loc in self.cells.keys():
+            cell = self.cells[loc]
+            if isinstance(cell, type(self.habitable_geos.values())):
                 neighbour_cell = self.neighbour_cell(loc)
-                tile.make_migration(neighbour_cell)
+                cell.make_migration(neighbour_cell)'''

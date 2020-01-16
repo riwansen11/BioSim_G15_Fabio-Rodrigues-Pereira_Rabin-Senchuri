@@ -61,36 +61,54 @@ def test_invalid_character():
 
 
 def test_neighbour_cells():
-    island_map = "OOOOO\nOJJJO\nOJJJO\nOJJJO\nOOOOO"
+    """ Test, in 4 different maps, if the method 'neighbour_cell(loc)'
+    identifies the 'Desert' geography as one of the neighbours of the
+    geography 'Jungle' placed at the coordinates (2,2). The expected
+    neighbour geography 'Desert' was placed on the north, south, west
+    and east neighbor on the respectively tuple island_maps"""
+    island_maps = ("OOOOO\nOJDJO\nOMJMO\nOJMJO\nOOOOO",
+                  "OOOOO\nOJMJO\nOMJMO\nOJDJO\nOOOOO",
+                  "OOOOO\nOJMJO\nODJMO\nOJMJO\nOOOOO",
+                  "OOOOO\nOJMJO\nOMJDO\nOJMJO\nOOOOO")
     ini_pop = [
-            {
-                "loc": (2, 2),
-                "pop": [
-                    {"species": "Herbivore", "age": 5, "weight": 20}],
-            },
-            {
-                "loc": (2, 3),
-                "pop": [
-                    {"species": "Carnivore", "age": 5, "weight": 20}],
-            },
-            {
-                "loc": (2, 1),
-                "pop": [
-                    {"species": "Carnivore", "age": 5, "weight": 20}],
-            },
-            {
-                "loc": (1, 2),
-                "pop": [
-                    {"species": "Carnivore", "age": 5, "weight": 20}],
-            },
-            {
-                "loc": (3, 2),
-                "pop": [
-                    {"species": "Carnivore", "age": 5, "weight": 20}],
-            }
-        ]
+        {
+            "loc": (2, 2),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 20}],
+        }]
+    for island_map in island_maps:
+        t = BioSim(island_map, ini_pop, None)
+        neighbour_expected = Desert.__name__
+        neighbours = [type(neighbour).__name__ for neighbour
+                      in t.island.neighbour_cell(loc=(2, 2))]
+        assert neighbour_expected in neighbours
 
-    a = BioSim(island_map, ini_pop, None)
-    loc = (2, 2)
-    '''[<src.biosim.geography.Jungle object at 0x10d696a90>, ...,
-    <src.biosim.geography.Jungle object at 0x10d696b10>]'''
+
+def test_a():
+    ini_pop = [
+        {
+            "loc": (2, 2),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 20}],
+        },
+        {
+            "loc": (2, 3),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 20}],
+        },
+        {
+            "loc": (2, 1),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 20}],
+        },
+        {
+            "loc": (1, 2),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 20}],
+        },
+        {
+            "loc": (3, 2),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 20}]
+        }]
+    pass

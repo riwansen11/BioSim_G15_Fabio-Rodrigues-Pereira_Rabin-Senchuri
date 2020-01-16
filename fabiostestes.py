@@ -1,5 +1,7 @@
 from src.biosim.fauna import Population, Herbivore, Carnivore
 from src.biosim.simulation import BioSim
+from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
+    Desert
 
 island_map = "OOOOO\nOJJJO\nOJJJO\nOJJJO\nOOOOO"
 ini_pop = [
@@ -27,6 +29,11 @@ ini_pop = [
 
 a = BioSim(island_map, ini_pop, None)
 loc = (2, 2)
+neighbours = a.island.neighbour_cell(loc)
+for n in neighbours:
+    b = type(n).__name__
+    print(b)
+    print(Jungle.__name__)
 
 # print(Herbivore)
 '''<class 'src.biosim.fauna.Herbivore'>'''
@@ -47,7 +54,6 @@ loc = (2, 2)
 
 # print(type(a.island.cells[loc].population))
 '''<class 'dict'>'''
-
 
 '''[<src.biosim.geography.Jungle object at 0x10d696a90>, ...,
 <src.biosim.geography.Jungle object at 0x10d696b10>]'''

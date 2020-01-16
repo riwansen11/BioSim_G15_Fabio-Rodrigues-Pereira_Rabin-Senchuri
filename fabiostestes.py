@@ -14,4 +14,6 @@ ini_pop = [
 a = BioSim(None, ini_pop, None)
 
 loc = (1, 14)
-print(a.island.cells[loc].population.values())
+b = a.island.cells[loc].population
+for species in b.values():
+    print(species)

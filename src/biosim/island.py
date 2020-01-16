@@ -22,12 +22,30 @@ class Island:
                    'J': Jungle, 'D': Desert}
 
     @staticmethod
+    def check_string_instance(argument):
+        if not isinstance(argument, str):
+            raise TypeError('Argument *{}* must be provided as '
+                            'string'.format(argument))
+
+    @staticmethod
+    def check_list_instance(argument):
+        if not isinstance(argument, list):
+            raise TypeError('Argument *{}* must be provided as '
+                            'list'.format(argument))
+
+    @staticmethod
+    def check_dict_instance(argument):
+        if not isinstance(argument, dict):
+            raise TypeError('Argument *{}* must be provided as '
+                            'dictionary'.format(argument))
+
+    @staticmethod
     def list_geo_cells(island_map):
         geos = textwrap.dedent(island_map).splitlines()
         return [list(row.strip()) for row in geos]
 
     @staticmethod
-    def check_line_lengths(geos):
+    def check_invalid_line_lengths(geos):
         length_count = [len(row) for row in geos]
         for i in length_count:
             if i is not length_count[0]:
@@ -51,24 +69,26 @@ class Island:
                 if letter not in cls.geo_classes.keys():
                     raise ValueError('Invalid character identified')
 
-    @staticmethod
-    def check_dict_instance(argument):
-        if not isinstance(argument, dict):
-            raise TypeError('Argument *{}* must be provided as '
-                            'dictionary'.format(argument))
+    @classmethod
+    def check_coordinates_exists(cls, coordinates, cells):
+        cls.check_dict_instance(cells)
+        if coordinates not in cells.keys():
+            raise ValueError('These *{}* coordinates are not '
+                             'found'.format(coordinates))
 
-    @staticmethod
-    def check_list_instance(argument):
-        if not isinstance(argument, list):
-            raise TypeError('Argument *{}* must be provided as '
-                            'list'.format(argument))
+    @classmethod
+    def check_habitability(cls, coordinates, cells):
+        cls.check_dict_instance(cells)
+        if type(cells[coordinates]) not in \
+                cls.habitable_geos.values():
+            raise TypeError('This *{}* area is not '
+                            'habitable'.format(coordinates))
 
     def __init__(self, island_map):
         self.geos = self.list_geo_cells(island_map)
-        self.check_line_lengths(self.geos)
-        self.check_invalid_character(self.geos)
+        self.check_invalid_line_lengths(self.geos)
         self.check_invalid_boundary(self.geos)
-
+        self.check_invalid_character(self.geos)
         self.cells = self.create_cells()
 
     def create_cells(self):
@@ -79,28 +99,18 @@ class Island:
         return dict(zip(loc, geo))
 
     def set_parameters(self, param_key, params):
+        self.check_string_instance(param_key)
         self.check_dict_instance(params)
         merged_classes = dict(**self.fauna_classes, **self.geo_classes)
         merged_classes[param_key].set_parameters(params)
-
-    def check_coordinates_exists(self, coordinates):
-        if coordinates not in self.cells.keys():
-            raise ValueError('These *{}* coordinates are not '
-                             'found'.format(coordinates))
-
-    def check_habitability(self, coordinates):
-        if type(self.cells[coordinates]) not in \
-                self.habitable_geos.values():
-            raise TypeError('This *{}* area is not '
-                            'habitable'.format(coordinates))
 
     def add_population(self, given_pop):
         self.check_list_instance(given_pop)
 
         for population in given_pop:
             coordinates = population['loc']
-            self.check_coordinates_exists(coordinates)
-            self.check_habitability(coordinates)
+            self.check_coordinates_exists(coordinates, self.cells)
+            self.check_habitability(coordinates, self.cells)
             geo_object = self.cells[coordinates]
 
             individuals = []
@@ -112,11 +122,37 @@ class Island:
                 individuals.append(new_individual)
             for animal in individuals:
                 geo_object.population[type(animal)].append(animal)
+
+    def neighbour_cell(self, loc):
+        neighbours = [(loc[0], loc[1] - 1),
+                      (loc[0] - 1, loc[1]),
+                      (loc[0] + 1, loc[1]),
+                      (loc[0], loc[1] + 1)]
+        return [self.cells[n] for n in neighbours
+                if n in self.cells.keys()]
             
     def yearly_cycle(self):
-        for coordinates, geo_object in self.cells.items():
+        '''for coordinates, geo_object in self.cells.items():
             if type(geo_object) in self.habitable_geos.values():
                 geo_object.feeding(), geo_object.procreation()
         # self.migration()
         # self.add_newborns()
         # self.weight_loss(), self.aging(), self.death()
+
+        # self.feeding()
+        # self.migration()
+        # self.do_aging()
+        # self.loose_of_weight()
+        # self.death()'''
+        pass
+
+    def feeding(self):
+        for cell in self.cells.values():
+            cell.feeding()
+
+    '''def migration(self):
+        for loc in self.cells.keys():
+            cell = self.cells[loc]
+            if isinstance(cell, type(self.habitable_geos.values())):
+                neighbour_cell = self.neighbour_cell(loc)
+                cell.make_migration(neighbour_cell)'''

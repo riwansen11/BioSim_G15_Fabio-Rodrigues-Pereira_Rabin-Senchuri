@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import random
 import numpy as np
 
 """
@@ -13,12 +14,16 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 class Population:
     parameters = {}
 
+    @staticmethod
+    def fitness_formula(sgn, x, xhalf, phi):
+        return 1. / (1. + np.exp(sgn * phi * (x - xhalf)))
+
     @classmethod
     def check_unknown_parameter(cls, params):
         for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
-                                 "'{}'".format(parameter))
+                                 "*{}*".format(parameter))
 
     @classmethod
     def set_parameters(cls, params):
@@ -27,7 +32,80 @@ class Population:
 
     def __init__(self, age=0, weight=None):
         self.age = age
-        self.weight = weight
+        self.weight = random.gauss(self.parameters['w_birth'],
+                                   self.parameters['sigma_birth']) \
+            if weight is None else weight
+
+        self.fitness = self.fitness()
+
+    def ages(self):
+        self.age += 1
+
+    def gain_weight(self, feed):
+        self.weight = self.weight + self.parameters["beta"] * feed
+
+    def loose_weight(self):
+        self.weight = self.weight - (self.parameters["eta"] *
+                                     self.weight)
+        self.update_fitness()
+
+    def fitness(self):
+        return 0 if self.weight is 0 else \
+            (self.fitness_formula(+1, self.age,
+                                  self.parameters['a_half'],
+                                  self.parameters['phi_age']) *
+             self.fitness_formula(-1, self.weight,
+                                  self.parameters['w_half'],
+                                  self.parameters['phi_weight']))
+
+    def birth(self, number_specie_objects):
+        """
+        k = formula with the probability of birth
+
+        a = the probability to give birth to an offspring in a year
+
+        :param number_specie_objects:
+        :return:
+        """
+        k = self.parameters['zeta'] * (self.parameters['w_birth'] +
+                                       self.parameters['sigma_birth'])
+
+        a = min(1, self.parameters['gamma'] * self.fitness *
+                (number_specie_objects - 1))
+
+        return random.random() < a and self.weight > k
+
+    def update_weight_after_birth(self, weight):
+        self.weight = self.parameters['xi'] * weight
+        self.update_fitness()
+
+    def update_fitness(self):
+        self.fitness = self.fitness(self.age, self.weight)
+
+    def death(self):
+        if self.fitness is 0:
+            return True
+        elif random.random() < self.parameters['omega'] * \
+                (1 - self.fitness):
+            return True
+        else:
+            return False
+
+    def herbivore_eating_rule(self, f):
+        eaten = f if f <= self.parameters['F'] else self.parameters['F']
+        self.weight += self.parameters['beta'] * eaten
+        return eaten
+
+    '''def coordinations(self):
+        animals = []
+        for i in range(50):
+            for j in range(50):
+                animals.append((random.randint(1, 22),
+                                random.randint(1, 21)))
+        return animals'''
+
+    def migration_chances(self):
+        return random.random() < self.parameters['mu'] * self.fitness()
 
 
 class Herbivore(Population):

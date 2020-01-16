@@ -39,19 +39,19 @@ class Island:
             raise TypeError('Argument *{}* must be provided as '
                             'dictionary'.format(argument))
 
-    @staticmethod
+    @staticmethod  # tested
     def list_geo_cells(island_map):
         geos = textwrap.dedent(island_map).splitlines()
         return [list(row.strip()) for row in geos]
 
-    @staticmethod
+    @staticmethod  # tested
     def check_invalid_line_lengths(geos):
         length_count = [len(row) for row in geos]
         for i in length_count:
             if i is not length_count[0]:
                 raise ValueError('Different line lengths detected')
 
-    @staticmethod
+    @staticmethod  # tested
     def check_invalid_boundary(geos):
         for north in geos[0]:
             for south in geos[-1]:
@@ -62,7 +62,7 @@ class Island:
             if west is not 'O' or east is not 'O':
                 raise ValueError('The boundary is not Ocean')
 
-    @classmethod
+    @classmethod  # tested
     def check_invalid_character(cls, geos):
         for row in geos:
             for letter in row:

@@ -1,3 +1,4 @@
+from src.biosim.fauna import Population, Herbivore, Carnivore
 from src.biosim.simulation import BioSim
 
 island_map = "OOOOO\nOJJJO\nOJJJO\nOJJJO\nOOOOO"
@@ -26,8 +27,31 @@ ini_pop = [
 
 a = BioSim(island_map, ini_pop, None)
 loc = (2, 2)
-print(a.island.habitable_geos.values())
+
+# print(Herbivore)
+'''<class 'src.biosim.fauna.Herbivore'>'''
+
+# print(type(Herbivore))
+'''<class 'type'>'''
+
+# print(a.island.cells[loc])
+'''<src.biosim.geography.Jungle object at 0x114a0ad90>'''
+
+# print(type(a.island.cells[loc]))
+'''<class 'src.biosim.geography.Jungle'>'''
+
+# print(a.island.cells[loc].population)
+'''{<class 'src.biosim.fauna.Herbivore'>: 
+[<src.biosim.fauna.Herbivore object at 0x10cf36050>], 
+<class 'src.biosim.fauna.Carnivore'>: []}'''
+
+# print(type(a.island.cells[loc].population))
+'''<class 'dict'>'''
+
+
 '''[<src.biosim.geography.Jungle object at 0x10d696a90>, ...,
 <src.biosim.geography.Jungle object at 0x10d696b10>]'''
 
+# print(a.island.habitable_geos.keys())
+'''dict_keys(['S', 'J', 'D'])'''
 

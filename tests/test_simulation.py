@@ -16,32 +16,3 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 
-def test_neighbour_cells():
-    """Test if returns the 4ths neighbour_object cells"""
-    island_map = "OOOOO\nOJJJO\nOJJJO\nOJJJO\nOOOOO"
-    ini_pop = [
-        {
-            "loc": (2, 2),
-            "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (2, 3),
-            "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (2, 1),
-            "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (1, 2),
-            "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (3, 2),
-            "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
-        }
-    ]
-
-    BioSim(island_map, ini_pop, None)
-
-

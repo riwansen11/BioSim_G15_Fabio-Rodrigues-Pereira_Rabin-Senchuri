@@ -19,7 +19,7 @@ class Population:
         return 1. / (1. + np.exp(sgn * phi * (x - xhalf)))
 
     @classmethod
-    def check_unknown_parameter(cls, params):
+    def check_unknown_parameters(cls, params):
         for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
@@ -27,7 +27,7 @@ class Population:
 
     @classmethod
     def set_parameters(cls, params):
-        cls.check_unknown_parameter(params)
+        cls.check_unknown_parameters(params)
         cls.parameters.update(params)
 
     def __init__(self, age=0, weight=None):

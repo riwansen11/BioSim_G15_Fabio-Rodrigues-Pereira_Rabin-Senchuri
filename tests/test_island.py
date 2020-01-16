@@ -16,6 +16,27 @@ from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
 from src.biosim.fauna import Herbivore, Carnivore
 
 
+def test_check_string_instance():
+    """Test if the method 'check_string_instance(argument)' identifies
+    different argument's type than string and raise ValueError"""
+    with pytest.raises(TypeError):
+        Island.check_string_instance(0)
+
+
+def test_check_list_instance():
+    """Test if the method 'check_list_instance(argument)' identifies
+    different argument's type than list and raise ValueError"""
+    with pytest.raises(TypeError):
+        Island.check_list_instance({0})
+
+
+def test_check_dict_instance():
+    """Test if the method 'check_dict_instance(argument)' identifies
+    different argument's type than dictionary and raise ValueError"""
+    with pytest.raises(TypeError):
+        Island.check_dict_instance([0])
+
+
 def test_list_geo_cells():
     """Test if the method 'list_geo_cells(island_map)' generates a
     correct list of geographies with the correct coordinates."""
@@ -25,7 +46,8 @@ def test_list_geo_cells():
 
 
 def test_invalid_line_lengths():
-    """Raises ValueError if length of island is not same on each row"""
+    """Test if the method 'check_invalid_line_lengths(geos)' identifies
+    a different horizontal (line/row) length on the island_maps"""
     island_maps = ("OOOOOO\nOJJJO\nOOOOO",
                    "OOOOO\nOOJJJO\nOOOOO",
                    "OOOOO\nOJJJO\nOOOOOO")
@@ -36,7 +58,8 @@ def test_invalid_line_lengths():
 
 
 def test_invalid_boundary():
-    """Raises ValueError if boundary of island is other than "O"""
+    """Test if the method 'check_invalid_boundary(geos)' identifies
+    a different boundary for island_maps than only 'Oceans'"""
     island_maps = ("JOOOO\nOJJJO\nOOOOO",
                    "OOOOJ\nOJJJO\nOOOOO",
                    "OOJOO\nOJJJO\nOOOOO",

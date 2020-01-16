@@ -25,6 +25,13 @@ def test_check_unknown_parameters():
         Savannah.check_unknown_parameters(params={'f_min': 100})
 
 
+def test_check_known_parameters():
+    """Test method 'check_unknown_parameters()' if it identifies the
+    given parameter and does not return ValueError"""
+    Jungle.check_unknown_parameters(params={'f_max': 100})
+    Savannah.check_unknown_parameters(params={'f_max': 100})
+
+
 def test_now_negative_parameters():
     """Test method 'check_non_negative_parameters(param_key, params)'
     if it identifies the negative value of a given parameter and returns

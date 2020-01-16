@@ -21,19 +21,19 @@ class Island:
     geo_classes = {'O': Ocean, 'S': Savannah, 'M': Mountain,
                    'J': Jungle, 'D': Desert}
 
-    @staticmethod
+    @staticmethod  # tested
     def check_string_instance(argument):
         if not isinstance(argument, str):
             raise TypeError('Argument *{}* must be provided as '
                             'string'.format(argument))
 
-    @staticmethod
+    @staticmethod  # tested
     def check_list_instance(argument):
         if not isinstance(argument, list):
             raise TypeError('Argument *{}* must be provided as '
                             'list'.format(argument))
 
-    @staticmethod
+    @staticmethod  # tested
     def check_dict_instance(argument):
         if not isinstance(argument, dict):
             raise TypeError('Argument *{}* must be provided as '
@@ -123,7 +123,7 @@ class Island:
             for animal in individuals:
                 geo_object.population[type(animal)].append(animal)
 
-    def neighbour_cell(self, loc):  # returns the geo_objects
+    def neighbour_cell(self, loc):  # tested - returns the geo_objects
         neighbours = [(loc[0], loc[1] - 1),
                       (loc[0] - 1, loc[1]),
                       (loc[0] + 1, loc[1]),

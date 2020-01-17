@@ -101,9 +101,8 @@ class Cells:
     def get_old(self):
         for specie_objects in self.population.values():
             for animal_object in specie_objects:
-                print(animal_object.age)
+                print(type(animal_object.fitness))
                 animal_object.get_old()
-                print(animal_object.age)
 
     def lose_weight(self):
         for specie_objects in self.population.values():

@@ -16,7 +16,7 @@ class Population:
 
     @staticmethod
     def fitness_formula(sgn, x, xhalf, phi):
-        return 1. / (1. + np.exp(sgn * phi * (x - xhalf)))
+        return float(1.0 / (1 + np.exp(sgn * phi * (x - xhalf))))
 
     @classmethod
     def check_unknown_parameters(cls, params):
@@ -31,6 +31,7 @@ class Population:
         cls.parameters.update(params)
 
     def __init__(self, age=0, weight=None):
+
         self.age = age
         self.weight = random.gauss(self.parameters['w_birth'],
                                    self.parameters['sigma_birth']) \
@@ -72,7 +73,7 @@ class Population:
         self.update_fitness()
 
     def update_fitness(self):
-        self.fitness = self.fitness(self.age, self.weight)
+        self.fitness = self.fitness(self.age, self.weight, self.parameters)
 
     def die(self):
         if self.fitness is 0:
@@ -106,7 +107,7 @@ class Herbivore(Population):
                   'DeltaPhiMax': None}
 
     def __init__(self, age=0, weight=None):
-        super().__init__()
+        super().__init__(age, weight)
 
     def eating_rule(self, f):
         eaten = f if f <= self.parameters['F'] else self.parameters['F']
@@ -133,4 +134,4 @@ class Carnivore(Population):
                   'DeltaPhiMax': 10.0}
 
     def __init__(self, age=0, weight=None):
-        super().__init__()
+        super().__init__(age, weight)

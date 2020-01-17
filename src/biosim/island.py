@@ -119,7 +119,6 @@ class Island:
             coordinate = population['loc']
             self.check_coordinates_exists(coordinate, self.cells)
             self.check_habitability(coordinate, self.cells)
-            geo_object = self.cells[coordinate]
             individual_objects = []
             for individual in population['pop']:
                 species = individual['species']
@@ -129,11 +128,10 @@ class Island:
                     self.fauna_classes[species](age, weight)
 
                 individual_objects.append(individual_object)
-
+            geo_object = self.cells[coordinate]
             for animal_object in individual_objects:
-                geo_object.population[type(
-                    animal_object).__name__].append(
-                    animal_object)
+                geo_object.population[
+                    type(animal_object).__name__].append(animal_object)
 
     def neighbour_cell(self, loc):  # returns the habitable geo_objects
         neighbours = [(loc[0], loc[1] - 1),
@@ -145,31 +143,21 @@ class Island:
 
     def yearly_cycle(self):
         for coordinate, geo_object in self.habitable_cells.items():
-            geo_object.feed()
+            geo_object.grow_fodder_and_feed()
             geo_object.add_newborns()
-            #neighbour_cell = self.neighbour_cell(coordinate)
-            geo_object.migrate(neighbour_cell)
+            # neighbour_cell = self.neighbour_cell(coordinate)
+            #geo_object.migrate(neighbour_cell)
             geo_object.get_old()
             geo_object.lose_weight()
             geo_object.die()
 
     def get_population_numbers(self):
-        population_herbivore, population_carnivore = 0, 0
-        for geo_object in self.habitable_cells.values():
-            population_herbivore += geo_object.population_number(
-                'Herbivore')
-            population_carnivore += geo_object.population_number(
-                'Carnivore')
-        return {'Herbivore': population_herbivore,
-                'Carnivore': population_carnivore}
-
-    def get_population_per_cell(self):
         population = {'Coordinates': [], 'Herbivore': [],
                       'Carnivore': []}
         for location, geo_object in self.cells.items():
             population['Coordinates'].append(location)
-            population['Herbivore'].append(geo_object.population_number(
-                'Herbivore'))
-            population['Carnivore'].append(geo_object.population_number(
-                'Carnivore'))
+            population['Herbivore'].append(len(geo_object.population[
+                                            'Herbivore']))
+            population['Carnivore'].append(len(geo_object.population[
+                                            'Carnivore']))
         return population

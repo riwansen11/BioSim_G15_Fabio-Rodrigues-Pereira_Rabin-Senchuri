@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
+import pandas
 import random as rd
 from src.biosim.island import Island
 
@@ -114,43 +114,29 @@ class BioSim:
 
     @property
     def year(self):
-        """Last year simulated."""
+        """Last year simulated"""
         pass
 
     @property
-    def num_animals(self):
-        """Total number of animals on island."""
-        population_total = 0
-        for population in self.island.get_population_numbers().values():
-            population_total += population
-        return population_total
+    def num_animals(self):  # tested
+        """Total number of animals on island"""
+        pop = self.island.get_population_numbers()
+        return sum(pop['Herbivore']) + sum(pop['Carnivore'])
 
     @property
-    def num_animals_per_species(self):
-        """Number of animals per species in island, as dictionary."""
-        return self.island.get_population_numbers()
+    def num_animals_per_species(self):  # tested
+        """Number of animals per species in island, as dictionary"""
+        pop = self.island.get_population_numbers()
+        return {'Herbivore': sum(pop['Herbivore']),
+                'Carnivore': sum(pop['Carnivore'])}
 
     @property
     def animal_distribution(self):
         """Pandas DataFrame with animal count per species for each cell
         on island.
-
-        return pd.DataFrame(animals_count = [ {'Herbivore': 33,
-                                               'Carnivore': 10},
-                                              {'Herbivore': 50,
-                                               'Carnivore': 1} ],
-                            index = ['Herbivore', 'Carnivore'],
-                            columns =['(0, 0)', '(0, 1)', ...]
-                            )
         """
-        '''population = {'Coordinates': [], 'Herbivore': [],
-                         'Carnivore': []}
-        population = self.island.get_population_per_cell()
-
-        index = ['Herbivore', 'Carnivore']
-
-        coordinates = []
-        return pd.DataFrame(population, index, coordinates)'''
+        pop = self.island.get_population_numbers()
+        return pandas.DataFrame(pop)
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""

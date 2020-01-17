@@ -48,16 +48,10 @@ class Cells:
         self.new_population = {'Herbivore': [], 'Carnivore': []}
         self.fodder = 0
 
-    def feed(self):
-        self.grow_fodder()
-        self.herbivore_feed()
-        self.carnivore_feed()
-
     def herbivore_feed(self):
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
         for herbivore_object in reversed(self.population['Herbivore']):
             if herbivore_object.parameters["F"] <= self.fodder:
-                herbivore_object.herb_eating(herbivore_object.parameters["F"])
                 self.fodder -= herbivore_object.parameters["F"]
             elif 0 < self.fodder < herbivore_object.parameters["F"]:
                 herbivore_object.herb_eating(self.fodder)
@@ -68,7 +62,8 @@ class Cells:
         self.population["Carnivore"].sort(key=lambda i: i.fitness)
 
         for carn_object in reversed(self.population["Carnivore"]):
-            eaten = carn_object.carn_eating_rule(self.population["Herbivore"])
+            eaten = carn_object.carn_eating_rule(self.population[
+                                                     "Herbivore"])
 
     def add_newborns(self):
         for specie_objects in self.population.values():
@@ -106,7 +101,7 @@ class Cells:
 
         return tuple([h_propensity, c_propensity])'''
 
-    def get_old(self):
+    def get_old(self):  # tested
         for specie_objects in self.population.values():
             for animal_object in specie_objects:
                 animal_object.get_old()
@@ -124,11 +119,6 @@ class Cells:
                     survivors.append(animal_object)
             self.population[specie_type] = survivors
 
-    def population_number(self, specie):
-        return len(self.population['Herbivore']) \
-            if specie is 'Herbivore' \
-            else len(self.population['Carnivore'])
-
     def total_herbivore_mass(self):
         herb_mass = 0
         for herb in self.population['Herbivore']:
@@ -143,8 +133,9 @@ class Jungle(Cells):
         super().__init__()
         self.fodder = self.parameters['f_max']
 
-    def grow_fodder(self):
+    def grow_fodder_and_feed(self):
         self.fodder = self.parameters['f_max']  # ****check
+        self.herbivore_feed(), self.carnivore_feed()
 
 
 class Savannah(Cells):
@@ -154,17 +145,19 @@ class Savannah(Cells):
         super().__init__()
         self.fodder = self.parameters['f_max']
 
-    def grow_fodder(self):
+    def grow_fodder_and_feed(self):
         self.fodder += self.parameters['alpha'] \
                        * (self.parameters['f_max'] - self.fodder)
+        self.herbivore_feed(), self.carnivore_feed()
 
 
 class Desert(Cells):
     def __init__(self):
         super().__init__()
 
-    def grow_fodder(self):
+    def grow_fodder_and_feed(self):
         self.fodder = 0
+        self.herbivore_feed(), self.carnivore_feed()
 
 
 class Ocean(Cells):

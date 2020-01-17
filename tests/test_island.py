@@ -77,16 +77,62 @@ def test_invalid_boundary():
 def test_invalid_character():
     """Test if the method 'check_invalid_character(geos)' identifies
     an invalid character on the island_map"""
-    island_map = "OOOOOO\nOJAJO\nOOOOO"
+    island_map = "OOOOO\nOJAJO\nOOOOO"
     island_map = Island.list_geo_cells(island_map)
     with pytest.raises(ValueError):
         Island.check_invalid_character(island_map)
 
 
-def test_add_age():
-    """Test if the method 'def add_population()' correctly add the age
-    of the animal_object"""
-    pass
+def test_age_stored():
+    """Test if the method 'def add_population()' correctly store the age
+    on animal_object"""
+    island_map = "OOOOO\nOJJJO\nOOOOO"
+    ini_pop = [
+        {
+            "loc": (1, 2),
+            "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+        }]
+    t, loc = BioSim(island_map, ini_pop, None), (1, 2)
+    h_age = t.island.habitable_cells[loc].population['Herbivore'][0].age
+    assert h_age is 5
+
+
+def test_weight_stored():
+    """Test if the method 'add_population()' correctly store the
+    weight on animal_object"""
+    island_map = "OOOOO\nOJJJO\nOOOOO"
+    ini_pop = [
+        {
+            "loc": (1, 2),
+            "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+        }]
+    t, loc = BioSim(island_map, ini_pop, None), (1, 2)
+    h_weight = t.island.habitable_cells[loc].population['Herbivore'][
+        0].weight
+    assert h_weight is 20
+
+
+def test_get_population_numbers():
+    """Test if the method 'get_population_numbers()' correctly gets the
+    entire population of all geo_object"""
+    island_map = "OOOOO\nOJJJO\nOOOOO"
+    ini_pop = [
+        {"loc": (1, 1),
+         "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+                 {"species": "Herbivore", "age": 5, "weight": 20},
+                 {"species": "Carnivore", "age": 5, "weight": 20}]},
+        {"loc": (1, 2),
+         "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+                 {"species": "Carnivore", "age": 5, "weight": 20},
+                 {"species": "Carnivore", "age": 5, "weight": 20}]},
+        {"loc": (1, 3),
+         "pop": [{"species": "Herbivore", "age": 5, "weight": 20}]}]
+
+    t = BioSim(island_map, ini_pop, None)
+    pop = t.island.get_population_numbers()
+    pop_num = sum(pop['Herbivore']) + sum(pop['Carnivore'])
+    assert pop_num is 7
+
 
 def test_neighbour_cells():  # wrong after correction on the method
     """ Test, in 4 different maps, if the method 'neighbour_cell(loc)'
@@ -110,34 +156,4 @@ def test_neighbour_cells():  # wrong after correction on the method
         neighbours = [type(neighbour).__name__ for neighbour
                       in t.island.neighbour_cell(loc=(2, 2))]
         assert neighbour_expected in neighbours'''
-    pass
-
-
-def test_a():
-    ini_pop = [
-        {
-            "loc": (2, 2),
-            "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (2, 3),
-            "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (2, 1),
-            "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (1, 2),
-            "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 20}],
-        },
-        {
-            "loc": (3, 2),
-            "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 20}]
-        }]
     pass

@@ -2,8 +2,9 @@ from src.biosim.fauna import Population, Herbivore, Carnivore
 from src.biosim.simulation import BioSim
 from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
+import pandas as pd
 
-island_map = "OOOOO\nOJJJO\nOOOOO"
+'''island_map = "OOOOO\nOJJJO\nOOOOO"
 ini_pop = [
     {"loc": (1, 1),
      "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
@@ -14,19 +15,30 @@ ini_pop = [
              {"species": "Carnivore", "age": 5, "weight": 20},
              {"species": "Carnivore", "age": 5, "weight": 20}]},
     {"loc": (1, 3),
-     "pop": [{"species": "Herbivore", "age": 5, "weight": 20}]}]
+     "pop": [{"species": "Herbivore", "age": 5, "weight": 20}]}]'''
 
-t = BioSim(island_map, ini_pop, None)
+t = BioSim(island_map="OOOO\nOJSO\nOOOO", ini_pop=[], seed=None)
+t.add_population(
+    [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Herbivore", "age": 1, "weight": 10.0},
+                {"species": "Carnivore", "age": 1, "weight": 10.0},
+            ],
+        },
+        {
+            "loc": (1, 2),
+            "pop": [
+                {"species": "Herbivore", "age": 1, "weight": 10.0},
+                {"species": "Herbivore", "age": 1, "weight": 10.0},
+            ],
+        },
+    ]
+)
 pop = t.island.get_population_numbers()
-animal_count = [{'Herbivore': herb_pop, 'Carnivore': carn_pop}
-                for herb_pop in pop['Herbivore']
-                for carn_pop in pop['Carnivore']]
-index = ['Herbivore', 'Carnivore']
-columns = [str(coord) for coord in pop['Coordinates']]
-
-print(animal_count)
-print(index)
-print(columns)
+data = pd.DataFrame(pop)
+print(data)
 
 ''' >> dict.items()
 dict_items([((0, 0), 

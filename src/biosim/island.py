@@ -152,12 +152,13 @@ class Island:
             geo_object.die()
 
     def get_population_numbers(self):
-        population = {'Coordinates': [], 'Herbivore': [],
+        population = {'Row': [], 'Col': [], 'Herbivore': [],
                       'Carnivore': []}
-        for location, geo_object in self.cells.items():
-            population['Coordinates'].append(location)
-            population['Herbivore'].append(len(geo_object.population[
-                                            'Herbivore']))
-            population['Carnivore'].append(len(geo_object.population[
-                                            'Carnivore']))
+        for loc, geo_object in self.cells.items():
+            population['Row'].append(loc[0])
+            population['Col'].append(loc[1])
+            population['Herbivore'].append(
+                len(geo_object.population['Herbivore']))
+            population['Carnivore'].append(
+                len(geo_object.population['Carnivore']))
         return population

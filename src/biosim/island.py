@@ -153,8 +153,19 @@ class Island:
         population_herbivore, population_carnivore = 0, 0
         for geo_object in self.habitable_cells.values():
             population_herbivore += geo_object.population_number(
-                Herbivore)
+                'Herbivore')
             population_carnivore += geo_object.population_number(
-                Carnivore)
+                'Carnivore')
         return {'Herbivore': population_herbivore,
                 'Carnivore': population_carnivore}
+
+    def get_population_per_cell(self):
+        population = {'Coordinates': [], 'Herbivore': [],
+                      'Carnivore': []}
+        for location, geo_object in self.cells.items():
+            population['Coordinates'].append(location)
+            population['Herbivore'].append(geo_object.population_number(
+                'Herbivore'))
+            population['Carnivore'].append(geo_object.population_number(
+                'Carnivore'))
+        return population

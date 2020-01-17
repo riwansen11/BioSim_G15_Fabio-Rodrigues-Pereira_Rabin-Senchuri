@@ -143,7 +143,12 @@ class BioSim:
                             columns =['(0, 0)', '(0, 1)', ...]
                             )
         """
-        pass
+        population = self.island.get_population_per_cell()
+
+        index = ['Herbivore', 'Carnivore']
+
+        coordinates = []
+        return pd.DataFrame(population, index, coordinates)
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""

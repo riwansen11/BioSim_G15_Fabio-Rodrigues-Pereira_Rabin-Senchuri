@@ -59,7 +59,7 @@ class Population:
                                   self.parameters['w_half'],
                                   self.parameters['phi_weight']))
 
-    def add_newborns(self, number_specie_objects):
+    def birth(self, number_specie_objects):
         k = self.parameters['zeta'] * (self.parameters['w_birth'] +
                                        self.parameters['sigma_birth'])
 
@@ -85,7 +85,9 @@ class Population:
             return False
 
     def migration_chances(self):
-        return random.random() < self.parameters['mu'] * self.fitness()
+        prob_move = self.parameters['mu'] * self.fitness
+        rand_num = np.random.random()
+        return rand_num < prob_move
 
 
 class Herbivore(Population):

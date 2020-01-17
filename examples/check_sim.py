@@ -39,7 +39,7 @@ if __name__ == "__main__":
         {
             "loc": (10, 10),
             "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 20}
+                {"species": "Herbivore", "age": 5, "weight": 40}
                 for _ in range(150)
             ],
         }
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         {
             "loc": (10, 10),
             "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 100}
+                {"species": "Carnivore", "age": 5, "weight": 40}
                 for _ in range(40)
             ],
         }

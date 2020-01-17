@@ -145,6 +145,7 @@ class Island:
         for coordinate, geo_object in self.habitable_cells.items():
             geo_object.grow_fodder_and_feed()
             geo_object.add_newborns()
+
             geo_object.migrate(self.neighbour_cell(coordinate))
             geo_object.get_old()
             geo_object.lose_weight()

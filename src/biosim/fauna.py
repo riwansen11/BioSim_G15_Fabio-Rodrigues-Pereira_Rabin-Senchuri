@@ -39,7 +39,7 @@ class Population:
 
         self.fitness = self.calculate_fitness()
 
-    def get_old(self):
+    def get_old(self):  # tested
         self.age += 1
 
     def gain_weight(self, feed):
@@ -142,8 +142,10 @@ class Carnivore(Population):
             h_fitness = herb.calculate_fitness()
             if h_fitness >= c_fitness:
                 prob = 0
-            elif 0 < (c_fitness - h_fitness) < self.parameters['DeltaPhiMax']:
-                prob = (c_fitness - h_fitness) / self.parameters['DeltaPhiMax']
+            elif 0 < (c_fitness -
+                      h_fitness) < self.parameters['DeltaPhiMax']:
+                prob = (c_fitness - h_fitness) / self.parameters[
+                    'DeltaPhiMax']
             else:
                 prob = 1
             # check if animal gets eaten
@@ -155,5 +157,3 @@ class Carnivore(Population):
                     break
         self.gain_weight(feed)
         self.update_fitness()
-
-

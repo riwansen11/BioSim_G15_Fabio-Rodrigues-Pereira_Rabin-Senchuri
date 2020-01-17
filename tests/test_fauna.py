@@ -9,7 +9,11 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import pytest
-from src.biosim.fauna import Population, Herbivore, Carnivore
+from src.biosim.simulation import BioSim
+from src.biosim.island import Island
+from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
+    Desert
+from src.biosim.fauna import Herbivore, Carnivore
 
 
 def test_check_unknown_parameters():
@@ -25,6 +29,24 @@ def test_check_known_parameters():
     given parameter and does not return ValueError"""
     Herbivore.check_unknown_parameters(params={'zeta': 100})
     Carnivore.check_unknown_parameters(params={'mu': 100})
+
+
+def test_animal_got_old():
+    """Test if the method 'get_old()' correctly increases in 1 year the
+    animal_object age"""
+    island_map = "OOOOO\nOJJJO\nOOOOO"
+    ini_pop = [
+        {
+            "loc": (1, 2),
+            "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+        }]
+    t, loc = BioSim(island_map, ini_pop, None), (1, 2)
+    herb_object = t.island.habitable_cells[loc].population[
+        'Herbivore'][0]
+    herb_young = herb_object.age
+    herb_object.get_old()
+    herb_older = herb_object.age
+    assert herb_older is (herb_young + 1)
 
 
 def test_create_animal():

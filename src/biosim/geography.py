@@ -57,7 +57,6 @@ class Cells:
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
         for herbivore_object in reversed(self.population['Herbivore']):
             if herbivore_object.parameters["F"] <= self.fodder:
-                herbivore_object.herb_eating(herbivore_object.parameters["F"])
                 self.fodder -= herbivore_object.parameters["F"]
             elif 0 < self.fodder < herbivore_object.parameters["F"]:
                 herbivore_object.herb_eating(self.fodder)
@@ -68,7 +67,8 @@ class Cells:
         self.population["Carnivore"].sort(key=lambda i: i.fitness)
 
         for carn_object in reversed(self.population["Carnivore"]):
-            eaten = carn_object.carn_eating_rule(self.population["Herbivore"])
+            eaten = carn_object.carn_eating_rule(self.population[
+                                                     "Herbivore"])
 
     def add_newborns(self):
         for specie_objects in self.population.values():
@@ -106,7 +106,7 @@ class Cells:
 
         return tuple([h_propensity, c_propensity])'''
 
-    def get_old(self):
+    def get_old(self):  # tested
         for specie_objects in self.population.values():
             for animal_object in specie_objects:
                 animal_object.get_old()
@@ -123,11 +123,6 @@ class Cells:
                 if not animal_object.die():
                     survivors.append(animal_object)
             self.population[specie_type] = survivors
-
-    def population_number(self, specie):
-        return len(self.population['Herbivore']) \
-            if specie is 'Herbivore' \
-            else len(self.population['Carnivore'])
 
     def total_herbivore_mass(self):
         herb_mass = 0

@@ -3,47 +3,30 @@ from src.biosim.simulation import BioSim
 from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
 
+island_map = "OOOOO\nOJJJO\nOOOOO"
 ini_pop = [
-    {
-        "loc": (5, 7),
-        "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
-    },
-    {
-        "loc": (5, 7),
-        "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
-    },
-    {
-        "loc": (5, 7),
-        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
-    },
-    {
-        "loc": (5, 7),
-        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
-    },
-    {
-        "loc": (5, 7),
-        "pop": [{"species": "Carnivore", "age": 5, "weight": 20}],
-    }
-]
-a = BioSim(None, ini_pop, None)
-loc = (5, 7)
+    {"loc": (1, 1),
+     "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+             {"species": "Herbivore", "age": 5, "weight": 20},
+             {"species": "Carnivore", "age": 5, "weight": 20}]},
+    {"loc": (1, 2),
+     "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+             {"species": "Carnivore", "age": 5, "weight": 20},
+             {"species": "Carnivore", "age": 5, "weight": 20}]},
+    {"loc": (1, 3),
+     "pop": [{"species": "Herbivore", "age": 5, "weight": 20}]}]
 
-b = a.island.habitable_cells[loc].population['Herbivore']
-print(b)
+t = BioSim(island_map, ini_pop, None)
+pop = t.island.get_population_numbers()
+animal_count = [{'Herbivore': herb_pop, 'Carnivore': carn_pop}
+                for herb_pop in pop['Herbivore']
+                for carn_pop in pop['Carnivore']]
+index = ['Herbivore', 'Carnivore']
+columns = [str(coord) for coord in pop['Coordinates']]
 
-for animal in b:
-    print(animal.age)
-
-
-
-
-
-
-
-
-
-
-
+print(animal_count)
+print(index)
+print(columns)
 
 ''' >> dict.items()
 dict_items([((0, 0), 
@@ -113,4 +96,3 @@ for coordinates, geo_object in c:
 
 # print(a.island.habitable_geos.keys())
 '''dict_keys(['S', 'J', 'D'])'''
-

@@ -77,20 +77,16 @@ class Cells:
             specie_objects.extend(newborns)
 
     def migrate(self, neighbour_cells):
-        pass
-
-        '''for species in self.popilation.keys():
-            for animal in species:
-                if animal:
-                    neighbour_cell_props = [neighbour.neighbour_cell_prospensity(animal) for neighbour in
-                                            neighbour_cells]
-                    print(neighbour_cell_props)'''
+        for species, animals in self.population.items():
+            if animals:
+                neighbour_cell_props = [neighbour.neighbour_cell_propensity(species) for neighbour in
+                                        neighbour_cells]
 
     def neighbour_cell_propensity(self, species):
-        pass
-        '''relevant_fodder = self.fodder if species.__class__.__name__ == "Herbivore" \
+        relevant_fodder = self.fodder if species == "Herbivore" \
             else self.total_herbivore_mass()
-        h_relevant_abundance = self.herbivor_relevant_abundance(len(self.animal_pop[0]),
+        print(relevant_fodder)
+        h_relevant_abundance = self.herbivore_relevant_abundance(len(self.animal_pop[0]),
                                                                 species.default_params["F"],
                                                                 relevant_fodder)
         c_relevant_abundance = self.carnivore_relevant_abundance(len(self.animal_pop[1]),
@@ -99,7 +95,7 @@ class Cells:
         h_propensity = np.exp(species.default_params["lambda"] * h_relevant_abundance)
         c_propensity = np.exp(species.default_params["lambda"] * c_relevant_abundance)
 
-        return tuple([h_propensity, c_propensity])'''
+        return tuple([h_propensity, c_propensity])
 
     def get_old(self):  # tested
         for specie_objects in self.population.values():

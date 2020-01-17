@@ -133,23 +133,9 @@ class BioSim:
     @property
     def animal_distribution(self):
         """Pandas DataFrame with animal count per species for each cell
-        on island.
-
-        return pd.DataFrame(animals_count = [ {'Herbivore': 33,
-                                               'Carnivore': 10},
-                                              {'Herbivore': 50,
-                                               'Carnivore': 1} ],
-                            index = ['Herbivore', 'Carnivore'],
-                            columns =['(0, 0)', '(0, 1)', ...]
-                            )
-        """
-        '''pop = self.island.get_population_numbers()
-        animal_count = [{'Herbivore': herb_pop, 'Carnivore': carn_pop}
-                        for herb_pop in pop['Herbivore']
-                        for carn_pop in pop['Carnivore']]
-        index = ['Herbivore', 'Carnivore']
-        columns = [str(coord) for coord in pop['Coordinates']]
-        return pd.DataFrame(animal_count, index, columns)'''
+        on island"""
+        pop = self.island.get_population_numbers()
+        return pd.DataFrame(pop)
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""

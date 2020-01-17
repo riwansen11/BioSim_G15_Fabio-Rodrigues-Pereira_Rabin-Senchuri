@@ -134,7 +134,7 @@ class Jungle(Cells):
         self.fodder = self.parameters['f_max']
 
     def grow_fodder_and_feed(self):
-        self.fodder = self.parameters['f_max']  # ****check
+        self.fodder = self.parameters['f_max']
         self.herbivore_feed(), self.carnivore_feed()
 
 

@@ -44,8 +44,8 @@ class Cells:
         cls.parameters.update(params)
 
     def __init__(self):
-        self.population = {Herbivore: [], Carnivore: []}
-        self.new_population = {Herbivore: [], Carnivore: []}
+        self.population = {'Herbivore': [], 'Carnivore': []}
+        self.new_population = {'Herbivore': [], 'Carnivore': []}
         self.fodder = 0
 
     def feed(self):
@@ -54,8 +54,8 @@ class Cells:
         self.carnivore_feed()
 
     def herbivore_feed(self):
-        self.population[Herbivore].sort(key=lambda h: h.fitness)
-        for herbivore_object in reversed(self.population[Herbivore]):
+        self.population['Herbivore'].sort(key=lambda h: h.fitness)
+        for herbivore_object in reversed(self.population['Herbivore']):
             fodder_eaten = herbivore_object.eating_rule(self.fodder)
             self.fodder -= fodder_eaten
 
@@ -117,12 +117,13 @@ class Cells:
             self.population[specie_type] = survivors
 
     def population_number(self, specie):
-        return len(self.population[Herbivore]) if specie is Herbivore \
-            else len(self.population[Carnivore])
+        return len(self.population['Herbivore']) \
+            if specie is 'Herbivore' \
+            else len(self.population['Carnivore'])
 
     def total_herbivore_mass(self):
         herb_mass = 0
-        for herb in self.population[Herbivore]:
+        for herb in self.population['Herbivore']:
             herb_mass += herb.weight
         return herb_mass
 

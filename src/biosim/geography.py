@@ -49,18 +49,28 @@ class Cells:
         self.fodder = 0
 
     def feed(self):
-        # self.grow_fodder()
+        self.grow_fodder()
         self.herbivore_feed()
         self.carnivore_feed()
 
     def herbivore_feed(self):
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
         for herbivore_object in reversed(self.population['Herbivore']):
-            fodder_eaten = herbivore_object.eating_rule(self.fodder)
-            self.fodder -= fodder_eaten
+            if herbivore_object.parameters["F"] <= self.fodder:
+                herbivore_object.herb_eating(
+                    herbivore_object.parameters["F"])
+                self.fodder -= herbivore_object.parameters["F"]
+            elif 0 < self.fodder < herbivore_object.parameters["F"]:
+                herbivore_object.herb_eating(self.fodder)
+                self.fodder = 0
 
     def carnivore_feed(self):
-        pass
+        self.population["Herbivore"].sort(key=lambda h: h.fitness)
+        self.population["Carnivore"].sort(key=lambda i: i.fitness)
+
+        for carn_object in reversed(self.population["Carnivore"]):
+            eaten = carn_object.carn_eating_rule(
+                self.population["Herbivore"])
 
     def add_newborns(self):
         for specie_objects in self.population.values():
@@ -98,12 +108,10 @@ class Cells:
 
         return tuple([h_propensity, c_propensity])'''
 
-    def get_old(self):
+    def get_old(self):  # tested
         for specie_objects in self.population.values():
             for animal_object in specie_objects:
-                print(animal_object.age)
                 animal_object.get_old()
-                print(animal_object.age)
 
     def lose_weight(self):
         for specie_objects in self.population.values():
@@ -117,11 +125,6 @@ class Cells:
                 if not animal_object.die():
                     survivors.append(animal_object)
             self.population[specie_type] = survivors
-
-    def population_number(self, specie):
-        return len(self.population['Herbivore']) \
-            if specie is 'Herbivore' \
-            else len(self.population['Carnivore'])
 
     def total_herbivore_mass(self):
         herb_mass = 0

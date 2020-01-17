@@ -27,14 +27,18 @@ ini_pop = [
 ]
 a = BioSim(None, ini_pop, None)
 loc = (5, 7)
-'''for a, b in enumerate(a.island.cells.items()):
-    print(a)
-    print(b)'''
-a.island.feeding()
-print(a.island.cells.items())
-print(a.island.cells.keys())
-print(a.island.cells.values())
-print(a.island.habitable_cells)
+
+b = a.island.habitable_cells[loc].population['Herbivore']
+print(b)
+
+for animal in b:
+    print(animal.age)
+
+
+
+
+
+
 
 
 

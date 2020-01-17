@@ -143,7 +143,7 @@ class Island:
 
     def yearly_cycle(self):
         for coordinate, geo_object in self.habitable_cells.items():
-            geo_object.feed()
+            geo_object.grow_fodder_and_feed()
             geo_object.add_newborns()
 <<<<<<< HEAD
             #neighbour_cell = self.neighbour_cell(coordinate)

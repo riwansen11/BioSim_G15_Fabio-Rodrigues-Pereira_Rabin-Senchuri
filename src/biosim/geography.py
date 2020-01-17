@@ -48,11 +48,6 @@ class Cells:
         self.new_population = {'Herbivore': [], 'Carnivore': []}
         self.fodder = 0
 
-    def feed(self):
-        self.grow_fodder()
-        self.herbivore_feed()
-        self.carnivore_feed()
-
     def herbivore_feed(self):
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
         for herbivore_object in reversed(self.population['Herbivore']):
@@ -138,8 +133,9 @@ class Jungle(Cells):
         super().__init__()
         self.fodder = self.parameters['f_max']
 
-    def grow_fodder(self):
+    def grow_fodder_and_feed(self):
         self.fodder = self.parameters['f_max']  # ****check
+        self.herbivore_feed(), self.carnivore_feed()
 
 
 class Savannah(Cells):
@@ -149,17 +145,19 @@ class Savannah(Cells):
         super().__init__()
         self.fodder = self.parameters['f_max']
 
-    def grow_fodder(self):
+    def grow_fodder_and_feed(self):
         self.fodder += self.parameters['alpha'] \
                        * (self.parameters['f_max'] - self.fodder)
+        self.herbivore_feed(), self.carnivore_feed()
 
 
 class Desert(Cells):
     def __init__(self):
         super().__init__()
 
-    def grow_fodder(self):
+    def grow_fodder_and_feed(self):
         self.fodder = 0
+        self.herbivore_feed(), self.carnivore_feed()
 
 
 class Ocean(Cells):

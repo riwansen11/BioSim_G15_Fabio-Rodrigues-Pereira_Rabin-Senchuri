@@ -57,8 +57,6 @@ class Cells:
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
         for herbivore_object in reversed(self.population['Herbivore']):
             if herbivore_object.parameters["F"] <= self.fodder:
-                herbivore_object.herb_eating(
-                    herbivore_object.parameters["F"])
                 self.fodder -= herbivore_object.parameters["F"]
             elif 0 < self.fodder < herbivore_object.parameters["F"]:
                 herbivore_object.herb_eating(self.fodder)
@@ -69,8 +67,8 @@ class Cells:
         self.population["Carnivore"].sort(key=lambda i: i.fitness)
 
         for carn_object in reversed(self.population["Carnivore"]):
-            eaten = carn_object.carn_eating_rule(
-                self.population["Herbivore"])
+            eaten = carn_object.carn_eating_rule(self.population[
+                                                     "Herbivore"])
 
     def add_newborns(self):
         for specie_objects in self.population.values():
@@ -159,6 +157,9 @@ class Savannah(Cells):
 class Desert(Cells):
     def __init__(self):
         super().__init__()
+
+    def grow_fodder(self):
+        self.fodder = 0
 
 
 class Ocean(Cells):

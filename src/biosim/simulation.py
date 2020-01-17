@@ -110,7 +110,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        # self.island.yearly_cycle()
+        self.island.yearly_cycle()
 
     @property
     def year(self):
@@ -143,12 +143,14 @@ class BioSim:
                             columns =['(0, 0)', '(0, 1)', ...]
                             )
         """
+        '''population = {'Coordinates': [], 'Herbivore': [],
+                         'Carnivore': []}
         population = self.island.get_population_per_cell()
 
         index = ['Herbivore', 'Carnivore']
 
         coordinates = []
-        return pd.DataFrame(population, index, coordinates)
+        return pd.DataFrame(population, index, coordinates)'''
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""

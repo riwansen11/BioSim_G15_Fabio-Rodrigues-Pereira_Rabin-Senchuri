@@ -123,12 +123,17 @@ class Island:
             individual_objects = []
             for individual in population['pop']:
                 species = individual['species']
-                age, weight = individual['age'], individual['weight']
+                print(species)
+                age = individual['age']
+                print(age)
+                weight = individual['weight']
+                print(weight)
                 individual_object = \
                     self.fauna_classes[species](age, weight)
                 individual_objects.append(individual_object)
             for animal_object in individual_objects:
-                geo_object.population[type(animal_object)].append(
+                geo_object.population[type(
+                    animal_object).__name__].append(
                     animal_object)
 
     def neighbour_cell(self, loc):  # returns the habitable geo_objects
@@ -141,13 +146,13 @@ class Island:
 
     def yearly_cycle(self):
         for coordinate, geo_object in self.habitable_cells.items():
-            geo_object.feed()
-            geo_object.add_newborns()
-            neighbour_cell = self.neighbour_cell(coordinate)
-            geo_object.migrate(neighbour_cell)
+            # geo_object.feed()
+            # geo_object.add_newborns()
+            # neighbour_cell = self.neighbour_cell(coordinate)
+            # geo_object.migrate(neighbour_cell)
             geo_object.get_old()
-            geo_object.lose_weight()
-            geo_object.die()
+            # geo_object.lose_weight()
+            # geo_object.die()
 
     def get_population_numbers(self):
         population_herbivore, population_carnivore = 0, 0

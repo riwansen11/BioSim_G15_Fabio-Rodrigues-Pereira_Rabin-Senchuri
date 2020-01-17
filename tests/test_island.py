@@ -83,6 +83,11 @@ def test_invalid_character():
         Island.check_invalid_character(island_map)
 
 
+def test_add_age():
+    """Test if the method 'def add_population()' correctly add the age
+    of the animal_object"""
+    pass
+
 def test_neighbour_cells():  # wrong after correction on the method
     """ Test, in 4 different maps, if the method 'neighbour_cell(loc)'
     identifies the 'Desert' geography as one of the neighbours of the

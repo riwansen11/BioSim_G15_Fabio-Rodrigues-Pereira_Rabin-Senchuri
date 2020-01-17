@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
-import random as rd
-from src.biosim.island import Island
-
 """
 This is the simulation model which functions with the BioSim package 
 written for the INF200 project January 2019.
@@ -11,6 +7,10 @@ written for the INF200 project January 2019.
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
+import pandas as pd
+import random as rd
+from src.biosim.island import Island
 
 
 class BioSim:
@@ -92,10 +92,6 @@ class BioSim:
         """
 
         :param population: List of dictionaries specifying population:
-        [{ "loc": (10, 10),
-           "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
-           "loc": (10, 10),
-           "pop": [{"species": "Carnivore", "age": 10, "weight": 05}]}]
         """
         self.island.add_population(population)
 

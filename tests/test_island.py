@@ -112,38 +112,13 @@ def test_weight_stored():
     assert h_weight is 20
 
 
-def test_get_population_numbers():
-    """Test if the method 'get_population_numbers()' correctly gets the
-    entire population of all geo_object"""
-    island_map = "OOOOO\nOJJJO\nOOOOO"
-    ini_pop = [
-        {"loc": (1, 1),
-         "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
-                 {"species": "Herbivore", "age": 5, "weight": 20},
-                 {"species": "Carnivore", "age": 5, "weight": 20}]},
-        {"loc": (1, 2),
-         "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
-                 {"species": "Carnivore", "age": 5, "weight": 20},
-                 {"species": "Carnivore", "age": 5, "weight": 20}]},
-        {"loc": (1, 3),
-         "pop": [{"species": "Herbivore", "age": 5, "weight": 20}]}]
-
-    t = BioSim(island_map, ini_pop, None)
-    pop = t.island.get_population_numbers()
-    pop_num = sum(pop['Herbivore']) + sum(pop['Carnivore'])
-    assert pop_num is 7
-
-
-def test_neighbour_cells():  # wrong after correction on the method
-    """ Test, in 4 different maps, if the method 'neighbour_cell(loc)'
-    identifies the 'Desert' geography as one of the neighbours of the
-    geography 'Jungle' placed at the coordinates (2,2). The expected
-    neighbour geography 'Desert' was placed on the north, south, west
-    and east neighbor on the respectively tuple island_maps"""
-    '''island_maps = ("OOOOO\nOJDJO\nOMJMO\nOJMJO\nOOOOO",
-                  "OOOOO\nOJMJO\nOMJMO\nOJDJO\nOOOOO",
-                  "OOOOO\nOJMJO\nODJMO\nOJMJO\nOOOOO",
-                  "OOOOO\nOJMJO\nOMJDO\nOJMJO\nOOOOO")
+def test_neighbour_cells():
+    """ Test if the method 'neighbour_cell(loc)' returns the correctly
+    habitable neighbours of a given localization"""
+    island_maps = ("OOOOO\nOJDJO\nOMJMO\nOJMJO\nOOOOO",
+                   "OOOOO\nOJMJO\nOMJMO\nOJDJO\nOOOOO",
+                   "OOOOO\nOJMJO\nODJMO\nOJMJO\nOOOOO",
+                   "OOOOO\nOJMJO\nOMJDO\nOJMJO\nOOOOO")
     ini_pop = [
         {
             "loc": (2, 2),
@@ -152,8 +127,44 @@ def test_neighbour_cells():  # wrong after correction on the method
         }]
     for island_map in island_maps:
         t = BioSim(island_map, ini_pop, None)
-        neighbour_expected = Desert.__name__
         neighbours = [type(neighbour).__name__ for neighbour
                       in t.island.neighbour_cell(loc=(2, 2))]
-        assert neighbour_expected in neighbours'''
-    pass
+        assert 'Desert' in neighbours
+        assert len(neighbours) is 1
+    island_map = ("OOOOO\nOJDJO\nOOJJO\nOJSJO\nOOOOO")
+    t = BioSim(island_map, ini_pop, None)
+    neighbours = [type(neighbour).__name__ for neighbour
+                  in t.island.neighbour_cell(loc=(2, 2))]
+    assert 'Jungle' in neighbours
+    assert 'Savannah' in neighbours
+    assert 'Desert' in neighbours
+    assert len(neighbours) is 3
+
+
+def test_get_population_numbers():
+    """Test if the method 'get_population_numbers()' correctly gets the
+    entire population of each geo_object and returns a dictionary, such
+    that: {'Row': [], 'Col': [], 'Herbivore': [], 'Carnivore': []}"""
+    island_map = "OOOOO\nOJJJO\nOOOOO"
+    ini_pop = [
+        {"loc": (1, 1),
+         "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+                 {"species": "Herbivore", "age": 5, "weight": 20},
+                 {"species": "Carnivore", "age": 5, "weight": 20}]},
+        {"loc": (1, 2),
+         "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+                 {"species": "Carnivore", "age": 5, "weight": 20}]}]
+
+    t = BioSim(island_map, ini_pop, None)
+    pop = t.island.get_population_numbers()
+    row_loc, col_loc = pop['Row'][0], pop['Col'][0]
+    pop_herb, pop_carn = pop['Herbivore'][0], pop['Carnivore'][0]
+    assert (row_loc and col_loc and pop_herb and pop_carn) is 0
+
+    row_loc, col_loc = pop['Row'][6], pop['Col'][6]
+    pop_herb, pop_carn = pop['Herbivore'][6], pop['Carnivore'][6]
+    assert row_loc and col_loc is 1 and pop_herb is 2 and pop_carn is 1
+
+    row_loc, col_loc = pop['Row'][7], pop['Col'][7]
+    pop_herb, pop_carn = pop['Herbivore'][7], pop['Carnivore'][7]
+    assert row_loc is 1 and col_loc is 2 and pop_herb and pop_carn is 1

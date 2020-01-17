@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from src.biosim.fauna import Herbivore, Carnivore
-import numpy as np
 
 """
 This is the geography model which functions with the BioSim package 
@@ -38,7 +36,7 @@ class Cells:
                              "non-negative".format(param_key))
 
     @classmethod
-    def set_parameters(cls, params):
+    def set_parameters(cls, params):  # tested
         cls.check_unknown_parameters(params)
         cls.check_non_negative_parameters('f_max', params)
         cls.parameters.update(params)

@@ -16,7 +16,7 @@ class Population:
 
     @staticmethod
     def fitness_formula(sgn, x, xhalf, phi):
-        return 1. / (1. + np.exp(sgn * phi * (x - xhalf)))
+        return 1.0 / (1 + np.exp(sgn * phi * (x - xhalf)))
 
     @classmethod
     def check_unknown_parameters(cls, params):
@@ -31,12 +31,13 @@ class Population:
         cls.parameters.update(params)
 
     def __init__(self, age=0, weight=None):
+
         self.age = age
         self.weight = random.gauss(self.parameters['w_birth'],
                                    self.parameters['sigma_birth']) \
             if weight is None else weight
 
-        self.fitness = self.fitness()
+        self.fitness = self.calculate_fitness()
 
     def get_old(self):
         self.age += 1
@@ -49,7 +50,7 @@ class Population:
                                      self.weight)
         self.update_fitness()
 
-    def fitness(self):
+    def calculate_fitness(self):
         return 0 if self.weight is 0 else \
             (self.fitness_formula(+1, self.age,
                                   self.parameters['a_half'],
@@ -72,7 +73,7 @@ class Population:
         self.update_fitness()
 
     def update_fitness(self):
-        self.fitness = self.fitness(self.age, self.weight)
+        self.fitness = self.calculate_fitness()
 
     def die(self):
         if self.fitness is 0:
@@ -106,12 +107,11 @@ class Herbivore(Population):
                   'DeltaPhiMax': None}
 
     def __init__(self, age=0, weight=None):
-        super().__init__()
+        super().__init__(age, weight)
 
-    def eating_rule(self, f):
-        eaten = f if f <= self.parameters['F'] else self.parameters['F']
-        self.weight += self.parameters['beta'] * eaten
-        return eaten
+    def herb_eating(self, f):
+        self.weight += self.parameters['beta'] * f
+        self.update_fitness()
 
 
 class Carnivore(Population):
@@ -133,4 +133,27 @@ class Carnivore(Population):
                   'DeltaPhiMax': 10.0}
 
     def __init__(self, age=0, weight=None):
-        super().__init__()
+        super().__init__(age, weight)
+
+    def carn_eating_rule(self, herb_list):
+        feed = 0
+        c_fitness = self.calculate_fitness()
+        for herb in herb_list:
+            h_fitness = herb.calculate_fitness()
+            if h_fitness >= c_fitness:
+                prob = 0
+            elif 0 < (c_fitness - h_fitness) < self.parameters['DeltaPhiMax']:
+                prob = (c_fitness - h_fitness) / self.parameters['DeltaPhiMax']
+            else:
+                prob = 1
+            # check if animal gets eaten
+            if random.random() < prob:
+                feed += herb.weight
+                herb_list.remove(herb)
+
+                if feed >= self.parameters['F']:
+                    break
+        self.gain_weight(feed)
+        self.update_fitness()
+
+

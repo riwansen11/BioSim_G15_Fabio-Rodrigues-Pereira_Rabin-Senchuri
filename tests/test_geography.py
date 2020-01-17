@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import random
-import pytest
-import math
-import numpy as np
-# from pytest import approx
-from src.biosim.geography import Cells, Jungle, Savannah, Desert, \
-    Ocean, Mountain
-
 """
 This is the geography pytest package which is a test package for the 
 BioSim packages written for the INF200 project January 2019.
@@ -15,6 +7,12 @@ BioSim packages written for the INF200 project January 2019.
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
+import pytest
+from src.biosim.simulation import BioSim
+from src.biosim.geography import Cells, Jungle, Savannah, Desert, \
+    Ocean, Mountain
+from src.biosim.fauna import Herbivore, Carnivore
 
 
 def test_check_unknown_parameters():
@@ -41,3 +39,24 @@ def test_now_negative_parameters():
     Savannah.check_non_negative_parameters(param_key, params)
 
 
+def test_animal_got_old():
+    """Test if the method 'get_old()' correctly increases in 1 year all
+    the animal_objects stored in a specific geo_object"""
+    island_map = "OOOOO\nOJJJO\nOOOOO"
+    ini_pop = [
+        {
+            "loc": (1, 2),
+            "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+                    {"species": "Herbivore", "age": 2, "weight": 20}],
+        }]
+    t, loc = BioSim(island_map, ini_pop, None), (1, 2)
+    geo_object = t.island.habitable_cells[loc]
+    herb_object_1 = geo_object.population['Herbivore'][0]
+    herb_object_2 = geo_object.population['Herbivore'][1]
+    herb_young_1 = herb_object_1.age
+    herb_young_2 = herb_object_2.age
+    geo_object.get_old()
+    herb_older_1 = herb_object_1.age
+    herb_older_2 = herb_object_2.age
+    assert herb_older_1 is (herb_young_1 + 1)
+    assert herb_older_2 is (herb_young_2 + 1)

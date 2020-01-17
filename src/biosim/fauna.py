@@ -36,9 +36,9 @@ class Population:
                                    self.parameters['sigma_birth']) \
             if weight is None else weight
 
-        self.fitness = self.fitness()
+        self.fitness = self.calculate_fitness()
 
-    def get_old(self):
+    def get_old(self):  # tested
         self.age += 1
 
     def gain_weight(self, feed):
@@ -49,7 +49,7 @@ class Population:
                                      self.weight)
         self.update_fitness()
 
-    def fitness(self):
+    def calculate_fitness(self):
         return 0 if self.weight is 0 else \
             (self.fitness_formula(+1, self.age,
                                   self.parameters['a_half'],
@@ -106,9 +106,9 @@ class Herbivore(Population):
                   'DeltaPhiMax': None}
 
     def __init__(self, age=0, weight=None):
-        super().__init__()
+        super().__init__(age, weight)
 
-    def eating_rule(self, f):
+    def herb_eating(self, f):
         eaten = f if f <= self.parameters['F'] else self.parameters['F']
         self.weight += self.parameters['beta'] * eaten
         return eaten
@@ -133,4 +133,4 @@ class Carnivore(Population):
                   'DeltaPhiMax': 10.0}
 
     def __init__(self, age=0, weight=None):
-        super().__init__()
+        super().__init__(age, weight)

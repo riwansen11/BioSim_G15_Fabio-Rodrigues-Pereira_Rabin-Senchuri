@@ -10,14 +10,40 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import random
 import numpy as np
+import math as math
 
 
 class Population:
     parameters = {}
 
     @staticmethod
-    def fitness_formula(sgn, x, xhalf, phi):
-        return 1.0 / (1 + np.exp(sgn * phi * (x - xhalf)))
+    def fit_formula(x, x_half, phi_x):
+        """This method returns the fitness formula used to calculate
+        the physical condition (fitness) of an animal (pop_object).
+
+        * Parameters:   x:          int or float:   'age'
+                                                    'weight'
+                        x_half:     int or float:   'age_half'
+                                                    'weight_half'
+                        phi_x:   int or float:      'phi_age'
+                                                    'phi_weight'
+
+        * Formula: 1 / {1 + exp[phi_x('x' - 'x_1/2')]}
+
+        * Where used: calculate_fitness()
+
+        * returns: fit_formula: int or float
+        """
+        return 1.0 / (1 + math.exp(phi_x * (x - x_half)))
+
+    @classmethod
+    def check__phi_borders(cls, _phi):  # tested
+        """Check if the _phi calculated by the method
+        'calculate_fitness()' is inside of its required result
+        borders '0 <= _phi <= 1'"""
+        if not 0 <= _phi <= 1:
+            raise ValueError("The parameter '_phi' calculated "
+                             "is not in its borders 0 <= _phi <= 1")
 
     @classmethod  # tested
     def check_unknown_parameters(cls, params):
@@ -40,6 +66,29 @@ class Population:
 
         self.fitness = self.calculate_fitness()
 
+    def calculate_fitness(self):
+        """This method calculates and returns the overall physical
+        condition (fitness) of an animal which is based on age and
+        weight using the formula:
+
+        _phi = if omega <= 0: 0
+               else: fit_formula('age', 'age_1/2', 'phi_age') X
+                     fit_formula(-'weight', 'weight_1/2', 'phi_weight')
+
+        * Method(s) required: fit_formula(x, x_half, phi_x)
+
+        * returns: _phi: int or float
+        """
+        _phi = 0 if self.weight is 0 \
+            else (self.fit_formula(self.age,
+                                   self.parameters['a_half'],
+                                   self.parameters['phi_age']) *
+                  self.fit_formula(-1*self.weight,
+                                   self.parameters['w_half'],
+                                   self.parameters['phi_weight']))
+        self.check__phi_borders(_phi)
+        return _phi
+
     def get_old(self):  # tested
         self.age += 1
 
@@ -51,16 +100,7 @@ class Population:
                                      self.weight)
         self.update_fitness()
 
-    def calculate_fitness(self):
-        return 0 if self.weight is 0 else \
-            (self.fitness_formula(+1, self.age,
-                                  self.parameters['a_half'],
-                                  self.parameters['phi_age']) *
-             self.fitness_formula(-1, self.weight,
-                                  self.parameters['w_half'],
-                                  self.parameters['phi_weight']))
-
-    def add_newborns(self, number_specie_objects):
+    def birth(self, number_specie_objects):
         k = self.parameters['zeta'] * (self.parameters['w_birth'] +
                                        self.parameters['sigma_birth'])
 
@@ -86,7 +126,9 @@ class Population:
             return False
 
     def migration_chances(self):
-        return random.random() < self.parameters['mu'] * self.fitness()
+        prob_move = self.parameters['mu'] * self.fitness
+        rand_num = np.random.random()
+        return rand_num < prob_move
 
 
 class Herbivore(Population):
@@ -106,8 +148,8 @@ class Herbivore(Population):
 
 class Carnivore(Population):
     parameters = {'w_birth': 8.0, 'sigma_birth': 1.5, 'beta': 0.9,
-                  'eta': 0.05, 'a_half': 40., 'phi_age': 0.2,
-                  'w_half': 10., 'phi_weight': 0.1, 'mu': 0.25,
+                  'eta': 0.05, 'a_half': 40.0, 'phi_age': 0.2,
+                  'w_half': 10.0, 'phi_weight': 0.1, 'mu': 0.25,
                   'lambda': 1, 'gamma': 0.2, 'zeta': 3.5, 'xi': 1.2,
                   'omega': 0.4, 'F': 10.0, 'DeltaPhiMax': 10.0}
 

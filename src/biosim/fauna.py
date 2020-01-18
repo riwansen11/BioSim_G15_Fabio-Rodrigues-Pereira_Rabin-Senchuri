@@ -96,8 +96,18 @@ class Population:
         self.weight = self.weight + self.parameters["beta"] * feed
 
     def lose_weight(self):
-        self.weight = self.weight - (self.parameters["eta"] *
-                                     self.weight)
+        """This method decreases the weight of the animal, in yearly
+        basis, according to the weight_loss_rate.
+
+        * Formulas: weight_loss_rate:       'eta' * 'weight'
+                    yearly_weight_loss:     'weight' - 'weight_loss_rate'
+
+        * Notes: After the weight is decreased, the fitness of the
+        animal is updated by the method 'update_fitness()'.
+        """
+        weight_loss_rate = self.parameters["eta"] * self.weight
+        yearly_weight_loss = self.weight - weight_loss_rate
+        self.weight = yearly_weight_loss
         self.update_fitness()
 
     def birth(self, number_specie_objects):
@@ -114,6 +124,8 @@ class Population:
         self.update_fitness()
 
     def update_fitness(self):
+        """This method updates the calculation of parameter fitness of
+        the animal"""
         self.fitness = self.calculate_fitness()
 
     def die(self):
@@ -147,11 +159,11 @@ class Herbivore(Population):
 
 
 class Carnivore(Population):
-    parameters = {'w_birth': 8.0, 'sigma_birth': 1.5, 'beta': 0.9,
-                  'eta': 0.05, 'a_half': 40.0, 'phi_age': 0.2,
-                  'w_half': 10.0, 'phi_weight': 0.1, 'mu': 0.25,
-                  'lambda': 1, 'gamma': 0.2, 'zeta': 3.5, 'xi': 1.2,
-                  'omega': 0.4, 'F': 10.0, 'DeltaPhiMax': 10.0}
+    parameters = {'w_birth': 6.0, 'sigma_birth': 1.0, 'beta': 0.75,
+                  'eta': 0.125, 'a_half': 60.0, 'phi_age': 0.4,
+                  'w_half': 4.0, 'phi_weight': 0.4, 'mu': 0.4,
+                  'lambda': 1, 'gamma': 0.8, 'zeta': 3.5, 'xi': 1.1,
+                  'omega': 0.9, 'F': 50.0, 'DeltaPhiMax': 10.0}
 
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)

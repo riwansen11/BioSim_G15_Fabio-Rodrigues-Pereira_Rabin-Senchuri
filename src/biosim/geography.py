@@ -155,14 +155,20 @@ class Cells:
                                             migrated_animals]
 
     def get_old(self):  # tested
+        """This method identifies each specie of animals and makes it to
+        communicates to the method 'get_old()' in fauna in order
+        to apply the aging in each animal"""
         for specie_objects in self.population.values():
-            for animal_object in specie_objects:
-                animal_object.get_old()
+            for pop_object in specie_objects:
+                pop_object.get_old()
 
     def lose_weight(self):
+        """This method identifies each specie of animals and makes it to
+        communicates to the method 'lose_weight()' in fauna in order
+        to apply the weight loss in each animal"""
         for specie_objects in self.population.values():
-            for animal_object in specie_objects:
-                animal_object.lose_weight()
+            for pop_object in specie_objects:
+                pop_object.lose_weight()
 
     def die(self):
         for specie_type in self.population.keys():

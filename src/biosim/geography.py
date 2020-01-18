@@ -48,7 +48,9 @@ class Cells:
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
         for herbivore_object in reversed(self.population['Herbivore']):
             if herbivore_object.parameters["F"] <= self.fodder:
+                herbivore_object.herb_eating(herbivore_object.parameters["F"])
                 self.fodder -= herbivore_object.parameters["F"]
+                print(self.fodder)
             elif 0 < self.fodder < herbivore_object.parameters["F"]:
                 herbivore_object.herb_eating(self.fodder)
                 self.fodder = 0
@@ -56,7 +58,6 @@ class Cells:
     def carnivore_feed(self):
         self.population["Herbivore"].sort(key=lambda h: h.fitness)
         self.population["Carnivore"].sort(key=lambda i: i.fitness)
-
         for carn_object in reversed(self.population["Carnivore"]):
             carn_object.carn_eating_rule(self.population[
                                                      "Herbivore"])
@@ -71,28 +72,6 @@ class Cells:
                         newborn.weight)
                     newborns.append(newborn)
             specie_objects.extend(newborns)
-
-    # def migrate(self, neighbour_cells):
-    #
-    #     for species, animals in self.population.items():
-    #         if animals:
-    #             neighbour_cell_props = [neighbour.neighbour_cell_propensity(species) for neighbour in
-    #                                     neighbour_cells]
-    #
-    # def neighbour_cell_propensity(self, species):
-    #     relevant_fodder = self.fodder if species == "Herbivore" \
-    #         else self.total_herbivore_mass()
-    #     r_abundance = self.relevant_abundance(len(self.population[species]),
-    #                                           self.population[species][0].parameters["F"],
-    #                                           relevant_fodder)
-    #     return np.exp(species.default_params["lambda"] * r_abundance)
-    # def relative_abundance():
-    #     return self.fodder / ((len(self.population[specie]) + 1) *
-    #                      Herbivore.parameters["F"])
-    #
-    # def carnivore_fodder(self, specie):
-    #     return self.total_herbivore_mass() / ((len(self.population[specie]) + 1) *
-    #                      Carnivore.parameters["F"])
 
     def propensity(self, specie):
         num_animals = len(self.population[specie]) + len(
@@ -153,6 +132,16 @@ class Cells:
                 self.population[species] = [animal for animal in animals
                                             if animal not in
                                             migrated_animals]
+
+    def add_new_migrated(self):
+        """
+        Add newly mighrated animals to the cell
+
+        """
+        for species in self.population.keys():
+            new_pop = self.new_population[species]
+            self.population[species].extend(new_pop)
+            self.new_population[species] = []
 
     def get_old(self):  # tested
         for specie_objects in self.population.values():

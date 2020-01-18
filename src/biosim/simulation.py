@@ -160,24 +160,24 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        if img_years is None:
-            img_years = vis_years
-        self.final_step = self.step + num_years
-        self.setup_graphics()
-        while self.step < self.final_step:
-            total_animal = self.get_total_animal_count()
-            if self.get_total_animal_count() == 0:
-                break
-
-            if self.step % vis_years == 0:
-                self.update_graphics()
-
-            if self.step % img_years == 0:
-                self.save_graphics()
-
-            self.island.yearly_cycle()
-            self.step += 1
-        # self.island.yearly_cycle()
+        # if img_years is None:
+        #     img_years = vis_years
+        # self.final_step = self.step + num_years
+        # self.setup_graphics()
+        # while self.step < self.final_step:
+        #     total_animal = self.get_total_animal_count()
+        #     if self.get_total_animal_count() == 0:
+        #         break
+        #
+        #     if self.step % vis_years == 0:
+        #         self.update_graphics()
+        #
+        #     if self.step % img_years == 0:
+        #         self.save_graphics()
+        #
+        #     self.island.yearly_cycle()
+        #     self.step += 1
+        self.island.yearly_cycle()
 
     def make_movie(self, movie_fmt=_DEFAULT_MOVIE_FORMAT):
         """

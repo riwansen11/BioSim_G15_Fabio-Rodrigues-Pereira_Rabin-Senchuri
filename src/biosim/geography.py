@@ -46,6 +46,15 @@ class Cells:
         self.fodder = 0
 
     def sort_animals_by_fitness(self, specie, decreasing=False):  # ok
+        """This method sorts the population of a given specie. There
+        are 2 types of sorting, with increasing values of fitness
+        (decreasing=False) or decreasing values of fitness
+        (decreasing=True).
+
+        :param  specie:     string: 'Herbivore' or 'Carnivore'
+        :param  decreasing: bol:    True for decreasing fitness values;
+                                    False for increasing fitness values;
+        """
         fitness, animals = [], []
         for animal in self.population[specie]:
             fitness.append(animal.fitness)
@@ -57,7 +66,7 @@ class Cells:
                     reverse=decreasing)]
         self.population[specie] = sorted_stronger_weaker_herbivores
 
-    def herbivore_feed(self):
+    def herbivore_feed(self):  # tested
         """This method organizes the population of herbivores in order
         of greatest fitness (those who eat first) to worst. Then,
         per animal (herb_object), it is applied the herbivore eating
@@ -71,17 +80,8 @@ class Cells:
                         2. elif 0 < f < F:      f = 0
                                                 w = 'beta' * (F - f)
                         3. else                 f = 0
-
         """
-        # test 1 - classified by greater to weaker?
-        print(self.population['Herbivore'][0].fitness,
-              self.population['Herbivore'][1].fitness)
-
         self.sort_animals_by_fitness('Herbivore', decreasing=True)
-
-        print(self.population['Herbivore'][0].fitness,
-              self.population['Herbivore'][1].fitness)
-
         for herb_object in self.population['Herbivore']:
             h_ate = 0
             h_appetite = herb_object.parameters["F"]
@@ -107,15 +107,19 @@ class Cells:
             c_ate = 0
             c_appetite = carn_object.parameters['F']
             c_food_desired = c_appetite - c_ate
+            print(c_ate, c_appetite, c_food_desired)
 
             # 1. try to hunt
             for herb_object in self.population["Herbivore"]:
                 h_fitness = herb_object.fitness
                 h_weight = herb_object.weight
                 is_herb_killed = carn_object.is_herb_killed(h_fitness)
+                print(is_herb_killed, c_food_desired, 'lalala')
                 if c_food_desired <= 0:
+                    print(c_food_desired <= 0)
                     break
                 elif is_herb_killed:
+                    print('is_killed', is_herb_killed)
                     if h_weight <= c_food_desired:
                         carn_object.gain_weight(h_weight)
                         carn_object.update_fitness()

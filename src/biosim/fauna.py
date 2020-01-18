@@ -195,4 +195,7 @@ class Carnivore(Population):
             p = (c_fitness - h_fitness) / d_phi_max
         else:
             p = 1
-        return rd.random() < p
+        rand_num = rd.random()
+        print('p', p, 'rand_num', rand_num)
+        test = rand_num < p
+        return test

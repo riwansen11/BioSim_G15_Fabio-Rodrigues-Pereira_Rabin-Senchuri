@@ -6,18 +6,26 @@ import pandas as pd
 import math as math
 import numpy as np
 
-island_map = ("OOO\nOJO\nOOO")
-ini_pop = [
+island_map = "OOO\nOJO\nOOO"
+ini_herb = [
         {"loc": (1, 1),
          "pop": [
-             {"species": "Herbivore", "age": 50, "weight": 20},
-             {"species": "Herbivore", "age": 10, "weight": 10},
-             {"species": "Carnivore", "age": 5, "weight": 20},
-             {"species": "Carnivore", "age": 10, "weight": 80}]}]
-t = BioSim(island_map, ini_pop, None)
-loc = (1, 1)
+                {"species": "Herbivore", "age": 5, "weight": 40}
+                for _ in range(20)
+            ]}]
 
-herb_0_age = t.island.cells[loc].population['Herbivore'][0].age
+ini_carn = [
+        {"loc": (1, 1),
+         "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 40}
+                for _ in range(5)
+            ]}]
+t = BioSim(island_map, ini_herb, None)
+t.add_population(ini_carn)
+loc = (1, 1)
+t.island.cells[loc].carnivore_feed()
+
+'''herb_0_age = t.island.cells[loc].population['Herbivore'][0].age
 herb_0_weight = t.island.cells[loc].population['Herbivore'][0].weight
 herb_0_fitness = t.island.cells[loc].population['Herbivore'][0].fitness
 print('herb_0_age:', herb_0_age)
@@ -45,7 +53,7 @@ print('carn_1_age:', carn_1_age)
 print('carn_1_weight:', carn_1_weight)
 print('carn_1_fitness:', carn_1_fitness)
 
-t.simulate(1)
+t.simulate(1)'''
 
 
 

@@ -63,6 +63,8 @@ def test_animal_got_old():
 
 
 def test_sort_animals_by_decreasing_fitness():
+    """Test if the method 'sort_animals_by_fitness()' correctly
+    sorts the population of a specie by decreasing fitness values"""
     island_map = "OOO\nOJO\nOOO"
     ini_pop = [
         {"loc": (1, 1),
@@ -81,6 +83,8 @@ def test_sort_animals_by_decreasing_fitness():
 
 
 def test_sort_animals_by_increasing_fitness():
+    """Test if the method 'sort_animals_by_fitness()' correctly
+    sorts the population of a specie by increasing fitness values"""
     island_map = "OOO\nOJO\nOOO"
     ini_pop = [
         {"loc": (1, 1),
@@ -96,3 +100,46 @@ def test_sort_animals_by_increasing_fitness():
     herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
     herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
     assert herb_1 < herb_2
+
+
+def test_herbivore_feed():
+    """Many testes for the method 'herbivore_feed()':
+    1. if the fodder reduces when a animal eats it.
+    2. if the weight of the animal increases after eat.
+    3. if the fitness of the animal updates after eat.
+    """
+    island_map = "OOO\nOJO\nOOO"
+    ini_pop = [
+        {"loc": (1, 1),
+         "pop": [{"species": "Herbivore", "age": 10, "weight": 10}]}]
+    t = BioSim(island_map, ini_pop, None)
+    loc = (1, 1)
+    previous_fodder = t.island.cells[loc].fodder
+    previous_herbivore_weight = t.island.cells[loc].population[
+        'Herbivore'][0].weight
+    previous_herbivore_fitness = t.island.cells[loc].population[
+        'Herbivore'][0].fitness
+    t.island.cells[loc].herbivore_feed()
+    afterwards_fodder = t.island.cells[loc].fodder
+    afterwards_herbivore_weight = t.island.cells[loc].population[
+        'Herbivore'][0].weight
+    afterwards_herbivore_fitness = t.island.cells[loc].population[
+        'Herbivore'][0].fitness
+    assert previous_fodder > afterwards_fodder
+    assert previous_herbivore_weight < afterwards_herbivore_weight
+    assert previous_herbivore_fitness is not afterwards_herbivore_fitness
+
+
+def test_carnivore_feed():
+    """Many testes for the method 'herbivore_feed()':
+    1. if the fodder reduces when a animal eats it.
+    2. if the weight of the animal increases after eat.
+    3. if the fitness of the animal updates after eat.
+    """
+    island_map = "OOO\nOJO\nOOO"
+    ini_pop = [
+        {"loc": (1, 1),
+         "pop": [{"species": "Herbivore", "age": 10, "weight": 10}]}]
+    t = BioSim(island_map, ini_pop, None)
+    loc = (1, 1)
+

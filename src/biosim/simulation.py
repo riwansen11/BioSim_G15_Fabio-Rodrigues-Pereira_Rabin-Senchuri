@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+"""
+This is the Simulation model which functions with the BioSim package
+written for the INF200 project January 2019.
+"""
+
+__author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
+__email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
 
 import pandas as pd
 import random as rd
@@ -8,20 +16,10 @@ import os
 import numpy as np
 import matplotlib
 
-matplotlib.use('TkAgg')
+'''matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import subprocess
-
-
-"""
-This is the simulation model which functions with the BioSim package 
-written for the INF200 project January 2019.
-"""
-
-__author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
-__email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
-
 
 # Update these variables to point to your ffmpeg and convert binaries
 _FFMPEG_BINARY = 'ffmpeg'
@@ -31,7 +29,7 @@ _CONVERT_BINARY = 'convert'
 _DEFAULT_GRAPHICS_DIR = os.path.join('data')
 
 _DEFAULT_GRAPHICS_NAME = 'dv'
-_DEFAULT_MOVIE_FORMAT = 'mp4'
+_DEFAULT_MOVIE_FORMAT = 'mp4'''
 
 
 class BioSim:
@@ -50,9 +48,13 @@ class BioSim:
                        OOOSSSSJJJJJJJOOOOOOO
                        OOOOOOOOOOOOOOOOOOOOO"""
 
-    def __init__(self, island_map, ini_pop, seed, ymax_animals=None,
-                 cmax_animals=None, img_base=None, img_dir=_DEFAULT_GRAPHICS_DIR,
-                 img_name=_DEFAULT_GRAPHICS_NAME, img_fmt='png'):
+    def __init__(self, island_map, ini_pop, seed,
+                 ymax_animals=None,
+                 cmax_animals=None,
+                 img_base=None,
+                 img_dir=_DEFAULT_GRAPHICS_DIR,
+                 img_name=_DEFAULT_GRAPHICS_NAME,
+                 img_fmt='png'):
         """
         :param island_map: Multi-line string specifying island geography.
         :param ini_pop: List of dictionaries specifying initial
@@ -82,9 +84,11 @@ class BioSim:
         island_map = self.example_geogr if island_map is None \
             else island_map
 
-        np.random.seed(seed)
+        self.island = Island(island_map)
+        self.island.add_population(ini_pop)
+        self.seed = rd.seed(seed)
 
-        self.color_by_square_type = {'O': mcolors.to_rgb('aqua'),
+        '''self.color_by_square_type = {'O': mcolors.to_rgb('aqua'),
                                      'M': mcolors.to_rgb('darkgray'),
                                      'J': mcolors.to_rgb('forestgreen'),
                                      'S': mcolors.to_rgb('yellowgreen'),
@@ -93,10 +97,7 @@ class BioSim:
         self.island_map_colors = [[self.color_by_square_type[column] for
                                    column in row] for row in
                                   island_map.splitlines()]
-
-        self.island = Island(island_map)
-        self.island.add_population(ini_pop)
-        self.seed = rd.seed(seed)
+        
         self.ymax_animals = ymax_animals
         self.cmax_animals = cmax_animals
         self.img_fmt = img_fmt
@@ -120,7 +121,7 @@ class BioSim:
             self.img_base = None
 
         self.img_ctr = 0
-        self.img_fmt = img_fmt
+        self.img_fmt = img_fmt'''
 
     def set_animal_parameters(self, species, params):
         """
@@ -160,13 +161,13 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        if img_years is None:
+        '''if img_years is None:
             img_years = vis_years
         self.final_step = self.step + num_years
         self.setup_graphics()
         while self.step < self.final_step:
-            total_animal = self.get_total_animal_count()
-            if self.get_total_animal_count() == 0:
+            total_animal = self.num_animals()
+            if self.num_animals() == 0:
                 break
 
             if self.step % vis_years == 0:
@@ -176,24 +177,35 @@ class BioSim:
                 self.save_graphics()
 
             self.island.yearly_cycle()
-            self.step += 1
-        # self.island.yearly_cycle()
+            self.step += 1'''
+        self.island.yearly_cycle()
 
-    def make_movie(self, movie_fmt=_DEFAULT_MOVIE_FORMAT):
-        """
-        Creates MPEG4 movie from visualization image files saved onto disk.
+    @property
+    def num_animals(self):  # tested
+        """Total number of animals on island"""
+        pop = self.island.get_population_numbers()
+        return sum(pop['Herbivore']) + sum(pop['Carnivore'])
 
-        Parameters
-        ----------
-        movie_fmt : str
-            The movie is stored as "img_base + movie_fmt"
+    @property
+    def year(self):
+        """Last year simulated"""
+        pass
 
-        Notes
-        -----
-        Requires ffmpeg.
+    @property
+    def num_animals_per_species(self):  # tested
+        """Number of animals per species in island, as dictionary"""
+        pop = self.island.get_population_numbers()
+        return {'Herbivore': sum(pop['Herbivore']),
+                'Carnivore': sum(pop['Carnivore'])}
 
-        """
+    @property
+    def animal_distribution(self):
+        """Pandas DataFrame with animal count per species for each cell
+        on island"""
+        pop = self.island.get_population_numbers()
+        return pd.DataFrame(pop)
 
+    '''def make_movie(self, movie_fmt=_DEFAULT_MOVIE_FORMAT):
         if self.img_base is None:
             raise RuntimeError("No filename defined.")
 
@@ -223,7 +235,7 @@ class BioSim:
         else:
             raise ValueError('Unknown movie format: ' + movie_fmt)
 
-    def setup_graphics(self):
+    def setup_graphics(self):  # used on simulation
         if self.fig is None:
             self.fig = plt.figure()
             self.fig.canvas.set_window_title('BioSim Interactive Window')
@@ -251,7 +263,7 @@ class BioSim:
 
         self.fig.tight_layout()
 
-    def make_herbivore_line(self):
+    def make_herbivore_line(self):  # used on setup_graphics
         """
         Creates the Herbivore interactive plot, i.e. the graph in the
         interactive graphics window showing the total number of herbivores on
@@ -260,8 +272,7 @@ class BioSim:
         """
         if self.herbivore_line is None:
             herbivore_plot = self.mean_ax.plot(np.arange(0, self.final_step),
-                                               np.nan * np.ones(
-                                                   self.final_step))
+                                               np.nan * np.ones(self.final_step))
             self.herbivore_line = herbivore_plot[0]
         else:
             xdata, ydata = self.herbivore_line.get_data()
@@ -271,7 +282,7 @@ class BioSim:
                 self.herbivore_line.set_data(np.hstack((xdata, xnew)),
                                              np.hstack((ydata, ynew)))
 
-    def make_carnivore_line(self):
+    def make_carnivore_line(self):  # used on setup_graphics
         """
         Creates the Carnivore interactive plot, i.e. the graph in the
         interactive graphics window showing the total number of Carnivores on
@@ -280,8 +291,7 @@ class BioSim:
         """
         if self.carnivore_line is None:
             carnivore_plot = self.mean_ax.plot(np.arange(0, self.final_step),
-                                               np.nan * np.ones(
-                                                   self.final_step))
+                                               np.nan * np.ones(self.final_step))
             self._carnivore_line = carnivore_plot[0]
         else:
             xdata, ydata = self._carnivore_line.get_data()
@@ -291,7 +301,7 @@ class BioSim:
                 self.carnivore_line.set_data(np.hstack((xdata, xnew)),
                                              np.hstack((ydata, ynew)))
 
-    def make_static_map(self):
+    def make_static_map(self):  # setup_graphics
         """
         Creates a static map, i.e. a plot of the island's geography with a
         color code for each of the island landscape types.
@@ -303,20 +313,15 @@ class BioSim:
 
         """
         self.island_map = self.fig.add_subplot(2, 2, 1)
-        self.island_map.imshow(self.island_map_colors,
-                               interpolation='nearest')
+        self.island_map.imshow(self.island_map_colors,interpolation='nearest')
 
-        self.island_map.set_xticks(
-            range(0, len(self.island_map_colors[0]), 5))
-        self.island_map.set_xticklabels(range(1, 1 + len(
-            self.island_map_colors[0]), 5))
+        self.island_map.set_xticks(range(0, len(self.island_map_colors[0]), 5))
+        self.island_map.set_xticklabels(range(1, 1 + len(self.island_map_colors[0]), 5))
 
-        self.island_map.set_yticks(
-            range(0, len(self.island_map_colors), 5))
-        self.island_map.set_yticklabels(range(1, 1 + len(
-            self.island_map_colors), 5))
+        self.island_map.set_yticks(range(0, len(self.island_map_colors), 5))
+        self.island_map.set_yticklabels(range(1, 1 + len(self.island_map_colors), 5))
 
-    def update_count_graph(self, island_animal_count):
+    def update_count_graph(self, island_animal_count):  # used on update_graphics
         """
         Updates the graphics in the upper-right corner of the graphics window
         in which the the total Herbivore and Carnivore population sizes are
@@ -339,7 +344,7 @@ class BioSim:
         carn_ydata[self.step] = carn_count
         self._carnivore_line.set_ydata(carn_ydata)
 
-    def update_herb_dist(self, herb_dist):
+    def update_herb_dist(self, herb_dist):  # used on update_graphics
         """
         Updates the graphics in the lower-left corner of the graphics window
         in which Herbivore distribution per square is represented as a
@@ -353,24 +358,20 @@ class BioSim:
         if self.herb_img_axis is not None:
             self.herb_img_axis.set_data(herb_dist)
         else:
-            self.herb_img_axis = self.herb_dist.imshow(
-                herb_dist, vmin=0,
-                vmax=200,
-                interpolation='nearest',
-                aspect='auto')
+            self.herb_img_axis = self.herb_dist.imshow(herb_dist, 
+                                                       vmin=0,
+                                                       vmax=200,
+                                                       interpolation='nearest',
+                                                       aspect='auto')
 
-            self.herb_dist.set_xticks(
-                range(0, len(self.island_map_colors[0]), 5))
-            self.herb_dist.set_xticklabels(range(1, 1 + len(
-                self.island_map_colors[0]), 5))
+            self.herb_dist.set_xticks(range(0, len(self.island_map_colors[0]), 5))
+            self.herb_dist.set_xticklabels(range(1, 1 + len(self.island_map_colors[0]), 5))
 
-            self.herb_dist.set_yticks(
-                range(0, len(self.island_map_colors), 5))
-            self.herb_dist.set_yticklabels(range(1, 1 + len(
-                self.island_map_colors), 5))
+            self.herb_dist.set_yticks(range(0, len(self.island_map_colors), 5))
+            self.herb_dist.set_yticklabels(range(1, 1 + len(self.island_map_colors), 5))
             self.herb_dist.set_title('Herbivore distribution')
 
-    def update_carn_dist(self, carn_dist):
+    def update_carn_dist(self, carn_dist):  # used on update_graphics
         """
         Updates the graphics in the lower-right corner of the graphics window
         in which Carnivore distribution per square is represented as a
@@ -384,43 +385,38 @@ class BioSim:
         if self.carn_img_axis is not None:
             self.carn_img_axis.set_data(carn_dist)
         else:
-            self._carn_img_axis = self.carn_dist.imshow(
-                carn_dist, vmin=0,
-                vmax=200,
-                interpolation='nearest',
-                aspect='auto')
+            self._carn_img_axis = self.carn_dist.imshow(carn_dist, 
+                                                        vmin=0,
+                                                        vmax=200,
+                                                        interpolation='nearest',
+                                                        aspect='auto')
 
-            self.carn_dist.set_xticks(
-                range(0, len(self.island_map_colors[0]), 5))
-            self.carn_dist.set_xticklabels(range(1, 1 + len(
-                self.island_map_colors[0]), 5))
+            self.carn_dist.set_xticks(range(0, len(self.island_map_colors[0]), 5))
+            self.carn_dist.set_xticklabels(range(1, 1 + len(self.island_map_colors[0]), 5))
 
-            self.carn_dist.set_yticks(
-                range(0, len(self.island_map_colors), 5))
-            self.carn_dist.set_yticklabels(range(1, 1 + len(
-                self.island_map_colors), 5))
+            self.carn_dist.set_yticks(range(0, len(self.island_map_colors), 5))
+            self.carn_dist.set_yticklabels(range(1, 1 + len(self.island_map_colors), 5))
             self.carn_dist.set_title('Carnivore distribution')
 
-    def update_graphics(self):
+    def update_graphics(self):  # used on simulate
         """
         Updates the interactive graphics window with real-time data and
         includes current year of simulation in upper-left corner.
 
         """
-        animal_count = self.get_square_animal_count()
-        row, col = len(self.island_map_colors), len(self.island_map_colors[0])
+        animal_count = self.animal_distribution
+        row, col = len(self.island_map_colors), \
+                   len(self.island_map_colors[0])
 
-        self.update_count_graph(self.get_island_animal_count())
-        self.update_herb_dist(
-            np.array(animal_count.herbivores).reshape(row, col))
-        self.update_carn_dist(
-            np.array(animal_count.carnivores).reshape(row, col))
+        self.update_count_graph(self.num_animals_per_species)
+        self.update_herb_dist(np.array(animal_count.herbivores).reshape(row, col))
+        self.update_carn_dist(np.array(animal_count.carnivores).reshape(row, col))
 
         plt.pause(1e-6)
 
         self.fig.suptitle('Year: {}'.format(self.step + 1), x=0.105)
 
-    def save_graphics(self):
+    def save_graphics(self):  # used on simulate
         """
         Saves graphics to file if file name is given.
 
@@ -429,72 +425,4 @@ class BioSim:
             return plt.savefig('{base}_{num:05d}.{type}'.format(base=self.img_base,
                                                                 num=self.img_ctr,
                                                                 type=self.img_fmt))
-        self.img_ctr += 1
-
-    def get_square_animal_count(self):
-        """
-        Computes the number of animals of each species per square.
-
-        Returns
-        -------
-        out : pandas.core.frame.DataFrame
-            Pandas DataFrame with columns x, y, 'herbivores' and 'carnivores'
-            containing the square coordinates and animal numbers.
-
-        """
-        square_count = []
-
-        island = self.island.cells
-        for loc, square in island.items():
-            square_count.append({'x': loc[0], 'y': loc[1],
-                                 'herbivores': len(square.population[
-                                                       "Herbivore"]),
-                                 'carnivores': len(square.population[
-                                                       "Carnivore"])})
-        return pd.DataFrame(square_count,
-                            columns=['x', 'y', 'herbivores', 'carnivores'])
-
-    def get_island_animal_count(self):
-        """
-        Computes the total number of animals of each species on the island.
-
-        Returns
-        -------
-        out : dict
-            Dictionary with keys 'herbivores' and 'carnivores'.
-
-        """
-        island_count = self.get_square_animal_count()
-        return {'herbivores': island_count['herbivores'].sum(),
-                'carnivores': island_count['carnivores'].sum()}
-
-    def get_total_animal_count(self):  # tested
-        """Total number of animals on island"""
-        island_pop = self.get_island_animal_count().values()
-        return np.sum(list(island_pop))
-
-    @property
-    def year(self):
-        """Last year simulated"""
-        pass
-
-    @property
-    def num_animals_per_species(self):  # tested
-        """Number of animals per species in island, as dictionary"""
-        pop = self.island.get_population_numbers()
-        return {'Herbivore': sum(pop['Herbivore']),
-                'Carnivore': sum(pop['Carnivore'])}
-
-    @property
-    def animal_distribution(self):
-        """Pandas DataFrame with animal count per species for each cell
-        on island.
-        """
-        pop = self.island.get_population_numbers()
-        return pd.DataFrame(pop)
-
-
-    # def make_movie(self):
-    #     """Create MPEG4 movie from visualization images saved."""
-    #     pass
-
+        self.img_ctr += 1'''

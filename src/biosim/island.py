@@ -143,7 +143,7 @@ class Island:
 
             # geo_object.migrate(self.neighbour_cell(coordinate))
             geo_object.get_old()
-            # geo_object.lose_weight()
+            geo_object.lose_weight()
             # geo_object.die()
 
     def get_population_numbers(self):  # tested

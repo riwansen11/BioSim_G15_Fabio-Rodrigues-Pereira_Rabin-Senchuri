@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from src.biosim.fauna import Herbivore, Carnivore
-import numpy as np
 import random
+import numpy as np
+from src.biosim.fauna import Herbivore, Carnivore
 
 """
 This is the geography model which functions with the BioSim package 
@@ -34,7 +34,7 @@ class Cells:
                              "non-negative".format(param_key))
 
     @classmethod
-    def set_parameters(cls, params):
+    def set_parameters(cls, params):  # tested
         cls.check_unknown_parameters(params)
         cls.check_non_negative_parameters('f_max', params)
         cls.parameters.update(params)
@@ -187,7 +187,7 @@ class Jungle(Cells):
         self.fodder = self.parameters['f_max']
 
     def grow_fodder_and_feed(self):
-        self.fodder = self.parameters['f_max']  # ****check
+        self.fodder = self.parameters['f_max']
         self.herbivore_feed(), self.carnivore_feed()
 
 

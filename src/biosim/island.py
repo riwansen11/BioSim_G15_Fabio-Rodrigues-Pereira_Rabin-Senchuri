@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-import textwrap
-from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
-    Desert
-from src.biosim.fauna import Herbivore, Carnivore
 
 """
 This is the Island model which functions with the BioSim package 
@@ -11,6 +7,11 @@ written for the INF200 project January 2019.
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
+import textwrap
+from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
+    Desert
+from src.biosim.fauna import Herbivore, Carnivore
 
 
 class Island:
@@ -107,7 +108,7 @@ class Island:
                 geo_objects.append(geo_object)
         return dict(zip(coordinates, geo_objects))
 
-    def set_parameters(self, param_key, params):
+    def set_parameters(self, param_key, params):  # tested
         self.check_string_instance(param_key)
         self.check_dict_instance(params)
         merged_classes = dict(**self.fauna_classes, **self.geo_classes)
@@ -133,13 +134,13 @@ class Island:
                 geo_object.population[
                     type(animal_object).__name__].append(animal_object)
 
-    def neighbour_cell(self, loc):  # returns the habitable geo_objects
-        neighbours = [(loc[0], loc[1] - 1),
-                      (loc[0] - 1, loc[1]),
-                      (loc[0] + 1, loc[1]),
-                      (loc[0], loc[1] + 1)]
-        return [self.habitable_cells[coordinates] for coordinates in
-                neighbours if coordinates in self.habitable_cells.keys()]
+    def neighbour_cell(self, loc):  # tested
+        neighbours_loc = [(loc[0], loc[1] - 1), (loc[0] - 1, loc[1]),
+                          (loc[0] + 1, loc[1]), (loc[0], loc[1] + 1)]
+        neighbours = [self.habitable_cells[coordinates] for
+                      coordinates in neighbours_loc if coordinates in
+                      self.habitable_cells.keys()]
+        return neighbours
 
     def yearly_cycle(self):
         for coordinate, geo_object in self.habitable_cells.items():
@@ -151,13 +152,14 @@ class Island:
             geo_object.lose_weight()
             geo_object.die()
 
-    def get_population_numbers(self):
-        population = {'Coordinates': [], 'Herbivore': [],
+    def get_population_numbers(self):  # tested
+        population = {'Row': [], 'Col': [], 'Herbivore': [],
                       'Carnivore': []}
-        for location, geo_object in self.cells.items():
-            population['Coordinates'].append(location)
-            population['Herbivore'].append(len(geo_object.population[
-                                            'Herbivore']))
-            population['Carnivore'].append(len(geo_object.population[
-                                            'Carnivore']))
+        for loc, geo_object in self.cells.items():
+            population['Row'].append(loc[0])
+            population['Col'].append(loc[1])
+            population['Herbivore'].append(
+                len(geo_object.population['Herbivore']))
+            population['Carnivore'].append(
+                len(geo_object.population['Carnivore']))
         return population

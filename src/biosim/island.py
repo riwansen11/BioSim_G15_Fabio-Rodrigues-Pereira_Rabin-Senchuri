@@ -138,12 +138,22 @@ class Island:
 
     def yearly_cycle(self):
         for coordinate, geo_object in self.habitable_cells.items():
-            # geo_object.grow_fodder_and_feed()
+            """This method calls, in order, the methods that compound 
+            the yearly cycle dynamics of the island, such that:
+            
+            1. Growing of fodder;
+            2. Animal's feeding;
+            3. Animals's birth;
+            4. Animal's migration;
+            5. Animal's aging;
+            6. Animal's weight loss;
+            7. Animal's death.
+            """
+            geo_object.grow_fodder_and_feed()
             # geo_object.add_newborns()
-
             # geo_object.migrate(self.neighbour_cell(coordinate))
-            geo_object.get_old()
-            geo_object.lose_weight()
+            # geo_object.get_old()
+            # geo_object.lose_weight()
             # geo_object.die()
 
     def get_population_numbers(self):  # tested

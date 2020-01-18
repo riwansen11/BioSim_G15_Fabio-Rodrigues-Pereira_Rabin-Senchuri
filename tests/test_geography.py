@@ -60,3 +60,39 @@ def test_animal_got_old():
     herb_older_2 = herb_object_2.age
     assert herb_older_1 is (herb_young_1 + 1)
     assert herb_older_2 is (herb_young_2 + 1)
+
+
+def test_sort_animals_by_decreasing_fitness():
+    island_map = "OOO\nOJO\nOOO"
+    ini_pop = [
+        {"loc": (1, 1),
+         "pop": [{"species": "Herbivore", "age": 50, "weight": 20},
+                 {"species": "Herbivore", "age": 10, "weight": 10}]}]
+    t = BioSim(island_map, ini_pop, None)
+    loc = (1, 1)
+    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
+    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
+    assert herb_1 < herb_2
+    t.island.cells[loc].sort_animals_by_fitness('Herbivore',
+                                                decreasing=True)
+    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
+    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
+    assert herb_1 > herb_2
+
+
+def test_sort_animals_by_increasing_fitness():
+    island_map = "OOO\nOJO\nOOO"
+    ini_pop = [
+        {"loc": (1, 1),
+         "pop": [{"species": "Herbivore", "age": 10, "weight": 10},
+                 {"species": "Herbivore", "age": 50, "weight": 20}]}]
+    t = BioSim(island_map, ini_pop, None)
+    loc = (1, 1)
+    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
+    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
+    assert herb_1 > herb_2
+    t.island.cells[loc].sort_animals_by_fitness('Herbivore',
+                                                decreasing=False)
+    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
+    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
+    assert herb_1 < herb_2

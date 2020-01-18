@@ -113,7 +113,7 @@ def test_weight_stored():
 
 
 def test_neighbour_cells():
-    """ Test if the method 'neighbour_cell(loc)' returns the correctly
+    """Test if the method 'neighbour_cell(loc)' returns the correctly
     habitable neighbours of a given localization"""
     island_maps = ("OOOOO\nOJDJO\nOMJMO\nOJMJO\nOOOOO",
                    "OOOOO\nOJMJO\nOMJMO\nOJDJO\nOOOOO",

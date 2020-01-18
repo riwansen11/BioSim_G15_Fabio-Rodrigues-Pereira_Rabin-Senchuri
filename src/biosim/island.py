@@ -118,21 +118,15 @@ class Island:
         self.check_list_instance(given_pop)
         for population in given_pop:
             coordinate = population['loc']
+            geo_object = self.cells[coordinate]
             self.check_coordinates_exists(coordinate, self.cells)
             self.check_habitability(coordinate, self.cells)
-            individual_objects = []
-            for individual in population['pop']:
-                species = individual['species']
-                age = individual['age']
-                weight = individual['weight']
-                individual_object = \
-                    self.fauna_classes[species](age, weight)
-
-                individual_objects.append(individual_object)
-            geo_object = self.cells[coordinate]
-            for animal_object in individual_objects:
-                geo_object.population[
-                    type(animal_object).__name__].append(animal_object)
+            for pop_unit in population['pop']:
+                species = pop_unit['species']
+                age_weight = (pop_unit['age'], pop_unit['weight'])
+                pop_object = self.fauna_classes[species](*age_weight)
+                geo_object.population[type(pop_object).__name__].append(
+                    pop_object)
 
     def neighbour_cell(self, loc):  # tested
         neighbours_loc = [(loc[0], loc[1] - 1), (loc[0] - 1, loc[1]),
@@ -144,13 +138,13 @@ class Island:
 
     def yearly_cycle(self):
         for coordinate, geo_object in self.habitable_cells.items():
-            geo_object.grow_fodder_and_feed()
-            geo_object.add_newborns()
+            # geo_object.grow_fodder_and_feed()
+            # geo_object.add_newborns()
 
-            geo_object.migrate(self.neighbour_cell(coordinate))
+            # geo_object.migrate(self.neighbour_cell(coordinate))
             geo_object.get_old()
-            geo_object.lose_weight()
-            geo_object.die()
+            # geo_object.lose_weight()
+            # geo_object.die()
 
     def get_population_numbers(self):  # tested
         population = {'Row': [], 'Col': [], 'Herbivore': [],

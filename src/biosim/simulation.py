@@ -8,7 +8,6 @@ written for the INF200 project January 2019.
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
-
 import pandas as pd
 import random as rd
 from src.biosim.island import Island
@@ -52,9 +51,9 @@ class BioSim:
                  ymax_animals=None,
                  cmax_animals=None,
                  img_base=None,
-                 img_dir=_DEFAULT_GRAPHICS_DIR,
-                 img_name=_DEFAULT_GRAPHICS_NAME,
-                 img_fmt='png'):
+                 img_dir=None,  # _DEFAULT_GRAPHICS_DIR,
+                 img_name=None,  # _DEFAULT_GRAPHICS_NAME,
+                 img_fmt=None):  # 'png'):
         """
         :param island_map: Multi-line string specifying island geography.
         :param ini_pop: List of dictionaries specifying initial

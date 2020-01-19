@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-This is the fauna model which functions with the BioSim package 
-written for the INF200 project January 2019.
+This is the Fauna model which functions with the BioSim package written
+for the INF200 project January 2019.
 """
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
@@ -27,11 +27,11 @@ class Population:
                         phi_x:   int or float:      'phi_age'
                                                     'phi_weight'
 
-        * Formula: 1 / {1 + exp[phi_x('x' - 'x_1/2')]}
+        * Formula: 1 / {1 + exp[phi_x('x' - 'x_1/2')]}.
 
-        * Where used: calculate_fitness()
+        * Where used: calculate_fitness().
 
-        * returns: fit_formula: int or float
+        * returns: fit_formula: int or float.
         """
         return 1.0 / (1 + math.exp(phi_x * (x - x_half)))
 
@@ -39,7 +39,7 @@ class Population:
     def check__phi_borders(cls, _phi):  # tested
         """Check if the _phi calculated by the method
         'calculate_fitness()' is inside of its required result
-        borders '0 <= _phi <= 1'"""
+        borders '0 <= _phi <= 1'."""
         if not 0 <= _phi <= 1:
             raise ValueError("The parameter '_phi' calculated "
                              "is not in its borders 0 <= _phi <= 1")
@@ -75,9 +75,9 @@ class Population:
                else: fit_formula('age', 'age_1/2', 'phi_age') X
                      fit_formula(-'weight', 'weight_1/2', 'phi_weight')
 
-        * Method(s) required: fit_formula(x, x_half, phi_x)
+        * Method(s) required: fit_formula(x, x_half, phi_x).
 
-        * returns: _phi: int or float
+        * returns: _phi: int or float.
         """
         _phi = 0 if self.weight <= 0 \
             else (self.fit_formula(self.age,
@@ -116,30 +116,52 @@ class Population:
 
     def update_fitness(self):
         """This method updates the calculation of parameter fitness of
-        the animal"""
+        the animal."""
         self.fitness = self.calculate_fitness()
 
     def birth(self, number_specie_objects):
+        """
+        This method calculates the probability of giving birth
+        according to the following conditions:
+
+        1. if the number of animals of a species is 1, then the
+        probability is 0;
+
+        2. The probability is also 0 if the weight of the animal is
+        less than 'zeta' * ('w_birth' + 'sigma_birth');
+
+        3. Else, the probability is the minimum between 1 or 'gamma' *
+        the animal fitness * (number of animals of the specie - 1);
+
+        * Note: The rd.random() is used to get a random number and
+        check if is less than the probability of birth, then there is
+        a offspring or not.
+
+        :param number_specie_objects: int with the number of animals
+                                      of a specie.
+
+        :return: True if the animal gives birth else False.
+        """
+
         k = self.parameters['zeta'] * (self.parameters['w_birth'] +
                                        self.parameters['sigma_birth'])
 
-        a = min(1, self.parameters['gamma'] * self.fitness *
-                (number_specie_objects - 1))
-
-        return rd.random() < a and self.weight > k
-
-    def update_weight_after_birth(self, weight):
-        self.weight = self.parameters['xi'] * weight
-        self.update_fitness()
-
-    def die(self):
-        if self.fitness is 0:
-            return True
-        elif rd.random() < self.parameters['omega'] * \
-                (1 - self.fitness):
-            return True
+        if number_specie_objects is 1:
+            p = 0
+        elif self.weight < k:
+            p = 0
         else:
-            return False
+            p = min(1, self.parameters['gamma'] * self.fitness *
+                    (number_specie_objects - 1))
+
+        return rd.random() < p
+
+    def update_weight_after_birth(self, baby_weight):
+        """This method, when called, updates the with of the animal
+        after gives birth, according to the formula: 'xi' * the baby
+        weight. Then it updates the fitness."""
+        self.weight = self.parameters['xi'] * baby_weight
+        self.update_fitness()
 
     def migration_chances(self):
         """This method calculates the migration probability according to
@@ -149,11 +171,26 @@ class Population:
         check if is less than the probability of migration, then a
         animal migrates or not.
 
-        :returns    True if the animal migrates else False
+        :returns    True if the animal migrates else False.
         """
         prob_move = self.parameters['mu'] * self.fitness
         rand_num = rd.random()
         return rand_num < prob_move
+
+    def die(self):
+        """An animal dies:
+         1. with certainty if its fitness is 0;
+         2. with probability if 'omega' * (1 - its fitness).
+
+         :return: True if the animal dies else False.
+         """
+        if self.fitness is 0:
+            return True
+        elif rd.random() < self.parameters['omega'] * \
+                (1 - self.fitness):
+            return True
+        else:
+            return False
 
 
 class Herbivore(Population):
@@ -195,7 +232,7 @@ class Carnivore(Population):
                     check if is less than p, then a herbivore is
                     killed or the herbivore escaped.
 
-        :returns    True if herbivore is killer else False
+        :returns    True if herbivore is killer else False.
         """
         d_phi_max = self.parameters['DeltaPhiMax']
         c_fitness = self.fitness

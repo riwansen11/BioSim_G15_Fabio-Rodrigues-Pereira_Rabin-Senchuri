@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-import random
-import numpy as np
-from src.biosim.fauna import Herbivore, Carnivore
 
 """
-This is the geography model which functions with the BioSim package 
+This is the Geography model which functions with the BioSim package
 written for the INF200 project January 2019.
 """
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+
+import random
+import numpy as np
+from src.biosim.fauna import Herbivore, Carnivore
 
 
 class Cells:
@@ -22,6 +23,7 @@ class Cells:
 
     @classmethod  # tested
     def check_unknown_parameters(cls, params):
+        """This method checks any unknown parameter given by the user."""
         for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
@@ -29,12 +31,15 @@ class Cells:
 
     @classmethod  # tested
     def check_non_negative_parameters(cls, param_key, params):
+        """This method checks any non-negative parameter given by the
+        user."""
         if params[param_key] < 0:  # check here and others restrictions
             raise ValueError("The parameter *{}* must be "
                              "non-negative".format(param_key))
 
     @classmethod
     def set_parameters(cls, params):  # tested
+        """This method sets the parameter for the landscapes."""
         cls.check_unknown_parameters(params)
         cls.check_non_negative_parameters('f_max', params)
         cls.parameters.update(params)
@@ -48,7 +53,7 @@ class Cells:
          propensity, dividing their propensity values by the sum of
          all propensities.
 
-         :return: list of propensity percentages
+         :return: list of propensity percentages.
          """
         propensities = [cell.propensity(species) for cell in
                         neighbour_cells]
@@ -148,7 +153,7 @@ class Cells:
     def get_old(self):  # tested
         """This method identifies each specie of animals and communicates
         to the method 'get_old()' in fauna in order to apply the aging
-        for each animal (pop_object)"""
+        for each animal (pop_object)."""
         for specie_objects in self.population.values():
             for pop_object in specie_objects:
                 pop_object.get_old()
@@ -156,19 +161,21 @@ class Cells:
     def lose_weight(self):
         """This method identifies each specie of animals and communicates
         to the method 'lose_weight()' in fauna in order to apply the
-        weight loss for each animal (pop_object)"""
+        weight loss for each animal (pop_object)."""
         for specie_objects in self.population.values():
             for pop_object in specie_objects:
                 pop_object.lose_weight()
 
     def add_newborns(self):
+        """This method extend a specie population adding their
+        offspring."""
         for specie_objects in self.population.values():
             newborns = []
             for animal_object in specie_objects:
                 if animal_object.birth(len(specie_objects)):
                     newborn = type(animal_object)()
-                    animal_object.update_weight_after_birth(
-                        newborn.weight)
+                    animal_object.\
+                        update_weight_after_birth(newborn.weight)
                     newborns.append(newborn)
             specie_objects.extend(newborns)
 
@@ -225,19 +232,20 @@ class Cells:
                                             if animal not in
                                             migrated_animals]
 
+    def total_herbivore_mass(self):
+        herb_mass = 0
+        for herb in self.population['Herbivore']:
+            herb_mass += herb.weight
+        return herb_mass
+
     def die(self):
+        """This method determines if an animal dies."""
         for specie_type in self.population.keys():
             survivors = []
             for animal_object in self.population[specie_type]:
                 if not animal_object.die():
                     survivors.append(animal_object)
             self.population[specie_type] = survivors
-
-    def total_herbivore_mass(self):
-        herb_mass = 0
-        for herb in self.population['Herbivore']:
-            herb_mass += herb.weight
-        return herb_mass
 
 
 class Jungle(Cells):
@@ -258,7 +266,6 @@ class Jungle(Cells):
         'f_max'.
         """
         self.fodder = self.parameters['f_max']
-        print('f_max:', self.fodder)
         self.herbivore_feed(), self.carnivore_feed()
 
 
@@ -291,7 +298,6 @@ class Savannah(Cells):
         f = self.fodder
         if f is not f_max:  # means not first year of the simulation
             self.fodder += alpha * (f_max - f)
-        print(alpha, f_max, f)
         self.herbivore_feed(), self.carnivore_feed()
 
 

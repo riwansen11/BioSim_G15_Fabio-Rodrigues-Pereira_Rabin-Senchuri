@@ -39,6 +39,23 @@ class Cells:
         cls.check_non_negative_parameters('f_max', params)
         cls.parameters.update(params)
 
+    @classmethod
+    def propensity_list(cls, species, neighbour_cells):
+        """This method calls the method 'propensity()' to receive the
+         propensity value for each particular neighbour landscape cell.
+
+         Then, it calculates the propensity percentage, for each
+         propensity, dividing their propensity values by the sum of
+         all propensities.
+
+         :return: list of propensity percentages
+         """
+        propensities = [cell.propensity(species) for cell in
+                        neighbour_cells]
+        probability_list = [propensity / np.sum(propensities)
+                            for propensity in propensities]
+        return probability_list
+
     def __init__(self):
         self.population = {'Herbivore': [], 'Carnivore': []}
         self.new_population = {'Herbivore': [], 'Carnivore': []}
@@ -155,38 +172,18 @@ class Cells:
                     newborns.append(newborn)
             specie_objects.extend(newborns)
 
-    # def migrate(self, neighbour_cells):
-    #
-    #     for species, animals in self.population.items():
-    #         if animals:
-    #             neighbour_cell_props = [neighbour.neighbour_cell_propensity(species) for neighbour in
-    #                                     neighbour_cells]
-    #
-    # def neighbour_cell_propensity(self, species):
-    #     relevant_fodder = self.fodder if species == "Herbivore" \
-    #         else self.total_herbivore_mass()
-    #     r_abundance = self.relevant_abundance(len(self.population[species]),
-    #                                           self.population[species][0].parameters["F"],
-    #                                           relevant_fodder)
-    #     return np.exp(species.default_params["lambda"] * r_abundance)
-    # def relative_abundance():
-    #     return self.fodder / ((len(self.population[specie]) + 1) *
-    #                      Herbivore.parameters["F"])
-    #
-    # def carnivore_fodder(self, specie):
-    #     return self.total_herbivore_mass() / ((len(self.population[specie]) + 1) *
-    #                      Carnivore.parameters["F"])
-
     def propensity(self, specie):
-        num_animals = len(self.population[specie]) + len(
-            self.new_population[specie])
+        num_animals = len(self.population[specie]) + \
+                      len(self.new_population[specie])
+
         if specie == "Herbivore":
             appetite = Herbivore.parameters['F']
         else:
             appetite = Carnivore.parameters['F']
 
-        relevant_fodder = self.fodder if specie == "Herbivore" else \
-            self.total_herbivore_mass()
+        relevant_fodder = self.fodder if specie == "Herbivore" \
+            else self.total_herbivore_mass()
+        
         relative_abundance = self.relevant_abundance(num_animals,
                                                      appetite,
                                                      relevant_fodder)
@@ -197,27 +194,18 @@ class Cells:
             return np.exp(Carnivore.parameters['lambda'] *
                           relative_abundance)
 
-        # carnivore_propensity = np.exp(
-        #     Carnivore.parameters["lambda"] *
-        #     self.carnivore_fodder(specie))
-        #
-        # return tuple([herbivore_propensity, carnivore_propensity])
-
-    def propensity_list(self, species, neighbour_cells):
-        # if species == "Herbivore":
-
-        propensities = [cell.propensity(species)
-                        for cell in neighbour_cells]
-        probability_list = [propensity / np.sum(propensities)
-                            for propensity in propensities]
-        # else:
-        #     propensities = [cell.propensity(animals)
-        #                     for cell in neighbour_cells]
-        #     probability_list = [propensity / np.sum(propensities)
-        #                         for propensity in propensities]
-        return probability_list
-
     def migrate(self, neighbour_cell):
+        """
+        1. The animals migrate ate least once a year;
+        2. The migration depends on animals fitness and availability of
+        fodder in the neighboring cells;
+        3. Animals can only move to north, south, west and east,
+        according to the method 'neighbour_cells()';
+        4. Animals move according to the probability formula in
+        the method 'migration_chances()';
+        5.
+
+        """
         for species, animals in self.population.items():
             if len(animals) > 0:
                 probability_list = self.propensity_list(
@@ -226,8 +214,6 @@ class Cells:
                 migrated_animals = []
                 for animal in animals:
                     if animal.migration_chances():
-                        # self.choose_migration_cell(
-                        #   animal, neighbour_cells, probability_list)
                         rand_num = random.random()
                         n = 0
                         while rand_num >= cumulative_probability[n]:

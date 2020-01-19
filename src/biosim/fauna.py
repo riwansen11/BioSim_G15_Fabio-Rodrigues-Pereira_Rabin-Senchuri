@@ -79,7 +79,7 @@ class Population:
 
         * returns: _phi: int or float
         """
-        _phi = 0 if self.weight is 0 \
+        _phi = 0 if self.weight <= 0 \
             else (self.fit_formula(self.age,
                                    self.parameters['a_half'],
                                    self.parameters['phi_age']) *
@@ -196,6 +196,4 @@ class Carnivore(Population):
         else:
             p = 1
         rand_num = rd.random()
-        print('p', p, 'rand_num', rand_num)
-        test = rand_num < p
-        return test
+        return rand_num < p

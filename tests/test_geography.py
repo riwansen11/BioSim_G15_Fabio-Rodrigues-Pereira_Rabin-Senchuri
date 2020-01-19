@@ -9,6 +9,7 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import pytest
+import random as rd
 from src.biosim.simulation import BioSim
 from src.biosim.geography import Cells, Jungle, Savannah, Desert, \
     Ocean, Mountain
@@ -62,46 +63,6 @@ def test_animal_got_old():
     assert herb_older_2 is (herb_young_2 + 1)
 
 
-def test_sort_animals_by_decreasing_fitness():
-    """Test if the method 'sort_animals_by_fitness()' correctly
-    sorts the population of a specie by decreasing fitness values"""
-    island_map = "OOO\nOJO\nOOO"
-    ini_pop = [
-        {"loc": (1, 1),
-         "pop": [{"species": "Herbivore", "age": 50, "weight": 20},
-                 {"species": "Herbivore", "age": 10, "weight": 10}]}]
-    t = BioSim(island_map, ini_pop, None)
-    loc = (1, 1)
-    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
-    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
-    assert herb_1 < herb_2
-    t.island.cells[loc].sort_animals_by_fitness('Herbivore',
-                                                decreasing=True)
-    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
-    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
-    assert herb_1 > herb_2
-
-
-def test_sort_animals_by_increasing_fitness():
-    """Test if the method 'sort_animals_by_fitness()' correctly
-    sorts the population of a specie by increasing fitness values"""
-    island_map = "OOO\nOJO\nOOO"
-    ini_pop = [
-        {"loc": (1, 1),
-         "pop": [{"species": "Herbivore", "age": 10, "weight": 10},
-                 {"species": "Herbivore", "age": 50, "weight": 20}]}]
-    t = BioSim(island_map, ini_pop, None)
-    loc = (1, 1)
-    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
-    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
-    assert herb_1 > herb_2
-    t.island.cells[loc].sort_animals_by_fitness('Herbivore',
-                                                decreasing=False)
-    herb_1 = t.island.cells[loc].population['Herbivore'][0].fitness
-    herb_2 = t.island.cells[loc].population['Herbivore'][1].fitness
-    assert herb_1 < herb_2
-
-
 def test_herbivore_feed():
     """Many testes for the method 'herbivore_feed()':
     1. if the fodder reduces when a animal eats it.
@@ -131,15 +92,28 @@ def test_herbivore_feed():
 
 
 def test_carnivore_feed():
-    """Many testes for the method 'herbivore_feed()':
-    1. if the fodder reduces when a animal eats it.
-    2. if the weight of the animal increases after eat.
-    3. if the fitness of the animal updates after eat.
+    """Many testes for the method 'carnivore_feed()':
+    1. If there are any succeed hunt, given by the method
+    'is_herb_killed()'.
     """
     island_map = "OOO\nOJO\nOOO"
-    ini_pop = [
+    ini_herb = [
         {"loc": (1, 1),
-         "pop": [{"species": "Herbivore", "age": 10, "weight": 10}]}]
-    t = BioSim(island_map, ini_pop, None)
+         "pop": [
+             {"species": "Herbivore", "age": rd.randint(1, 10), "weight":
+                 rd.randint(20, 60)}
+             for _ in range(200)
+         ]}]
+
+    ini_carn = [
+        {"loc": (1, 1),
+         "pop": [
+             {"species": "Carnivore", "age": rd.randint(1, 10), "weight":
+                 rd.randint(20, 60)}
+             for _ in range(200)
+         ]}]
+    t = BioSim(island_map, ini_herb, None)
+    t.add_population(ini_carn)
     loc = (1, 1)
+    t.island.cells[loc].carnivore_feed()
 

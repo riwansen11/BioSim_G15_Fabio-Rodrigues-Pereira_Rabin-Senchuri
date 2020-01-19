@@ -13,8 +13,11 @@ from src.biosim.simulation import BioSim
 from src.biosim.island import Island
 from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
+import numpy as np
 from src.biosim.fauna import Population, Herbivore, Carnivore
 import random as rd
+
+rd.seed(123456)
 
 
 @pytest.fixture(autouse=True)
@@ -78,127 +81,138 @@ def test_check__phi_borders():
 
 def test_create_animal():
     """"""
-    '''h = Herbivore()
+    h = Herbivore()
     assert h.age == 0
-    h.ages()'''
-    pass
 
 
 def test_herbivore_params_keys():
-    """ Tests that the given parameters are in the list of v
+    """ Tests that the given parameters are in the list of herbivor
     parameters"""
-    '''keys_list = ['w_birth', 'sigma_birth', 'beta', 'eta', 'a_half',
+    keys_list = ['w_birth', 'sigma_birth', 'beta', 'eta', 'a_half',
                  'phi_age', 'w_half', 'phi_weight', 'mu', 'lambda',
                  'gamma', 'zeta', 'xi', 'omega', 'F', 'DeltaPhiMax']
-    t = Herbivore(1, 50)
-    assert t.parameters.keys() in keys_list'''
-    pass
+    h = Herbivore()
+    assert [key in h.parameters for key in keys_list]
 
 
-def test_parameter_type():
+def test_animal_non_neagtive_weight():
     """
-    Test parameter are only dictionary
+    test if animal age is  non-negative
     """
-    '''pytest.raises(TypeError, Animal.set_params, [])'''
-    pass
+    h = Herbivore()
+    c = Carnivore()
+    assert h.weight >= 0
+    assert c.weight >= 0
 
 
-def test_animal_age_weight():
-    """
-    test if animal age is not int and non-negative
-    test if animal age is not int or float and non-negative
-    """
-    pass
-
-
-def test_default_paraemters():
+def test_default_parameters():
     """
     test that default parameters has keys as string and values as float
     """
-    '''h = Herbivore()
+    h = Herbivore()
     for key, value in h.parameters.items():
         assert isinstance(key, str)
-        assert isinstance(value, float)'''
-    pass
-
-
-'''@pytest.mark.parametrize('set_params',
-                         [{'w_half': 10.0}, {'phi_weight': 0.1},
-                          {'phi_age': 0.2}, {'a_half': 40.0}],
-                         indirect=True)'''
-
-
-def test_fitness_range():
-    """
-    test fitness value is between 0 and 1
-    """
-    '''a = Animal
-    a.w = np.random.randint(0, 100)
-    a.age = np.random.randint(0, 100)
-    assert 1 >= a.fitness >= 0'''
-    pass
-
-
-def test_fitness_value():
-    """
-    test calculated fitness values with real approx value
-    """
-    '''a = Animal
-    a.weight = 30
-    a.age = 10
-    assert a.fitness == approx(0.4102753)
-    assert a.fitness == approx(0.25506075)'''
-    pass
-
-
-def test_fitness_update():
-    """
-    test fitness is updated when weight is changed
-    """
-    pass
+        assert isinstance(value, float)
 
 
 def test_animal_aging():
     """
     test every year animal age updates
     """
-    pass
+    animal = Herbivore(10, 50)
+    before_age = animal.age
+    animal.get_old()
+    assert animal.age == before_age + 1
 
 
 def test_animal_weight_loss():
     """
     Test if animal looses weight
     """
-    pass
+    animal = Herbivore(10, 50)
+    before_weight = animal.weight
+    animal.lose_weight()
+    assert before_weight > animal.weight
+
+
+def test_fitness_range():
+    """
+    test fitness value is between 0 and 1
+    """
+    herb = Herbivore(np.random.randint(0, 100), np.random.randint(0, 100))
+    carn = Carnivore(np.random.randint(0, 100), np.random.randint(0, 100))
+    assert 1 >= herb.fitness >= 0
+    assert 1 >= carn.fitness >= 0
+
+
+def test_fitness_update():
+    """
+    test fitness is updated when weight is changed
+    """
+    animal = Herbivore(10, 50)
+    before_fitness = animal.fitness
+    animal.lose_weight()
+    assert animal.fitness != before_fitness
 
 
 def test_animal_death():
     """
-    test that animal dies when fitness is 0
+    test that animal dies when fitness is 0 or with
+    certain probability omega(1 - fitness)
+    """
+    animal = Herbivore(10, 50)
+    animal.fitness = 0
+    assert animal.die() is True
+
+
+def test_animal_migration_chances():
+    """
+    test the probability of migration is zero if
+    fitness is zero
+    """
+    animal = Herbivore(10, 50)
+    animal.fitness = 0
+    assert not animal.migration_chances()
+
+
+def test__animal_birth_probability():
+    """
+    1. Test no birth if single herbivore or carnivore
+    2. Test no birth if weight of herbivore or
+    carnivore is less than output of following
+    condition:
+        xi(w_birth + sigma_birth)
+    """
+    animal = Herbivore(20, 50)
+    assert not animal.birth(1)
+
+    animal = Carnivore(10, 50)
+    animal.weight = 5
+    assert not animal.birth(200)
+
+
+def test_update_weight_after_birth():
+    """
+    test that the weight of the mother is
+    reduced by xi times the weight of the
+    baby after reproduction
+    """
+    animal = Herbivore(20, 40)
+    weight_before_birth = animal.weight
+    baby_weight = 10
+    animal.update_weight_after_birth(baby_weight)
+    assert animal.weight < weight_before_birth
+
+
+def test_carnivore_kill():
+    """
+    Test that carnivore kills herbivore if
+        1. carnivore fitness is greater than
+        herbivore fitness
+        2. the difference between carnivore
+        fitness and herbivore fitness divided
+        by DeltaPhiMax parameter is greater
+        than random value.
     """
     pass
-
-
-def test_no_animal_birth():
-    """
-    test no birth if number of animal is 1
-    """
-    pass
-
-
-def test_carnivore_kill(mocker):
-    """
-    test that carnivore kills herbivore if carnivore
-    fitness is greater than herbivore fitness and the
-    difference between carnivore fitness and herbivore
-    fitness divided by DeltaPhiMax parameter is greater
-    random value.
-    """
-    mocker.patch('numpy.random.random', return_value=0.01)
-    herbivore = Herbivore()
-    carnivore = Carnivore()
-    herbivore.fitness, carnivore.fitness = 0.1, 0.8
-    assert carnivore.is_herb_killed(herbivore.fitness)
-
-
 

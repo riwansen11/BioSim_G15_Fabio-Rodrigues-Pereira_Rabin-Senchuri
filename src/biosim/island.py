@@ -150,20 +150,11 @@ class Island:
             7. Animal's death.
             """
             geo_object.grow_fodder_and_feed()
-<<<<<<< HEAD
-            geo_object.add_newborns()
-            geo_object.migrate(self.neighbour_cell(coordinate))
-            geo_object.add_new_migrated()
-            geo_object.get_old()
-            geo_object.lose_weight()
-            geo_object.die()
-=======
             # geo_object.add_newborns()
             # geo_object.migrate(self.neighbour_cell(coordinate))
             # geo_object.get_old()
             # geo_object.lose_weight()
             # geo_object.die()
->>>>>>> master
 
     def get_population_numbers(self):  # tested
         population = {'Row': [], 'Col': [], 'Herbivore': [],

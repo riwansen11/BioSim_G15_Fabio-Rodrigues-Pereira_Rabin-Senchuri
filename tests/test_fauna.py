@@ -14,8 +14,10 @@ from src.biosim.island import Island
 from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
 from src.biosim.fauna import Population, Herbivore, Carnivore
+import random as rd
 
 
+@pytest.fixture(autouse=True)
 def test_check_unknown_parameters():
     """Test method 'check_unknown_parameters()' if it does not
     identifies the given parameter and returns ValueError"""
@@ -184,7 +186,28 @@ def test_no_animal_birth():
     pass
 
 
-def test_animal_eating():
+def test_carnivore_kill(mocker):
     """
+    test that carnivore kills herbivore if carnivore
+    fitness is greater than herbivore fitness and the
+    difference between carnivore fitness and herbivore
+    fitness divided by DeltaPhiMax parameter is greater
+    random value.
     """
-    pass
+    mocker.patch('numpy.random.random', return_value=0.01)
+    herbivore = Herbivore()
+    carnivore = Carnivore()
+    herbivore.fitness, carnivore.fitness = 0.1, 0.8
+    assert carnivore.is_herb_killed(herbivore.fitness)
+
+
+def test_carnivore_eating():
+    herbivores = [Herbivore(weight=15, age=5) for _ in range(6)]
+    Carnivore.parameters({"DeltaPhiMax": 0.000001})
+    carn = Carnivore(weight=500, age=5)
+    start_weight = carn.weight
+    surviving_herbivores = carn.eating(herbivores)
+    new_weight = carn.weight
+    assert len(herbivores) > len(surviving_herbivores)
+    assert new_weight > start_weight
+    assert carn.weight == 537.5

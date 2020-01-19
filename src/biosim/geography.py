@@ -118,18 +118,19 @@ class Cells:
                 h_fitness = herb_object.fitness
                 h_weight = herb_object.weight
                 is_herb_killed = carn_object.is_herb_killed(h_fitness)
+
                 # print(is_herb_killed, c_food_desired, 'lalala')
                 if c_food_desired <= 0:
                     # print(c_food_desired <= 0)
                     break
                 elif is_herb_killed:
-                    # print('is_killed', is_herb_killed)
                     if h_weight <= c_food_desired:
                         carn_object.gain_weight(h_weight)
                         carn_object.update_fitness()
                         c_ate += h_weight
                         self.population["Herbivore"].remove(herb_object)
                     else:
+                        print('h_weight <= c_food_desired', h_weight, c_food_desired)
                         carn_object.gain_weight(c_food_desired)
                         carn_object.update_fitness()
                         c_ate += c_food_desired
@@ -277,7 +278,6 @@ class Jungle(Cells):
         'f_max'.
         """
         self.fodder = self.parameters['f_max']
-        print('f_max:', self.fodder)
         self.herbivore_feed(), self.carnivore_feed()
 
 
@@ -310,7 +310,7 @@ class Savannah(Cells):
         f = self.fodder
         if f is not f_max:  # means not first year of the simulation
             self.fodder += alpha * (f_max - f)
-        print(alpha, f_max, f)
+
         self.herbivore_feed(), self.carnivore_feed()
 
 

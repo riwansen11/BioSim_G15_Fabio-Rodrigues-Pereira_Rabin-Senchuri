@@ -117,3 +117,4 @@ def test_carnivore_feed():
     loc = (1, 1)
     t.island.cells[loc].carnivore_feed()
 
+

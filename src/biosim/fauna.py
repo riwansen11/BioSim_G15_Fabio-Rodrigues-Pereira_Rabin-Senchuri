@@ -188,7 +188,6 @@ class Carnivore(Population):
         """
         d_phi_max = self.parameters['DeltaPhiMax']
         c_fitness = self.fitness
-
         if c_fitness <= h_fitness:
             p = 0
         elif 0 < c_fitness - h_fitness < d_phi_max:

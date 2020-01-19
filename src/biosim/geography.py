@@ -120,7 +120,7 @@ class Cells:
         self.population['Carnivore'].sort(key=lambda h: h.fitness,
                                           reverse=True)
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
-
+        print(len(self.population['Herbivore']))
         for carn_object in self.population["Carnivore"]:
             c_ate = 0
             c_appetite = carn_object.parameters['F']
@@ -129,14 +129,24 @@ class Cells:
             for herb_object in self.population['Herbivore']:
                 h_fitness = herb_object.fitness
                 h_weight = herb_object.weight
-                is_herb_killed = carn_object.is_herb_killed(h_fitness)
                 is_killed = carn_object.is_herb_killed(h_fitness)
 
                 if is_killed:
-                    carn_object.update_fitness()
-                    c_food_desired -= c_food_desired
-                    self.population["Herbivore"].remove(herb_object)
-                    break
+
+                    if h_weight <= c_food_desired:
+                        carn_object.gain_weight(h_weight)
+                        carn_object.update_fitness()
+                        c_food_desired -= h_weight
+                        self.population["Herbivore"].remove(herb_object)
+
+                    elif h_weight > c_food_desired:
+                        carn_object.gain_weight(c_food_desired)
+                        carn_object.update_fitness()
+                        c_food_desired -= c_food_desired
+                        self.population["Herbivore"].remove(herb_object)
+                        break
+
+        print(len(self.population['Herbivore']))
 
     def get_old(self):  # tested
         """This method identifies each specie of animals and communicates

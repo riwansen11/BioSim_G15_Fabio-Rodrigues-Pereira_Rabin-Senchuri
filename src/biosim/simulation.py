@@ -15,7 +15,7 @@ import os
 import numpy as np
 import matplotlib
 
-'''matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import subprocess
@@ -28,7 +28,7 @@ _CONVERT_BINARY = 'convert'
 _DEFAULT_GRAPHICS_DIR = os.path.join('data')
 
 _DEFAULT_GRAPHICS_NAME = 'dv'
-_DEFAULT_MOVIE_FORMAT = 'mp4'''
+_DEFAULT_MOVIE_FORMAT = 'mp4'
 
 
 class BioSim:
@@ -87,7 +87,7 @@ class BioSim:
         self.island.add_population(ini_pop)
         self.seed = rd.seed(seed)
 
-        '''self.color_by_square_type = {'O': mcolors.to_rgb('aqua'),
+        self.color_by_square_type = {'O': mcolors.to_rgb('aqua'),
                                      'M': mcolors.to_rgb('darkgray'),
                                      'J': mcolors.to_rgb('forestgreen'),
                                      'S': mcolors.to_rgb('yellowgreen'),
@@ -120,7 +120,7 @@ class BioSim:
             self.img_base = None
 
         self.img_ctr = 0
-        self.img_fmt = img_fmt'''
+        self.img_fmt = img_fmt
 
     def set_animal_parameters(self, species, params):
         """
@@ -160,7 +160,7 @@ class BioSim:
 
         Image files will be numbered consecutively.
         """
-        '''if img_years is None:
+        if img_years is None:
             img_years = vis_years
         self.final_step = self.step + num_years
         self.setup_graphics()
@@ -176,15 +176,16 @@ class BioSim:
                 self.save_graphics()
 
             self.island.yearly_cycle()
-            self.step += 1'''
+            self.step += 1
 
-        self.island.yearly_cycle()
+        #self.island.yearly_cycle()
 
     @property
     def num_animals(self):  # tested
         """Total number of animals on island"""
-        pop = self.island.get_population_numbers()
-        return sum(pop['Herbivore']) + sum(pop['Carnivore'])
+        pop = self.island.get_population_numbers
+        print(pop)
+
 
     @property
     def year(self):
@@ -205,7 +206,7 @@ class BioSim:
         pop = self.island.get_population_numbers()
         return pd.DataFrame(pop)
 
-    '''def make_movie(self, movie_fmt=_DEFAULT_MOVIE_FORMAT):
+    def make_movie(self, movie_fmt=_DEFAULT_MOVIE_FORMAT):
         if self.img_base is None:
             raise RuntimeError("No filename defined.")
 
@@ -425,4 +426,4 @@ class BioSim:
             return plt.savefig('{base}_{num:05d}.{type}'.format(base=self.img_base,
                                                                 num=self.img_ctr,
                                                                 type=self.img_fmt))
-        self.img_ctr += 1'''
+        self.img_ctr += 1

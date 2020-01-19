@@ -14,6 +14,7 @@ from src.biosim.simulation import BioSim
 from src.biosim.geography import Cells, Jungle, Savannah, Desert, \
     Ocean, Mountain
 from src.biosim.fauna import Herbivore, Carnivore
+import numpy as np
 
 
 def test_check_unknown_parameters():
@@ -97,24 +98,37 @@ def test_carnivore_feed():
     'is_herb_killed()'.
     """
     island_map = "OOO\nOJO\nOOO"
-    ini_herb = [
-        {"loc": (1, 1),
-         "pop": [
-             {"species": "Herbivore", "age": rd.randint(1, 10), "weight":
-                 rd.randint(20, 60)}
-             for _ in range(200)
-         ]}]
-
-    ini_carn = [
-        {"loc": (1, 1),
-         "pop": [
-             {"species": "Carnivore", "age": rd.randint(1, 10), "weight":
-                 rd.randint(20, 60)}
-             for _ in range(200)
-         ]}]
-    t = BioSim(island_map, ini_herb, None)
-    t.add_population(ini_carn)
+    ini_herbs = [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 40}
+                for _ in range(150)
+            ],
+        }
+    ]
+    ini_carns = [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 40}
+                for _ in range(40)
+            ],
+        }
+    ]
+    t = BioSim(island_map, ini_herbs, None)
+    t.add_population(ini_carns)
     loc = (1, 1)
-    t.island.cells[loc].carnivore_feed()
+    cell_object = t.island.cells[loc]
 
+    carn_start_weight = np.sum(
+        carn.weight for carn in cell_object.population['Carnivore'])
+
+
+    cell_object.carnivore_feed()
+
+    carn_new_weight = np.sum(
+        carn.weight for carn in cell_object.population['Carnivore'])
+
+    assert carn_start_weight < carn_new_weight
 

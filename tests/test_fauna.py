@@ -201,13 +201,4 @@ def test_carnivore_kill(mocker):
     assert carnivore.is_herb_killed(herbivore.fitness)
 
 
-def test_carnivore_eating():
-    herbivores = [Herbivore(weight=15, age=5) for _ in range(6)]
-    Carnivore.parameters({"DeltaPhiMax": 0.000001})
-    carn = Carnivore(weight=500, age=5)
-    start_weight = carn.weight
-    surviving_herbivores = carn.eating(herbivores)
-    new_weight = carn.weight
-    assert len(herbivores) > len(surviving_herbivores)
-    assert new_weight > start_weight
-    assert carn.weight == 537.5
+

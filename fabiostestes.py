@@ -13,11 +13,7 @@ ini_herb = [
      "pop": [
          {"species": "Herbivore", "age": rd.randint(1, 10), "weight":
              rd.randint(20, 60)}
-<<<<<<< HEAD
-         for _ in range(20)
-=======
          for _ in range(20000)
->>>>>>> master
      ]}]
 
 ini_carn = [
@@ -30,9 +26,6 @@ ini_carn = [
 t = BioSim(island_map, ini_herb, None)
 t.add_population(ini_carn)
 loc = (1, 1)
-<<<<<<< HEAD
-t.island.cells[loc].carnivore_feed()
-=======
 t.island.cells[loc].carnivore_feed()
 
 '''herb_0_age = t.island.cells[loc].population['Herbivore'][0].age
@@ -98,4 +91,4 @@ global herb_object, h_w, h_f, c_food_desired
                             c_food_desired -= c_food_desired
                             print('killed', herb_object)
                             self.population["Herbivore"].remove(herb_object)'''
->>>>>>> master
+

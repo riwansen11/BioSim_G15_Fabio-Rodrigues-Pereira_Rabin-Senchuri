@@ -17,8 +17,22 @@ class Cells:
     parameters = {}
 
     @staticmethod
-    def relevant_abundance(animal_number, appetite,
-                           relevant_fodder):
+    def relative_abundance(animal_number, appetite, relevant_fodder):
+        """
+        This is the relative abundance of fodder that can be
+        calculated for each landscape cell, according to the formula
+        e_k = f_k / ((n_k + 1)*F), where:
+
+        f_k: the amount of relevant fodder available in cell k;
+        n_k: the number of animals of the same species in cell k;
+        F: the 'appetite' of the species.
+
+        :param animal_number: int or float:  n_k
+        :param appetite: int or float:  f_k
+        :param relevant_fodder: int or float:   F
+
+        :return: int or float: e_k
+        """
         return relevant_fodder / ((animal_number + 1) * appetite)
 
     @classmethod  # tested
@@ -188,10 +202,11 @@ class Cells:
         else:
             appetite = Carnivore.parameters['F']
 
+        # relevant fodder
         relevant_fodder = self.fodder if specie == "Herbivore" \
             else self.total_herbivore_mass()
         
-        relative_abundance = self.relevant_abundance(num_animals,
+        relative_abundance = self.relative_abundance(num_animals,
                                                      appetite,
                                                      relevant_fodder)
         if specie == "Herbivore":
@@ -203,6 +218,9 @@ class Cells:
 
     def migrate(self, neighbour_cell):
         """
+        This method carries out the migration of the island, according to
+        the following conditions:
+
         1. The animals migrate ate least once a year;
         2. The migration depends on animals fitness and availability of
         fodder in the neighboring cells;
@@ -210,8 +228,15 @@ class Cells:
         according to the method 'neighbour_cells()';
         4. Animals move according to the probability formula in
         the method 'migration_chances()';
-        5.
-
+        5. If the animals move, this also depends on the amount of
+        fodder available in the neighboring cells, which is calculated
+        by the relative abundance of fodder defined in the method
+        'relative_abundance()'. Relevant fodder is the amount of plant
+        available if the moving animal is a herbivore, and the total
+        weight of all herbivores in cell k if the moving animal is a
+        carnivore.
+        6. The propensity to move from i to j in the neighbour is
+        given by the method 'propensity()'.
         """
         for species, animals in self.population.items():
             if len(animals) > 0:
@@ -233,6 +258,8 @@ class Cells:
                                             migrated_animals]
 
     def total_herbivore_mass(self):
+        """This method returns the sum of the total mass of all
+        herbivores."""
         herb_mass = 0
         for herb in self.population['Herbivore']:
             herb_mass += herb.weight

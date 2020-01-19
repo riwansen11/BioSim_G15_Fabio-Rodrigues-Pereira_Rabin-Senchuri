@@ -44,23 +44,112 @@ class Cells:
         self.new_population = {'Herbivore': [], 'Carnivore': []}
         self.fodder = 0
 
-    def herbivore_feed(self):
-        self.population['Herbivore'].sort(key=lambda h: h.fitness)
-        for herbivore_object in reversed(self.population['Herbivore']):
-            if herbivore_object.parameters["F"] <= self.fodder:
-                herbivore_object.herb_eating(herbivore_object.parameters["F"])
-                self.fodder -= herbivore_object.parameters["F"]
-                print(self.fodder)
-            elif 0 < self.fodder < herbivore_object.parameters["F"]:
-                herbivore_object.herb_eating(self.fodder)
-                self.fodder = 0
+
+    '''def sort_animals_by_fitness(self, specie, decreasing=False):  # ok
+        """This method sorts the population of a given specie. There
+        are 2 types of sorting, with increasing values of fitness
+        (decreasing=False) or decreasing values of fitness
+        (decreasing=True).
+
+        :param  specie:     string: 'Herbivore' or 'Carnivore'
+        :param  decreasing: bol:    True for decreasing fitness values;
+                                    False for increasing fitness values;
+        """
+        fitness, animals = [], []
+        for animal in self.population[specie]:
+            fitness.append(animal.fitness)
+            animals.append(animal)
+
+        animals_by_decreasing_fitness = dict(zip(fitness, animals))
+
+        sorted_stronger_weaker_herbivores = \
+            [animals_by_decreasing_fitness[i] for i in
+             sorted(animals_by_decreasing_fitness.keys(),
+                    reverse=decreasing)]
+
+        self.population[specie] = sorted_stronger_weaker_herbivores'''
+
+    def herbivore_feed(self):  # tested
+        """This method organizes the population of herbivores in order
+        of greatest fitness (those who eat first) to worst. Then,
+        per animal (herb_object), it is applied the herbivore eating
+        rule, as following:
+
+        * Notations:    F:  Animal´s appetite
+                        f:  Available amount of fodder.
+
+        * rules:        1.  if F <= f:          f - F
+                                                w = w + ('beta' * F)
+                        2. elif 0 < f < F:      f = 0
+                                                w = 'beta' * (F - f)
+                        3. else                 f = 0
+        """
+        self.population['Herbivore'].sort(key=lambda h: h.fitness,
+                                          reverse=True)
+        for herb_object in self.population['Herbivore']:
+            h_ate = 0
+            h_appetite = herb_object.parameters["F"]
+            available_fodder = self.fodder
+            if h_appetite <= available_fodder:
+                available_fodder -= h_appetite
+                h_ate += h_appetite
+            elif 0 < available_fodder < h_appetite:
+                available_fodder = 0
+                h_ate += h_appetite - available_fodder
+            # gain weight
+            herb_object.gain_weight(h_ate)
+            # update fitness
+            herb_object.update_fitness()
+            # set new amount of fodder available
+            self.fodder = available_fodder
 
     def carnivore_feed(self):
-        self.population["Herbivore"].sort(key=lambda h: h.fitness)
-        self.population["Carnivore"].sort(key=lambda i: i.fitness)
-        for carn_object in reversed(self.population["Carnivore"]):
-            carn_object.carn_eating_rule(self.population[
-                                                     "Herbivore"])
+        self.population['Carnivore'].sort(key=lambda h: h.fitness,
+                                          reverse=True)
+        self.population['Herbivore'].sort(key=lambda h: h.fitness)
+        for carn_object in self.population["Carnivore"]:
+            c_ate = 0
+            c_appetite = carn_object.parameters['F']
+            c_food_desired = c_appetite - c_ate
+            # print(c_ate, c_appetite, c_food_desired)
+            # print(self.population['Herbivore'])
+
+            for herb_object in self.population['Herbivore']:
+                h_fitness = herb_object.fitness
+                h_weight = herb_object.weight
+                is_herb_killed = carn_object.is_herb_killed(h_fitness)
+                # print(is_herb_killed, c_food_desired, 'lalala')
+                if c_food_desired <= 0:
+                    # print(c_food_desired <= 0)
+                    break
+                elif is_herb_killed:
+                    # print('is_killed', is_herb_killed)
+                    if h_weight <= c_food_desired:
+                        carn_object.gain_weight(h_weight)
+                        carn_object.update_fitness()
+                        c_ate += h_weight
+                        self.population["Herbivore"].remove(herb_object)
+                    else:
+                        carn_object.gain_weight(c_food_desired)
+                        carn_object.update_fitness()
+                        c_ate += c_food_desired
+                        self.population["Herbivore"].remove(herb_object)
+
+    def get_old(self):  # tested
+        """This method identifies each specie of animals and communicates
+        to the method 'get_old()' in fauna in order to apply the aging
+        for each animal (pop_object)"""
+        for specie_objects in self.population.values():
+            for pop_object in specie_objects:
+                pop_object.get_old()
+
+    def lose_weight(self):
+        """This method identifies each specie of animals and communicates
+        to the method 'lose_weight()' in fauna in order to apply the
+        weight loss for each animal (pop_object)"""
+        for specie_objects in self.population.values():
+            for pop_object in specie_objects:
+                pop_object.lose_weight()
 
     def add_newborns(self):
         for specie_objects in self.population.values():
@@ -83,7 +172,8 @@ class Cells:
 
         relevant_fodder = self.fodder if specie == "Herbivore" else \
             self.total_herbivore_mass()
-        relative_abundance = self.relevant_abundance(num_animals, appetite,
+        relative_abundance = self.relevant_abundance(num_animals,
+                                                     appetite,
                                                      relevant_fodder)
         if specie == "Herbivore":
             return np.exp(Herbivore.parameters['lambda'] *
@@ -127,7 +217,8 @@ class Cells:
                         n = 0
                         while rand_num >= cumulative_probability[n]:
                             n += 1
-                        neighbour_cell[n].new_population[species].append(animal)
+                        neighbour_cell[n].new_population[species].append(
+                            animal)
                         migrated_animals.append(animal)
                 self.population[species] = [animal for animal in animals
                                             if animal not in
@@ -176,7 +267,17 @@ class Jungle(Cells):
         self.fodder = self.parameters['f_max']
 
     def grow_fodder_and_feed(self):
+        """This method increases the amount of fodder grown** in
+        the previous year and then calls the methods 'herbivore_feed()'
+        and 'carnivore_feed()', respectively, in order to execute the
+        animals eating conditions and rules
+
+        ** Notes: The yearly amount of fodder in the Jungle landscape
+        is always returned to its maximum, given by the parameter_key
+        'f_max'.
+        """
         self.fodder = self.parameters['f_max']
+        print('f_max:', self.fodder)
         self.herbivore_feed(), self.carnivore_feed()
 
 
@@ -188,8 +289,28 @@ class Savannah(Cells):
         self.fodder = self.parameters['f_max']
 
     def grow_fodder_and_feed(self):
-        self.fodder += self.parameters['alpha'] \
-                       * (self.parameters['f_max'] - self.fodder)
+        """This method increases the amount of fodder grown** in
+        the previous year and then calls the methods 'herbivore_feed()'
+        and 'carnivore_feed()', respectively, in order to execute the
+        animals eating conditions and rules
+
+        ** Notes: The yearly amount of fodder in the Savannah landscape
+        is always calculated by the following formula:
+
+        * Formula = 'alpha' * ('f_max' - f)
+
+            where   'alpha':    The growth rate of fodder;
+                    'f_max':    The maximum possible amount of fodder in
+                                the landscape;
+                    'f':        The remainder available amount of fodder
+                                from previous year.
+        """
+        alpha = self.parameters['alpha']
+        f_max = self.parameters['f_max']
+        f = self.fodder
+        if f is not f_max:  # means not first year of the simulation
+            self.fodder += alpha * (f_max - f)
+        print(alpha, f_max, f)
         self.herbivore_feed(), self.carnivore_feed()
 
 
@@ -198,6 +319,13 @@ class Desert(Cells):
         super().__init__()
 
     def grow_fodder_and_feed(self):
+        """This method increases the amount of fodder grown** in
+        the previous year and then calls the methods 'herbivore_feed()'
+        and 'carnivore_feed()', respectively, in order to execute the
+        animals eating conditions and rules
+
+        ** Notes: There is no fodder growth in the desert landscape.
+        """
         self.fodder = 0
         self.herbivore_feed(), self.carnivore_feed()
 

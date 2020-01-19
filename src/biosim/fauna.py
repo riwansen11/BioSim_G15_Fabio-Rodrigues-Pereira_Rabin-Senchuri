@@ -8,16 +8,42 @@ written for the INF200 project January 2019.
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
-import random
+import random as rd
 import numpy as np
+import math as math
 
 
 class Population:
     parameters = {}
 
     @staticmethod
-    def fitness_formula(sgn, x, xhalf, phi):
-        return 1.0 / (1 + np.exp(sgn * phi * (x - xhalf)))
+    def fit_formula(x, x_half, phi_x):
+        """This method returns the fitness formula used to calculate
+        the physical condition (fitness) of an animal (pop_object).
+
+        * Parameters:   x:          int or float:   'age'
+                                                    'weight'
+                        x_half:     int or float:   'age_half'
+                                                    'weight_half'
+                        phi_x:   int or float:      'phi_age'
+                                                    'phi_weight'
+
+        * Formula: 1 / {1 + exp[phi_x('x' - 'x_1/2')]}
+
+        * Where used: calculate_fitness()
+
+        * returns: fit_formula: int or float
+        """
+        return 1.0 / (1 + math.exp(phi_x * (x - x_half)))
+
+    @classmethod
+    def check__phi_borders(cls, _phi):  # tested
+        """Check if the _phi calculated by the method
+        'calculate_fitness()' is inside of its required result
+        borders '0 <= _phi <= 1'"""
+        if not 0 <= _phi <= 1:
+            raise ValueError("The parameter '_phi' calculated "
+                             "is not in its borders 0 <= _phi <= 1")
 
     @classmethod  # tested
     def check_unknown_parameters(cls, params):
@@ -34,31 +60,62 @@ class Population:
     def __init__(self, age=0, weight=None):
 
         self.age = age
-        self.weight = random.gauss(self.parameters['w_birth'],
-                                   self.parameters['sigma_birth']) \
+        self.weight = rd.gauss(self.parameters['w_birth'],
+                               self.parameters['sigma_birth']) \
             if weight is None else weight
 
         self.fitness = self.calculate_fitness()
 
+    def calculate_fitness(self):
+        """This method calculates and returns the overall physical
+        condition (fitness) of an animal which is based on age and
+        weight using the formula:
+
+        _phi = if omega <= 0: 0
+               else: fit_formula('age', 'age_1/2', 'phi_age') X
+                     fit_formula(-'weight', 'weight_1/2', 'phi_weight')
+
+        * Method(s) required: fit_formula(x, x_half, phi_x)
+
+        * returns: _phi: int or float
+        """
+        _phi = 0 if self.weight <= 0 \
+            else (self.fit_formula(self.age,
+                                   self.parameters['a_half'],
+                                   self.parameters['phi_age']) *
+                  self.fit_formula(-1 * self.weight,
+                                   self.parameters['w_half'],
+                                   self.parameters['phi_weight']))
+        self.check__phi_borders(_phi)
+        return _phi
+
     def get_old(self):  # tested
+        """This method increases the age of the animal, in yearly
+        basis, by 1 year."""
         self.age += 1
 
-    def gain_weight(self, feed):
-        self.weight = self.weight + self.parameters["beta"] * feed
+    def gain_weight(self, ate):
+        self.weight += self.parameters["beta"] * ate
 
     def lose_weight(self):
-        self.weight = self.weight - (self.parameters["eta"] *
-                                     self.weight)
+        """This method decreases the weight of the animal, in yearly
+        basis, according to the weight_loss_rate.
+
+        * Formulas: weight_loss_rate:       'eta' * 'weight'
+                    yearly_weight_loss:     'weight' - 'weight_loss_rate'
+
+        * Notes: After the weight is decreased, the fitness of the
+        animal is updated by the method 'update_fitness()'.
+        """
+        weight_loss_rate = self.parameters["eta"] * self.weight
+        yearly_weight_loss = self.weight - weight_loss_rate
+        self.weight = yearly_weight_loss
         self.update_fitness()
 
-    def calculate_fitness(self):
-        return 0 if self.weight is 0 else \
-            (self.fitness_formula(+1, self.age,
-                                  self.parameters['a_half'],
-                                  self.parameters['phi_age']) *
-             self.fitness_formula(-1, self.weight,
-                                  self.parameters['w_half'],
-                                  self.parameters['phi_weight']))
+    def update_fitness(self):
+        """This method updates the calculation of parameter fitness of
+        the animal"""
+        self.fitness = self.calculate_fitness()
 
     def birth(self, number_specie_objects):
         k = self.parameters['zeta'] * (self.parameters['w_birth'] +
@@ -67,19 +124,16 @@ class Population:
         a = min(1, self.parameters['gamma'] * self.fitness *
                 (number_specie_objects - 1))
 
-        return random.random() < a and self.weight > k
+        return rd.random() < a and self.weight > k
 
     def update_weight_after_birth(self, weight):
         self.weight = self.parameters['xi'] * weight
         self.update_fitness()
 
-    def update_fitness(self):
-        self.fitness = self.calculate_fitness()
-
     def die(self):
         if self.fitness is 0:
             return True
-        elif random.random() < self.parameters['omega'] * \
+        elif rd.random() < self.parameters['omega'] * \
                 (1 - self.fitness):
             return True
         else:
@@ -101,39 +155,45 @@ class Herbivore(Population):
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
 
-    def herb_eating(self, f):
-        self.weight += self.parameters['beta'] * f
-        self.update_fitness()
-
 
 class Carnivore(Population):
-    parameters = {'w_birth': 8.0, 'sigma_birth': 1.5, 'beta': 0.9,
-                  'eta': 0.05, 'a_half': 40., 'phi_age': 0.2,
-                  'w_half': 10., 'phi_weight': 0.1, 'mu': 0.25,
-                  'lambda': 1, 'gamma': 0.2, 'zeta': 3.5, 'xi': 1.2,
-                  'omega': 0.4, 'F': 10.0, 'DeltaPhiMax': 10.0}
+    parameters = {'w_birth': 6.0, 'sigma_birth': 1.0, 'beta': 0.75,
+                  'eta': 0.125, 'a_half': 60.0, 'phi_age': 0.4,
+                  'w_half': 4.0, 'phi_weight': 0.4, 'mu': 0.4,
+                  'lambda': 1, 'gamma': 0.8, 'zeta': 3.5, 'xi': 1.1,
+                  'omega': 0.9, 'F': 50.0, 'DeltaPhiMax': 10.0}
 
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
 
-    def carn_eating_rule(self, herb_list):
-        feed = 0
-        c_fitness = self.calculate_fitness()
-        for herb in herb_list:
-            h_fitness = herb.calculate_fitness()
-            if h_fitness >= c_fitness:
-                prob = 0
-            elif 0 < (c_fitness -
-                      h_fitness) < self.parameters['DeltaPhiMax']:
-                prob = (c_fitness - h_fitness) / self.parameters[
-                    'DeltaPhiMax']
-            else:
-                prob = 1
-            # check if animal gets eaten
-            if random.random() < prob:
-                feed += herb.weight
-                herb_list.remove(herb)
+    def is_herb_killed(self, h_fitness):
+        """This method decides if a Carnivore will kill a prey
+        (Herbivore) according to the following conditions:
 
-                if feed >= self.parameters['F']:
-                    break
-        self.gain_weight(feed), self.update_fitness()
+        1. If phi_carn <= phi_herb:     p = 0
+        2. If 0 < 'phi_carn' - 'phi_herb' < 'DeltaPhiMax':
+                                        p = ('phi_carn' - 'phi_herb')
+                                            /'DeltaPhiMax'
+        3. otherwise:                   p =   1
+
+        :where:     'phi_herb':    h_fitness:   The herbivore fitness
+                    'phi_carn':    c_fitness:   The carnivore fitness
+                    'DeltaPhiMax:  d_phi_max:
+
+        *Note:      We use rd.random() to get a random number and check
+                    if is less than p, then a herbivore is killed or
+                    the herbivore escaped.
+
+        :returns    True if herbivore is killer else False
+        """
+        d_phi_max = self.parameters['DeltaPhiMax']
+        c_fitness = self.fitness
+
+        if c_fitness <= h_fitness:
+            p = 0
+        elif 0 < c_fitness - h_fitness < d_phi_max:
+            p = (c_fitness - h_fitness) / d_phi_max
+        else:
+            p = 1
+        rand_num = rd.random()
+        return rand_num < p

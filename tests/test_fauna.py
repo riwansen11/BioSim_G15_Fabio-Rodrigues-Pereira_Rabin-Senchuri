@@ -13,7 +13,7 @@ from src.biosim.simulation import BioSim
 from src.biosim.island import Island
 from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
-from src.biosim.fauna import Herbivore, Carnivore
+from src.biosim.fauna import Population, Herbivore, Carnivore
 
 
 def test_check_unknown_parameters():
@@ -32,21 +32,46 @@ def test_check_known_parameters():
 
 
 def test_animal_got_old():
-    """Test if the method 'get_old()' correctly increases in 1 year the
-    animal_object age"""
+    """Test if the method 'get_old()' correctly increases in 1 year a
+    specie_object age"""
     island_map = "OOOOO\nOJJJO\nOOOOO"
     ini_pop = [
         {
             "loc": (1, 2),
-            "pop": [{"species": "Herbivore", "age": 5, "weight": 20}],
+            "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+                    {"species": "Carnivore", "age": 4, "weight": 20}],
         }]
     t, loc = BioSim(island_map, ini_pop, None), (1, 2)
     herb_object = t.island.habitable_cells[loc].population[
         'Herbivore'][0]
-    herb_young = herb_object.age
+    carn_object = t.island.habitable_cells[loc].population[
+        'Carnivore'][0]
+    herb_age_1 = herb_object.age
+    carn_age_1 = carn_object.age
     herb_object.get_old()
-    herb_older = herb_object.age
-    assert herb_older is (herb_young + 1)
+    carn_object.get_old()
+    herb_age_2 = herb_object.age
+    carn_age_2 = carn_object.age
+    assert herb_age_2 is (herb_age_1 + 1)
+    assert carn_age_2 is (carn_age_1 + 1)
+
+
+def test_calculate_fitness_and_formula():
+    """Test if the method 'calculate_fitness()' correctly communicates to
+    the method 'fit_formula()' and returns the correct fitness of the
+    animal (pop_object)'"""
+    pass
+
+
+def test_check__phi_borders():
+    """Test if method 'check__phi_borders()' verifies the _phy
+    conditions '0 <= _phi <= 1' and returns an ValueError if  not
+    satisfied"""
+    with pytest.raises(ValueError):
+        Herbivore(1, 50).check__phi_borders(-0.9999)
+        Carnivore(1, 50).check__phi_borders(-0.9999)
+        Herbivore(1, 50).check__phi_borders(1.0001)
+        Carnivore(1, 50).check__phi_borders(1.0001)
 
 
 def test_create_animal():
@@ -61,12 +86,10 @@ def test_herbivore_params_keys():
     """ Tests that the given parameters are in the list of v
     parameters"""
     '''keys_list = ['w_birth', 'sigma_birth', 'beta', 'eta', 'a_half',
-                 'phi_age',
-                 'w_half', 'phi_weight', 'mu', 'lambda', 'gamma',
-                 'zeta',
-                 'xi', 'omega', 'F']
-    h = Herbivore()
-    assert h.parameters.keys() in keys_list'''
+                 'phi_age', 'w_half', 'phi_weight', 'mu', 'lambda',
+                 'gamma', 'zeta', 'xi', 'omega', 'F', 'DeltaPhiMax']
+    t = Herbivore(1, 50)
+    assert t.parameters.keys() in keys_list'''
     pass
 
 

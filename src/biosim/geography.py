@@ -39,41 +39,33 @@ class Cells:
         cls.check_non_negative_parameters('f_max', params)
         cls.parameters.update(params)
 
+    @classmethod
+    def propensity_list(cls, species, neighbour_cells):
+        """This method calls the method 'propensity()' to receive the
+         propensity value for each particular neighbour landscape cell.
+
+         Then, it calculates the propensity percentage, for each
+         propensity, dividing their propensity values by the sum of
+         all propensities.
+
+         :return: list of propensity percentages
+         """
+        propensities = [cell.propensity(species) for cell in
+                        neighbour_cells]
+        probability_list = [propensity / np.sum(propensities)
+                            for propensity in propensities]
+        return probability_list
+
     def __init__(self):
         self.population = {'Herbivore': [], 'Carnivore': []}
         self.new_population = {'Herbivore': [], 'Carnivore': []}
         self.fodder = 0
 
-
-    '''def sort_animals_by_fitness(self, specie, decreasing=False):  # ok
-        """This method sorts the population of a given specie. There
-        are 2 types of sorting, with increasing values of fitness
-        (decreasing=False) or decreasing values of fitness
-        (decreasing=True).
-
-        :param  specie:     string: 'Herbivore' or 'Carnivore'
-        :param  decreasing: bol:    True for decreasing fitness values;
-                                    False for increasing fitness values;
-        """
-        fitness, animals = [], []
-        for animal in self.population[specie]:
-            fitness.append(animal.fitness)
-            animals.append(animal)
-
-        animals_by_decreasing_fitness = dict(zip(fitness, animals))
-
-        sorted_stronger_weaker_herbivores = \
-            [animals_by_decreasing_fitness[i] for i in
-             sorted(animals_by_decreasing_fitness.keys(),
-                    reverse=decreasing)]
-
-        self.population[specie] = sorted_stronger_weaker_herbivores'''
-
     def herbivore_feed(self):  # tested
         """This method organizes the population of herbivores in order
         of greatest fitness (those who eat first) to worst. Then,
         per animal (herb_object), it is applied the herbivore eating
-        rule, as following:
+        rules, as following:
 
         * Notations:    F:  Animal´s appetite
                         f:  Available amount of fodder.
@@ -104,36 +96,54 @@ class Cells:
             self.fodder = available_fodder
 
     def carnivore_feed(self):
+        """This method organizes the population of carnivore in order
+        of greatest fitness (those who eat first) to worst. Then,
+        organizes the population of herbivore in order of worst fitness
+        (those who are eaten first) to greatest. Then, per animal
+        (carn_object), it is applied the carnivore eating rules,
+        as following:
+
+        1. Carnivores prey on herbivores on Jungle, Savannah and Desert
+        landscapes, but do not prey on each oder;
+        2. A carnivore tries to kill a herbivore per time, beginning
+        with the herbivore with worst fitness, and then to the next
+        herbivore until has eaten an amount 'F' of herbivore weight;
+        3. The probability to kill a herbivore is given by the method
+        'is_herb_killed(h_fitness)';
+        4. Every herbivore killed is removed from the population by the
+        python's built-in method '.remove()';
+        5. The carnivore weight increases by the method
+        'gain_weight(h_weight)';
+        6. The carnivore fitness is updated every time he eats, by the
+        method 'update_fitness()'.
+        """
         self.population['Carnivore'].sort(key=lambda h: h.fitness,
                                           reverse=True)
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
+
         for carn_object in self.population["Carnivore"]:
             c_ate = 0
             c_appetite = carn_object.parameters['F']
             c_food_desired = c_appetite - c_ate
-            # print(c_ate, c_appetite, c_food_desired)
-            # print(self.population['Herbivore'])
 
             for herb_object in self.population['Herbivore']:
                 h_fitness = herb_object.fitness
                 h_weight = herb_object.weight
-                is_herb_killed = carn_object.is_herb_killed(h_fitness)
-                # print(is_herb_killed, c_food_desired, 'lalala')
-                if c_food_desired <= 0:
-                    # print(c_food_desired <= 0)
-                    break
-                elif is_herb_killed:
-                    # print('is_killed', is_herb_killed)
+                is_killed = carn_object.is_herb_killed(h_fitness)
+
+                if is_killed:
                     if h_weight <= c_food_desired:
                         carn_object.gain_weight(h_weight)
                         carn_object.update_fitness()
-                        c_ate += h_weight
+                        c_food_desired -= h_weight
                         self.population["Herbivore"].remove(herb_object)
-                    else:
+
+                    elif h_weight > c_food_desired:
                         carn_object.gain_weight(c_food_desired)
                         carn_object.update_fitness()
-                        c_ate += c_food_desired
+                        c_food_desired -= c_food_desired
                         self.population["Herbivore"].remove(herb_object)
+                        break
 
     def get_old(self):  # tested
         """This method identifies each specie of animals and communicates
@@ -163,15 +173,17 @@ class Cells:
             specie_objects.extend(newborns)
 
     def propensity(self, specie):
-        num_animals = len(self.population[specie]) + len(
-            self.new_population[specie])
+        num_animals = len(self.population[specie]) + \
+                      len(self.new_population[specie])
+
         if specie == "Herbivore":
             appetite = Herbivore.parameters['F']
         else:
             appetite = Carnivore.parameters['F']
 
-        relevant_fodder = self.fodder if specie == "Herbivore" else \
-            self.total_herbivore_mass()
+        relevant_fodder = self.fodder if specie == "Herbivore" \
+            else self.total_herbivore_mass()
+        
         relative_abundance = self.relevant_abundance(num_animals,
                                                      appetite,
                                                      relevant_fodder)
@@ -182,27 +194,18 @@ class Cells:
             return np.exp(Carnivore.parameters['lambda'] *
                           relative_abundance)
 
-        # carnivore_propensity = np.exp(
-        #     Carnivore.parameters["lambda"] *
-        #     self.carnivore_fodder(specie))
-        #
-        # return tuple([herbivore_propensity, carnivore_propensity])
-
-    def propensity_list(self, species, neighbour_cells):
-        # if species == "Herbivore":
-
-        propensities = [cell.propensity(species)
-                        for cell in neighbour_cells]
-        probability_list = [propensity / np.sum(propensities)
-                            for propensity in propensities]
-        # else:
-        #     propensities = [cell.propensity(animals)
-        #                     for cell in neighbour_cells]
-        #     probability_list = [propensity / np.sum(propensities)
-        #                         for propensity in propensities]
-        return probability_list
-
     def migrate(self, neighbour_cell):
+        """
+        1. The animals migrate ate least once a year;
+        2. The migration depends on animals fitness and availability of
+        fodder in the neighboring cells;
+        3. Animals can only move to north, south, west and east,
+        according to the method 'neighbour_cells()';
+        4. Animals move according to the probability formula in
+        the method 'migration_chances()';
+        5.
+
+        """
         for species, animals in self.population.items():
             if len(animals) > 0:
                 probability_list = self.propensity_list(
@@ -211,8 +214,6 @@ class Cells:
                 migrated_animals = []
                 for animal in animals:
                     if animal.migration_chances():
-                        # self.choose_migration_cell(
-                        #   animal, neighbour_cells, probability_list)
                         rand_num = random.random()
                         n = 0
                         while rand_num >= cumulative_probability[n]:

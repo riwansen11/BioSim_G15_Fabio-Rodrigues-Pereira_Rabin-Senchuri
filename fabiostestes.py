@@ -5,21 +5,24 @@ from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
 import pandas as pd
 import math as math
 import numpy as np
+import random as rd
 
 island_map = "OOO\nOJO\nOOO"
 ini_herb = [
-        {"loc": (1, 1),
-         "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 40}
-                for _ in range(20)
-            ]}]
+    {"loc": (1, 1),
+     "pop": [
+         {"species": "Herbivore", "age": rd.randint(1, 10), "weight":
+             rd.randint(20, 60)}
+         for _ in range(200)
+     ]}]
 
 ini_carn = [
-        {"loc": (1, 1),
-         "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 40}
-                for _ in range(5)
-            ]}]
+    {"loc": (1, 1),
+     "pop": [
+         {"species": "Carnivore", "age": rd.randint(1, 10), "weight":
+             rd.randint(20, 60)}
+         for _ in range(200)
+     ]}]
 t = BioSim(island_map, ini_herb, None)
 t.add_population(ini_carn)
 loc = (1, 1)
@@ -54,7 +57,3 @@ print('carn_1_weight:', carn_1_weight)
 print('carn_1_fitness:', carn_1_fitness)
 
 t.simulate(1)'''
-
-
-
-

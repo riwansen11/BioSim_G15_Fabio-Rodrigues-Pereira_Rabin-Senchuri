@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
 import numpy as np
-from operator import attrgetter
 from src.biosim.fauna import Herbivore, Carnivore
 
 """
@@ -45,7 +44,7 @@ class Cells:
         self.new_population = {'Herbivore': [], 'Carnivore': []}
         self.fodder = 0
 
-    def sort_animals_by_fitness(self, specie, decreasing=False):  # ok
+    '''def sort_animals_by_fitness(self, specie, decreasing=False):  # ok
         """This method sorts the population of a given specie. There
         are 2 types of sorting, with increasing values of fitness
         (decreasing=False) or decreasing values of fitness
@@ -59,12 +58,15 @@ class Cells:
         for animal in self.population[specie]:
             fitness.append(animal.fitness)
             animals.append(animal)
+
         animals_by_decreasing_fitness = dict(zip(fitness, animals))
+
         sorted_stronger_weaker_herbivores = \
             [animals_by_decreasing_fitness[i] for i in
              sorted(animals_by_decreasing_fitness.keys(),
                     reverse=decreasing)]
-        self.population[specie] = sorted_stronger_weaker_herbivores
+
+        self.population[specie] = sorted_stronger_weaker_herbivores'''
 
     def herbivore_feed(self):  # tested
         """This method organizes the population of herbivores in order
@@ -81,7 +83,8 @@ class Cells:
                                                 w = 'beta' * (F - f)
                         3. else                 f = 0
         """
-        self.sort_animals_by_fitness('Herbivore', decreasing=True)
+        self.population['Herbivore'].sort(key=lambda h: h.fitness,
+                                          reverse=True)
         for herb_object in self.population['Herbivore']:
             h_ate = 0
             h_appetite = herb_object.parameters["F"]
@@ -100,26 +103,26 @@ class Cells:
             self.fodder = available_fodder
 
     def carnivore_feed(self):
-        self.sort_animals_by_fitness('Carnivore', decreasing=True)
-        self.sort_animals_by_fitness('Herbivore', decreasing=False)
-
+        self.population['Carnivore'].sort(key=lambda h: h.fitness,
+                                          reverse=True)
+        self.population['Herbivore'].sort(key=lambda h: h.fitness)
         for carn_object in self.population["Carnivore"]:
             c_ate = 0
             c_appetite = carn_object.parameters['F']
             c_food_desired = c_appetite - c_ate
-            print(c_ate, c_appetite, c_food_desired)
+            # print(c_ate, c_appetite, c_food_desired)
+            # print(self.population['Herbivore'])
 
-            # 1. try to hunt
-            for herb_object in self.population["Herbivore"]:
+            for herb_object in self.population['Herbivore']:
                 h_fitness = herb_object.fitness
                 h_weight = herb_object.weight
                 is_herb_killed = carn_object.is_herb_killed(h_fitness)
-                print(is_herb_killed, c_food_desired, 'lalala')
+                # print(is_herb_killed, c_food_desired, 'lalala')
                 if c_food_desired <= 0:
-                    print(c_food_desired <= 0)
+                    # print(c_food_desired <= 0)
                     break
                 elif is_herb_killed:
-                    print('is_killed', is_herb_killed)
+                    # print('is_killed', is_herb_killed)
                     if h_weight <= c_food_desired:
                         carn_object.gain_weight(h_weight)
                         carn_object.update_fitness()
@@ -130,20 +133,6 @@ class Cells:
                         carn_object.update_fitness()
                         c_ate += c_food_desired
                         self.population["Herbivore"].remove(herb_object)
-
-            # 2. not satisfied, then eats fodder:
-            available_fodder = self.fodder
-            if c_food_desired <= available_fodder:
-                available_fodder -= c_food_desired
-                carn_object.gain_weight(c_food_desired)
-                carn_object.update_fitness()
-            elif 0 < available_fodder < c_food_desired:
-                available_fodder = 0
-                ate = c_food_desired - available_fodder
-                carn_object.gain_weight(ate)
-                carn_object.update_fitness()
-            # set new amount of fodder available
-            self.fodder = available_fodder
 
     def get_old(self):  # tested
         """This method identifies each specie of animals and communicates

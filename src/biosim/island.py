@@ -129,6 +129,12 @@ class Island:
                     pop_object)
 
     def neighbour_cell(self, loc):  # tested
+        """This method localizes the neighbour cells (north, south,
+        west and east), checks if they are habitable and returns a
+        list with the landscape objects.
+
+        :return: list
+        """
         neighbours_loc = [(loc[0], loc[1] - 1), (loc[0] - 1, loc[1]),
                           (loc[0] + 1, loc[1]), (loc[0], loc[1] + 1)]
         neighbours = [self.habitable_cells[coordinates] for
@@ -151,12 +157,19 @@ class Island:
             """
             geo_object.grow_fodder_and_feed()
             # geo_object.add_newborns()
-            # geo_object.migrate(self.neighbour_cell(coordinate))
-            # geo_object.get_old()
-            # geo_object.lose_weight()
+            geo_object.migrate(self.neighbour_cell(coordinate))
+            geo_object.get_old()
+            geo_object.lose_weight()
             # geo_object.die()
 
     def get_population_numbers(self):  # tested
+        """This method checks the population number of each specie, by
+        coordinates, store them and returns a dictionary with {'Row': [
+        ], 'Col': [], 'Herbivore': [], 'Carnivore': []}.
+
+        :return: dict: {'Row': [], 'Col': [], 'Herbivore': [],
+                        'Carnivore': []}.
+        """
         population = {'Row': [], 'Col': [], 'Herbivore': [],
                       'Carnivore': []}
         for loc, geo_object in self.cells.items():

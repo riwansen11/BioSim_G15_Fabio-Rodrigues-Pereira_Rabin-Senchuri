@@ -9,7 +9,6 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import random as rd
-import numpy as np
 import math as math
 
 
@@ -47,6 +46,7 @@ class Population:
 
     @classmethod  # tested
     def check_unknown_parameters(cls, params):
+        """This method checks unknwn parameters."""
         for parameter in params.keys():
             if parameter not in cls.parameters.keys():
                 raise ValueError("Unknown parameter provided: "
@@ -54,11 +54,11 @@ class Population:
 
     @classmethod  # tested
     def set_parameters(cls, params):
+        """This method sets the parameter for the animals."""
         cls.check_unknown_parameters(params)
         cls.parameters.update(params)
 
     def __init__(self, age=0, weight=None):
-
         self.age = age
         self.weight = rd.gauss(self.parameters['w_birth'],
                                self.parameters['sigma_birth']) \
@@ -95,6 +95,8 @@ class Population:
         self.age += 1
 
     def gain_weight(self, ate):
+        """This method increases the weight of the animal, in yearly
+        basis, by the amount eaten times 'beta'."""
         self.weight += self.parameters["beta"] * ate
 
     def lose_weight(self):
@@ -140,8 +142,17 @@ class Population:
             return False
 
     def migration_chances(self):
+        """This method calculates the migration probability according to
+        the animal fitness times the parameter 'mu'.
+
+        * Note: The rd.random() is used to get a random number and
+        check if is less than the probability of migration, then a
+        animal migrates or not.
+
+        :returns    True if the animal migrates else False
+        """
         prob_move = self.parameters['mu'] * self.fitness
-        rand_num = np.random.random()
+        rand_num = rd.random()
         return rand_num < prob_move
 
 
@@ -180,9 +191,9 @@ class Carnivore(Population):
                     'phi_carn':    c_fitness:   The carnivore fitness
                     'DeltaPhiMax:  d_phi_max:
 
-        *Note:      We use rd.random() to get a random number and check
-                    if is less than p, then a herbivore is killed or
-                    the herbivore escaped.
+        *Note:      The rd.random() is used to get a random number and
+                    check if is less than p, then a herbivore is
+                    killed or the herbivore escaped.
 
         :returns    True if herbivore is killer else False
         """

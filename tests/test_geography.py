@@ -158,7 +158,7 @@ def test_animal_death():
         {
             "loc": (1, 1),
             "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 40}
+                {"species": "Herbivore", "age": 5, "weight": rd.randint(1, 5)}
                 for _ in range(150)
             ],
         }
@@ -167,7 +167,7 @@ def test_animal_death():
         {
             "loc": (1, 1),
             "pop": [
-                {"species": "Carnivore", "age": 5, "weight": 2}
+                {"species": "Carnivore", "age": 5, "weight": rd.randint(1, 5)}
                 for _ in range(40)
             ],
         }
@@ -179,3 +179,62 @@ def test_animal_death():
     cell_object.die()
     assert len(cell_object.population["Carnivore"]) < 40
     assert len(cell_object.population["Herbivore"]) < 150
+
+
+def animal_propensity():
+    """
+    test  propensity to move to neighbouring cell
+    """
+    jungle = Jungle()
+
+    herbovore = Herbivore(10, 20)
+    assert jungle.propensity(herbovore) == pytest.approx(np.exp(120))
+
+    savannah = Savannah()
+    carnivore = Carnivore(10, 20)
+    assert savannah.propensity(carnivore) == pytest.approx(np.exp(60))
+
+    desert = Desert()
+    herbovore = Herbivore(10, 20)
+    assert desert.propensity(herbovore) == 1
+
+    ocean = Ocean()
+    herbovore = Herbivore(10, 20)
+    assert ocean.propensity(herbovore) == 0
+
+
+# def test_propensity_list():
+#     """test probability of propensity to move to neighbouring cell
+#     from current cell"""
+#     island_map = "OMO\nJJS\nODO"
+#     ini_herbs = [
+#         {
+#             "loc": (1, 1),
+#             "pop": [
+#                 {"species": "Herbivore", "age": 5, "weight": rd.randint(1, 5)}
+#                 for _ in range(5)
+#             ],
+#         }
+#     ]
+#     ini_carns = [
+#         {
+#             "loc": (1, 1),
+#             "pop": [
+#                 {"species": "Carnivore", "age": 5, "weight": rd.randint(1, 5)}
+#                 for _ in range(5)
+#             ],
+#         }
+#     ]
+#     t = BioSim(island_map, ini_herbs, None)
+#     t.add_population(ini_carns)
+#     loc = (1, 1)
+#     cell_object = t.island.cells[loc]
+#     left_neighboir = Jungle()
+#     right_neighbour = Savannah()
+#     top_neightbour = Mountain()
+#     down_neighbour = Desert()
+
+
+
+def test_animal_migration():
+    pass

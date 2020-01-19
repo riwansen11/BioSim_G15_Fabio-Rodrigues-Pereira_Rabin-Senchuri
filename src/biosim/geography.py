@@ -52,9 +52,12 @@ class Cells:
          """
         propensities = [cell.propensity(species) for cell in
                         neighbour_cells]
-        probability_list = [propensity / np.sum(propensities)
-                            for propensity in propensities]
-        return probability_list
+        if sum(propensities) == 0:
+            return 0
+        else:
+            probability_list = [propensity / np.sum(propensities)
+                                for propensity in propensities]
+            return probability_list
 
     def __init__(self):
         self.population = {'Herbivore': [], 'Carnivore': []}
@@ -206,24 +209,29 @@ class Cells:
         5.
 
         """
-        for species, animals in self.population.items():
-            if len(animals) > 0:
-                probability_list = self.propensity_list(
-                    species, neighbour_cell)
-                cumulative_probability = np.cumsum(probability_list)
-                migrated_animals = []
-                for animal in animals:
-                    if animal.migration_chances():
-                        rand_num = random.random()
-                        n = 0
-                        while rand_num >= cumulative_probability[n]:
-                            n += 1
-                        neighbour_cell[n].new_population[species].append(
-                            animal)
-                        migrated_animals.append(animal)
-                self.population[species] = [animal for animal in animals
-                                            if animal not in
-                                            migrated_animals]
+
+        def migrate(self, neighbour_cell):
+            for species, animals in self.population.items():
+                if len(animals) > 0:
+                    probability_list = self.propensity_list(
+                        species, neighbour_cell)
+                    if probability_list == 0:
+                        break
+                    cumulative_probability = np.cumsum(probability_list)
+                    migrated_animals = []
+                    for animal in animals:
+                        if animal.migration_chances():
+                            # self.choose_migration_cell(
+                            #   animal, neighbour_cells, probability_list)
+                            rand_num = random.random()
+                            n = 0
+                            while rand_num >= cumulative_probability[n]:
+                                n += 1
+                            neighbour_cell[n].new_population[species].append(animal)
+                            migrated_animals.append(animal)
+                    self.population[species] = [animal for animal in animals
+                                                if animal not in
+                                                migrated_animals]
 
     def add_new_migrated(self):
         """

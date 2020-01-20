@@ -9,11 +9,11 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import pytest
-from src.biosim.simulation import BioSim
-from src.biosim.island import Island
-from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
+from biosim.simulation import BioSim
+from biosim.island import Island
+from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
-from src.biosim.fauna import Herbivore, Carnivore
+from biosim.fauna import Herbivore, Carnivore
 
 
 def test_check_string_instance():

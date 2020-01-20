@@ -1,93 +1,41 @@
-from src.biosim.fauna import Population, Herbivore, Carnivore
-from src.biosim.simulation import BioSim
-from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
+from biosim.simulation import BioSim
+from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
-import pandas as pd
-import math as math
-import numpy as np
-import random as rd
+from biosim.fauna import Population, Herbivore, Carnivore
 
-island_map = "OOO\nOJO\nOOO"
-ini_herb = [
-    {"loc": (1, 1),
-     "pop": [
-         {"species": "Herbivore", "age": rd.randint(1, 10), "weight":
-             rd.randint(20, 60)}
-         for _ in range(20000)
-     ]}]
+island_map = '''OOOOO\nODDJO\nOJJJO\nOJJJO\nOOOOO'''
 
-ini_carn = [
-    {"loc": (1, 1),
-     "pop": [
-         {"species": "Carnivore", "age": rd.randint(1, 10), "weight":
-             rd.randint(20, 60)}
-         for _ in range(20)
-     ]}]
-t = BioSim(island_map, ini_herb, None)
-t.add_population(ini_carn)
-loc = (1, 1)
-t.island.cells[loc].carnivore_feed()
+ini_herbs = [{"loc": (2, 3),
+              "pop": [{"species": "Herbivore", "age": 5, "weight": 40}
+                      for _ in range(150)], }]
 
-'''herb_0_age = t.island.cells[loc].population['Herbivore'][0].age
-herb_0_weight = t.island.cells[loc].population['Herbivore'][0].weight
-herb_0_fitness = t.island.cells[loc].population['Herbivore'][0].fitness
-print('herb_0_age:', herb_0_age)
-print('herb_0_weight:', herb_0_weight)
-print('herb_0_fitness:', herb_0_fitness)
+ini_carns = [{"loc": (2, 3),
+              "pop": [{"species": "Carnivore", "age": 5, "weight": 40}
+                      for _ in range(40)], }]
 
-herb_1_age = t.island.cells[loc].population['Herbivore'][1].age
-herb_1_weight = t.island.cells[loc].population['Herbivore'][1].weight
-herb_1_fitness = t.island.cells[loc].population['Herbivore'][1].fitness
-print('herb_1_age:', herb_1_age)
-print('herb_1_weight:', herb_1_weight)
-print('herb_1_fitness:', herb_1_fitness)
+t = BioSim(island_map, ini_herbs, 1)
+t.set_animal_parameters("Herbivore", {"zeta": 3.2, "xi": 1.8})
+t.set_animal_parameters("Carnivore", {"a_half": 70,
+                                      "phi_age": 0.5,
+                                      "omega": 0.3,
+                                      "F": 65,
+                                      "DeltaPhiMax": 9.0, }, )
+t.set_landscape_parameters("J", {"f_max": 700})
+print(t.animal_distribution)
 
-carn_0_age = t.island.cells[loc].population['Carnivore'][0].age
-carn_0_weight = t.island.cells[loc].population['Carnivore'][0].weight
-carn_0_fitness = t.island.cells[loc].population['Carnivore'][0].fitness
-print('carn_0_age:', carn_0_age)
-print('carn_0_weight:', carn_0_weight)
-print('carn_0_fitness:', carn_0_fitness)
+a = 1
+while a < 5:
+    t.simulate(10)
+    print(t.island.cells[(2, 3)].parameters)
+    print(t.animal_distribution)
+    print(t.island.cells[(2, 3)].parameters)
+    a += 1
 
-carn_1_age = t.island.cells[loc].population['Carnivore'][1].age
-carn_1_weight = t.island.cells[loc].population['Carnivore'][1].weight
-carn_1_fitness = t.island.cells[loc].population['Carnivore'][1].fitness
-print('carn_1_age:', carn_1_age)
-print('carn_1_weight:', carn_1_weight)
-print('carn_1_fitness:', carn_1_fitness)
+t.add_population(ini_carns)
 
-t.simulate(1)
-
-
-
-
-global herb_object, h_w, h_f, c_food_desired
-        self.population['Carnivore'].sort(key=lambda h: h.fitness,
-                                          reverse=True)
-        self.population['Herbivore'].sort(key=lambda h: h.fitness)
-        for carn_object in self.population["Carnivore"]:
-            c_appetite = carn_object.parameters['F']
-            c_ate = 0
-            c_food_desired = c_appetite - c_ate
-
-            while not c_food_desired <= 0:
-                for herb_object in self.population['Herbivore']:
-                    h_w = herb_object.weight
-                    h_f = herb_object.fitness
-                    if carn_object.is_herb_killed(h_f):
-                        print('Killed:')
-                        print('Food desired', c_food_desired)
-                        if h_w <= c_food_desired:
-                            print('h_weight <= c_food_desired', h_w, c_food_desired)
-                            carn_object.gain_weight(h_w)
-                            carn_object.update_fitness()
-                            c_food_desired -= h_w
-                            print('killed', herb_object)
-                            self.population["Herbivore"].remove(herb_object)
-                        elif h_w > c_food_desired:
-                            print('h_weight > c_food_desired', h_w, c_food_desired)
-                            carn_object.gain_weight(c_food_desired)
-                            carn_object.update_fitness()
-                            c_food_desired -= c_food_desired
-                            print('killed', herb_object)
-                            self.population["Herbivore"].remove(herb_object)'''
+b = 1
+print(t.animal_distribution)
+while b < 10:
+    t.simulate(10)
+    print(t.animal_distribution)
+    b += 1

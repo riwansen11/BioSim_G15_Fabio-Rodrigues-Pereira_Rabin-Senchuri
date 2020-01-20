@@ -9,9 +9,9 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import textwrap
-from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
+from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
-from src.biosim.fauna import Herbivore, Carnivore
+from biosim.fauna import Herbivore, Carnivore
 
 
 class Island:
@@ -153,21 +153,22 @@ class Island:
         return neighbours
 
     def yearly_cycle(self):
+        """This method calls, in order, the methods that compound
+                    the yearly cycle dynamics of the island, such that:
+
+                    1. Growing of fodder;
+                    2. Animal's feeding;
+                    3. Animals's birth;
+                    4. Animal's migration;
+                    5. Animal's aging;
+                    6. Animal's weight loss;
+                    7. Animal's death.
+                    """
         for coordinate, geo_object in self.habitable_cells.items():
-            """This method calls, in order, the methods that compound 
-            the yearly cycle dynamics of the island, such that:
-            
-            1. Growing of fodder;
-            2. Animal's feeding;
-            3. Animals's birth;
-            4. Animal's migration;
-            5. Animal's aging;
-            6. Animal's weight loss;
-            7. Animal's death.
-            """
             geo_object.grow_fodder_and_feed()
             geo_object.add_newborns()
             geo_object.migrate(self.neighbour_cell(coordinate))
+            geo_object.add_new_migrated()
             geo_object.get_old()
             geo_object.lose_weight()
             geo_object.die()
@@ -177,16 +178,16 @@ class Island:
         coordinates, store them and returns a dictionary with {'Row': [
         ], 'Col': [], 'Herbivore': [], 'Carnivore': []}.
 
-        :return: dict: {'Row': [], 'Col': [], 'Herbivore': [],
-                        'Carnivore': []}.
+        :return: dict: {'Row': [], 'Col': [], 'herbivore': [],
+                        'carnivore': []}.
         """
-        population = {'Row': [], 'Col': [], 'Herbivore': [],
-                      'Carnivore': []}
+        population = {'Row': [], 'Col': [], 'herbivore': [],
+                      'carnivore': []}
         for loc, geo_object in self.cells.items():
             population['Row'].append(loc[0])
             population['Col'].append(loc[1])
-            population['Herbivore'].append(
+            population['herbivore'].append(
                 len(geo_object.population['Herbivore']))
-            population['Carnivore'].append(
+            population['carnivore'].append(
                 len(geo_object.population['Carnivore']))
         return population

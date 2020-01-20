@@ -8,9 +8,8 @@ written for the INF200 project January 2019.
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
-import random
 import numpy as np
-from src.biosim.fauna import Herbivore, Carnivore
+from biosim.fauna import Herbivore, Carnivore
 
 
 class Cells:
@@ -107,11 +106,7 @@ class Cells:
             elif 0 < available_fodder < h_appetite:
                 available_fodder = 0
                 h_ate += h_appetite - available_fodder
-            # gain weight
             herb_object.gain_weight(h_ate)
-            # update fitness
-            herb_object.update_fitness()
-            # set new amount of fodder available
             self.fodder = available_fodder
 
     def carnivore_feed(self):
@@ -140,7 +135,29 @@ class Cells:
                                           reverse=True)
         self.population['Herbivore'].sort(key=lambda h: h.fitness)
 
-        for carn_object in self.population["Carnivore"]:
+        for carnivore in self.population['Carnivore']:
+            appetite = carnivore.parameters['F']
+            food_intake = 0
+            survivors = []
+            for idx, herbivore in enumerate(
+                    self.population['Herbivore']):
+                if food_intake >= appetite:
+                    survivors.extend(
+                        self.population['Herbivore'][idx:])
+                    break
+                elif carnivore.is_herb_killed(herbivore.fitness):
+                    desired_amount = appetite - food_intake
+                    if herbivore.weight <= desired_amount:
+                        food_intake += herbivore.weight
+                    elif herbivore.weight > desired_amount:
+                        food_intake += desired_amount
+                else:
+                    survivors.append(herbivore)
+            carnivore.weight += carnivore.parameters['beta'] * food_intake
+            carnivore.update_fitness()
+            self.population['Herbivore'] = survivors
+
+        '''for carn_object in self.population["Carnivore"]:
             c_ate = 0
             c_appetite = carn_object.parameters['F']
             c_food_desired = c_appetite - c_ate
@@ -162,7 +179,7 @@ class Cells:
                         carn_object.update_fitness()
                         c_food_desired -= c_food_desired
                         self.population["Herbivore"].remove(herb_object)
-                        break
+                        break'''
 
     def get_old(self):  # tested
         """This method identifies each specie of animals and communicates
@@ -188,7 +205,7 @@ class Cells:
             for animal_object in specie_objects:
                 if animal_object.birth(len(specie_objects)):
                     newborn = type(animal_object)()
-                    animal_object.\
+                    animal_object. \
                         update_weight_after_birth(newborn.weight)
                     newborns.append(newborn)
             specie_objects.extend(newborns)
@@ -197,19 +214,18 @@ class Cells:
         num_animals = len(self.population[specie]) + \
                       len(self.new_population[specie])
 
-        if specie == "Herbivore":
+        if specie is "Herbivore":
             appetite = Herbivore.parameters['F']
         else:
             appetite = Carnivore.parameters['F']
 
-        # relevant fodder
-        relevant_fodder = self.fodder if specie == "Herbivore" \
+        relevant_fodder = self.fodder if specie is "Herbivore" \
             else self.total_herbivore_mass()
-        
+
         relative_abundance = self.relative_abundance(num_animals,
                                                      appetite,
                                                      relevant_fodder)
-        if specie == "Herbivore":
+        if specie is "Herbivore":
             return np.exp(Herbivore.parameters['lambda'] *
                           relative_abundance)
         else:
@@ -246,7 +262,7 @@ class Cells:
                 migrated_animals = []
                 for animal in animals:
                     if animal.migration_chances():
-                        rand_num = random.random()
+                        rand_num = np.random.random()
                         n = 0
                         while rand_num >= cumulative_probability[n]:
                             n += 1
@@ -256,6 +272,16 @@ class Cells:
                 self.population[species] = [animal for animal in animals
                                             if animal not in
                                             migrated_animals]
+
+    def add_new_migrated(self):
+        """
+        Add newly migrated animals to the cell
+
+        """
+        for species in self.population.keys():
+            new_pop = self.new_population[species]
+            self.population[species].extend(new_pop)
+            self.new_population[species] = []
 
     def total_herbivore_mass(self):
         """This method returns the sum of the total mass of all
@@ -322,9 +348,7 @@ class Savannah(Cells):
         """
         alpha = self.parameters['alpha']
         f_max = self.parameters['f_max']
-        f = self.fodder
-        if f is not f_max:  # means not first year of the simulation
-            self.fodder += alpha * (f_max - f)
+        self.fodder += alpha * (f_max - self.fodder)
         self.herbivore_feed(), self.carnivore_feed()
 
 

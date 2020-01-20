@@ -9,7 +9,7 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import pytest
-from src.biosim.simulation import BioSim
+from biosim.simulation import BioSim
 
 
 def test_set_animal_parameters():

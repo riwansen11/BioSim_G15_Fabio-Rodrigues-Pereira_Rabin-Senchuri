@@ -10,10 +10,10 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import pytest
 import random as rd
-from src.biosim.simulation import BioSim
-from src.biosim.geography import Cells, Jungle, Savannah, Desert, \
+from biosim.simulation import BioSim
+from biosim.geography import Cells, Jungle, Savannah, Desert, \
     Ocean, Mountain
-from src.biosim.fauna import Herbivore, Carnivore
+from biosim.fauna import Herbivore, Carnivore
 
 
 def test_check_unknown_parameters():

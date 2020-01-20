@@ -14,6 +14,7 @@ from biosim.simulation import BioSim
 from biosim.geography import Cells, Jungle, Savannah, Desert, \
     Ocean, Mountain
 from biosim.fauna import Herbivore, Carnivore
+import numpy as np
 
 
 def test_check_unknown_parameters():
@@ -93,27 +94,147 @@ def test_herbivore_feed():
 
 def test_carnivore_feed():
     """Many testes for the method 'carnivore_feed()':
-    1. If there are any succeed hunt, given by the method
-    'is_herb_killed()'.
+    1. Test carnivore weight increases after feeding hrbivor
     """
     island_map = "OOO\nOJO\nOOO"
-    ini_herb = [
-        {"loc": (1, 1),
-         "pop": [
-             {"species": "Herbivore", "age": rd.randint(1, 10), "weight":
-                 rd.randint(20, 60)}
-             for _ in range(200)
-         ]}]
-
-    ini_carn = [
-        {"loc": (1, 1),
-         "pop": [
-             {"species": "Carnivore", "age": rd.randint(1, 10), "weight":
-                 rd.randint(20, 60)}
-             for _ in range(200)
-         ]}]
-    t = BioSim(island_map, ini_herb, None)
-    t.add_population(ini_carn)
+    ini_herbs = [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 40}
+                for _ in range(150)
+            ],
+        }
+    ]
+    ini_carns = [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": 40}
+                for _ in range(40)
+            ],
+        }
+    ]
+    t = BioSim(island_map, ini_herbs, None)
+    t.add_population(ini_carns)
     loc = (1, 1)
-    t.island.cells[loc].carnivore_feed()
+    cell_object = t.island.cells[loc]
+    carn_start_weight = np.sum(
+        carn.weight for carn in cell_object.population['Carnivore'])
+    cell_object.carnivore_feed()
+    carn_new_weight = np.sum(
+        carn.weight for carn in cell_object.population['Carnivore'])
 
+    assert carn_start_weight < carn_new_weight
+
+
+def test_animal_number_increases_after_birth():
+    """
+    Test that the number of animals in the cell increases
+    after birth
+    """
+    island_map = "OOO\nOJO\nOOO"
+    ini_herbs = [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": 40}
+                for _ in range(150)
+            ],
+        }
+    ]
+    t = BioSim(island_map, ini_herbs, None)
+    loc = (1, 1)
+    cell_object = t.island.cells[loc]
+    before_birth_t0tal_animal = len(cell_object.population['Herbivore'])
+    cell_object.add_newborns()
+
+    assert len(cell_object.population['Herbivore']) > before_birth_t0tal_animal
+
+
+def test_animal_death():
+    island_map = "OOO\nOJO\nOOO"
+    ini_herbs = [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Herbivore", "age": 5, "weight": rd.randint(1, 5)}
+                for _ in range(150)
+            ],
+        }
+    ]
+    ini_carns = [
+        {
+            "loc": (1, 1),
+            "pop": [
+                {"species": "Carnivore", "age": 5, "weight": rd.randint(1, 5)}
+                for _ in range(40)
+            ],
+        }
+    ]
+    t = BioSim(island_map, ini_herbs, None)
+    t.add_population(ini_carns)
+    loc = (1, 1)
+    cell_object = t.island.cells[loc]
+    cell_object.die()
+    assert len(cell_object.population["Carnivore"]) < 40
+    assert len(cell_object.population["Herbivore"]) < 150
+
+
+def animal_propensity():
+    """
+    test  propensity to move to neighbouring cell
+    """
+    jungle = Jungle()
+
+    herbovore = Herbivore(10, 20)
+    assert jungle.propensity(herbovore) == pytest.approx(np.exp(120))
+
+    savannah = Savannah()
+    carnivore = Carnivore(10, 20)
+    assert savannah.propensity(carnivore) == pytest.approx(np.exp(60))
+
+    desert = Desert()
+    herbovore = Herbivore(10, 20)
+    assert desert.propensity(herbovore) == 1
+
+    ocean = Ocean()
+    herbovore = Herbivore(10, 20)
+    assert ocean.propensity(herbovore) == 0
+
+
+# def test_propensity_list():
+#     """test probability of propensity to move to neighbouring cell
+#     from current cell"""
+#     island_map = "OMO\nJJS\nODO"
+#     ini_herbs = [
+#         {
+#             "loc": (1, 1),
+#             "pop": [
+#                 {"species": "Herbivore", "age": 5, "weight": rd.randint(1, 5)}
+#                 for _ in range(5)
+#             ],
+#         }
+#     ]
+#     ini_carns = [
+#         {
+#             "loc": (1, 1),
+#             "pop": [
+#                 {"species": "Carnivore", "age": 5, "weight": rd.randint(1, 5)}
+#                 for _ in range(5)
+#             ],
+#         }
+#     ]
+#     t = BioSim(island_map, ini_herbs, None)
+#     t.add_population(ini_carns)
+#     loc = (1, 1)
+#     cell_object = t.island.cells[loc]
+#     left_neighboir = Jungle()
+#     right_neighbour = Savannah()
+#     top_neightbour = Mountain()
+#     down_neighbour = Desert()
+
+
+
+def test_animal_migration():
+    pass

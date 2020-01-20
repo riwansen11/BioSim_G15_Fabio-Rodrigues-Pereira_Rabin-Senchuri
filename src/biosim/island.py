@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 """
-This is the Island model which functions with the BioSim package 
-written for the INF200 project January 2019.
+This is the Island model which functions with the BioSim package written
+for the INF200 project January 2019.
 """
 
-__author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
-__email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+_author_ = "Fábio Rodrigues Pereira and Rabin Senchuri"
+_email_ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import textwrap
 from src.biosim.geography import Ocean, Savannah, Mountain, Jungle, \
@@ -24,29 +24,39 @@ class Island:
 
     @staticmethod  # tested
     def check_string_instance(argument):
+        """This method checks if the argument given by the user is a
+        string and raises a TypeError if necessary."""
         if not isinstance(argument, str):
-            raise TypeError('Argument *{}* must be provided as '
+            raise TypeError('Argument {} must be provided as '
                             'string'.format(argument))
 
     @staticmethod  # tested
     def check_list_instance(argument):
+        """This method checks if the argument given by the user is a
+        list and raises a TypeError if necessary."""
         if not isinstance(argument, list):
-            raise TypeError('Argument *{}* must be provided as '
+            raise TypeError('Argument {} must be provided as '
                             'list'.format(argument))
 
     @staticmethod  # tested
     def check_dict_instance(argument):
+        """This method checks if the argument given by the user is a
+        dictionary and raises a TypeError if necessary."""
         if not isinstance(argument, dict):
-            raise TypeError('Argument *{}* must be provided as '
+            raise TypeError('Argument {} must be provided as '
                             'dictionary'.format(argument))
 
     @staticmethod  # tested
     def list_geo_cells(island_map):
+        """This method makes a multiline-string accessible and
+        compatible to the others method."""
         geos = textwrap.dedent(island_map).splitlines()
         return [list(row.strip()) for row in geos]
 
     @staticmethod  # tested
     def check_invalid_line_lengths(geos):
+        """This method checks the length of each line of the map given
+        by the user and raises a ValueError if not the same."""
         length_count = [len(row) for row in geos]
         for i in length_count:
             if i is not length_count[0]:
@@ -74,7 +84,7 @@ class Island:
     def check_coordinates_exists(cls, coordinates, cells):
         cls.check_dict_instance(cells)
         if coordinates not in cells.keys():
-            raise ValueError('These *{}* coordinates are not '
+            raise ValueError('These {} coordinates are not '
                              'found'.format(coordinates))
 
     @classmethod
@@ -82,7 +92,7 @@ class Island:
         cls.check_dict_instance(cells)
         if type(cells[coordinates]) not in \
                 cls.habitable_geos.values():
-            raise TypeError('This *{}* area is not '
+            raise TypeError('This {} area is not '
                             'habitable'.format(coordinates))
 
     def __init__(self, island_map):
@@ -143,40 +153,41 @@ class Island:
         return neighbours
 
     def yearly_cycle(self):
+        """This method calls, in order, the methods that compound
+                    the yearly cycle dynamics of the island, such that:
+
+                    1. Growing of fodder;
+                    2. Animal's feeding;
+                    3. Animals's birth;
+                    4. Animal's migration;
+                    5. Animal's aging;
+                    6. Animal's weight loss;
+                    7. Animal's death.
+                    """
         for coordinate, geo_object in self.habitable_cells.items():
-            """This method calls, in order, the methods that compound 
-            the yearly cycle dynamics of the island, such that:
-            
-            1. Growing of fodder;
-            2. Animal's feeding;
-            3. Animals's birth;
-            4. Animal's migration;
-            5. Animal's aging;
-            6. Animal's weight loss;
-            7. Animal's death.
-            """
             geo_object.grow_fodder_and_feed()
-            # geo_object.add_newborns()
+            geo_object.add_newborns()
             geo_object.migrate(self.neighbour_cell(coordinate))
+            geo_object.add_new_migrated()
             geo_object.get_old()
             geo_object.lose_weight()
-            # geo_object.die()
+            geo_object.die()
 
     def get_population_numbers(self):  # tested
         """This method checks the population number of each specie, by
         coordinates, store them and returns a dictionary with {'Row': [
         ], 'Col': [], 'Herbivore': [], 'Carnivore': []}.
 
-        :return: dict: {'Row': [], 'Col': [], 'Herbivore': [],
-                        'Carnivore': []}.
+        :return: dict: {'Row': [], 'Col': [], 'herbivore': [],
+                        'carnivore': []}.
         """
-        population = {'Row': [], 'Col': [], 'Herbivore': [],
-                      'Carnivore': []}
+        population = {'Row': [], 'Col': [], 'herbivore': [],
+                      'carnivore': []}
         for loc, geo_object in self.cells.items():
             population['Row'].append(loc[0])
             population['Col'].append(loc[1])
-            population['Herbivore'].append(
+            population['herbivore'].append(
                 len(geo_object.population['Herbivore']))
-            population['Carnivore'].append(
+            population['carnivore'].append(
                 len(geo_object.population['Carnivore']))
         return population

@@ -23,7 +23,7 @@ class Population:
 
         Formula and conditions:
         ----------
-        q = 1.0 / (1 + \e^{\pm * \phi * (x - x_{1/2} )})
+            q = 1.0 / (1 + \\e^{\\pm * \\phi * (x - x_{1/2} )})
 
         Parameters
         ----------

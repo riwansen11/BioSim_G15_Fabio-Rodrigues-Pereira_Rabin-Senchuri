@@ -37,6 +37,35 @@ class Population:
         return 1.0 / (1 + np.exp(sign * phi_x * (x - x_half)))
 
     @classmethod
+    def calculate_fitness(cls, age, weight, parameters):
+        """This method calculates and returns the overall physical
+        condition (fitness) of an animal which is based on age and
+        weight using the formula:
+
+        phi = if omega <= 0: 0
+               else: fit_formula('age', 'age_1/2', 'phi_age') X
+                     fit_formula(-'weight', 'weight_1/2', 'phi_weight')
+
+        * Method(s) required: fit_formula(x, x_half, phi_x).
+
+        * returns: phi: int or float.
+        """
+        phi = 0
+
+        if weight is 0:
+            phi = 0
+
+        else:
+            phi = cls.fit_formula(1, age,
+                                  parameters['a_half'],
+                                  parameters['phi_age']) \
+                  * cls.fit_formula(-1, weight,
+                                    parameters['w_half'],
+                                    parameters['phi_weight'])
+        cls.check__phi_borders(phi)
+        return phi
+
+    @classmethod
     def check__phi_borders(cls, phi):  # tested
         """Check if the _phi calculated by the method
         'calculate_fitness()' is inside of its required result
@@ -63,64 +92,30 @@ class Population:
         self.age = age
         self.weight = np.random.normal(self.parameters['w_birth'],
                                        self.parameters['sigma_birth']) \
-            if weight is None else weight
+            if self.age is 0 else weight
 
-        self.fitness = self.calculate_fitness()
+        self.fitness = self.calculate_fitness(self.age, self.weight,
+                                              self.parameters)
 
-    def get_old(self):  # tested
-        """This method increases the age of the animal, in yearly
-        basis, by 1 year."""
-        self.age += 1
-
-    def gain_weight(self, ate):
+    def gain_weight(self, amount_eaten):
         """This method increases the weight of the animal, in yearly
         basis, by the amount eaten times 'beta'."""
-        self.weight += self.parameters["beta"] * ate
+        self.weight += self.parameters['beta'] * amount_eaten
         self.update_fitness()
 
-    def lose_weight(self):  # eta or xi ?
-        """This method decreases the weight of the animal, in yearly
-        basis, according to the weight_loss_rate.
-
-        * Formulas: weight_loss_rate:       'eta' * 'weight'
-                    yearly_weight_loss:     'weight' - 'weight_loss_rate'
-
-        * Notes: After the weight is decreased, the fitness of the
-        animal is updated by the method 'update_fitness()'.
-        """
-        self.weight -= self.parameters["eta"] * self.weight
+    def update_weight_after_birth(self, newborn_weight):
+        """This method, when called, updates the with of the animal
+        after gives birth, according to the formula: 'xi' * the baby
+        weight. Then it updates the fitness."""
+        self.weight -= self.parameters['xi'] * newborn_weight
         self.update_fitness()
-
-    def calculate_fitness(self):
-        """This method calculates and returns the overall physical
-        condition (fitness) of an animal which is based on age and
-        weight using the formula:
-
-        phi = if omega <= 0: 0
-               else: fit_formula('age', 'age_1/2', 'phi_age') X
-                     fit_formula(-'weight', 'weight_1/2', 'phi_weight')
-
-        * Method(s) required: fit_formula(x, x_half, phi_x).
-
-        * returns: phi: int or float.
-        """
-        if self.weight is 0:
-            phi = 0
-
-        else:
-            phi = self.fit_formula(1, self.age,
-                                   self.parameters['a_half'],
-                                   self.parameters['phi_age']) \
-                  * self.fit_formula(-1, self.weight,
-                                     self.parameters['w_half'],
-                                     self.parameters['phi_weight'])
-        self.check__phi_borders(phi)
-        return phi
 
     def update_fitness(self):
         """This method updates the calculation of parameter fitness of
         the animal."""
-        self.fitness = self.calculate_fitness()
+        self.fitness = self.calculate_fitness(self.age,
+                                              self.weight,
+                                              self.parameters)
 
     def birth(self, number_specie_objects):
         """
@@ -156,64 +151,7 @@ class Population:
 
         return np.random.random() < p and self.weight > k
 
-    def update_weight_after_birth(self, baby_weight):
-        """This method, when called, updates the with of the animal
-        after gives birth, according to the formula: 'xi' * the baby
-        weight. Then it updates the fitness."""
-        self.weight = self.parameters['xi'] * baby_weight
-        self.update_fitness()
-
-    def migration_chances(self):
-        """This method calculates the migration probability according to
-        the animal fitness times the parameter 'mu'.
-
-        * Note: The rd.random() is used to get a random number and
-        check if is less than the probability of migration, then a
-        animal migrates or not.
-
-        :returns    True if the animal migrates else False.
-        """
-        prob_move = self.parameters['mu'] * self.fitness
-        return np.random.random() < prob_move
-
-    def die(self):
-        """An animal dies:
-         1. with certainty if its fitness is 0;
-         2. with probability if 'omega' * (1 - its fitness).
-
-         :return: True if the animal dies else False.
-         """
-        if self.fitness is 0:
-            return True
-        elif np.random.random() < self.parameters['omega'] * \
-                (1 - self.fitness):
-            return True
-        else:
-            return False
-
-
-class Herbivore(Population):
-    parameters = {'w_birth': 8.0, 'sigma_birth': 1.5, 'beta': 0.9,
-                  'eta': 0.05, 'a_half': 40.0, 'phi_age': 0.2,
-                  'w_half': 10., 'phi_weight': 0.1, 'mu': 0.25,
-                  'lambda': 1, 'gamma': 0.2, 'zeta': 3.5, 'xi': 1.2,
-                  'omega': 0.4, 'F': 10.0, 'DeltaPhiMax': None}
-
-    def __init__(self, age=0, weight=None):
-        super().__init__(age, weight)
-
-
-class Carnivore(Population):
-    parameters = {'w_birth': 6.0, 'sigma_birth': 1.0, 'beta': 0.75,
-                  'eta': 0.125, 'a_half': 60.0, 'phi_age': 0.4,
-                  'w_half': 4.0, 'phi_weight': 0.4, 'mu': 0.4,
-                  'lambda': 1, 'gamma': 0.8, 'zeta': 3.5, 'xi': 1.1,
-                  'omega': 0.9, 'F': 50.0, 'DeltaPhiMax': 10.0}
-
-    def __init__(self, age=0, weight=None):
-        super().__init__(age, weight)
-
-    def is_herb_killed(self, h_fitness):
+    def will_kill(self, prey_fitness):
         """This method decides if a Carnivore will kill a prey
         (Herbivore) according to the following conditions:
 
@@ -233,14 +171,86 @@ class Carnivore(Population):
 
         :returns    True if herbivore is killer else False.
         """
+        hunter_fitness = self.fitness
+        hunter_prey_diff_fitness = hunter_fitness - prey_fitness
         d_phi_max = self.parameters['DeltaPhiMax']
-        c_fitness = self.fitness
 
-        if c_fitness <= h_fitness:
+        if hunter_fitness <= prey_fitness:
             p = 0
-        elif 0 < c_fitness - h_fitness < d_phi_max:
-            p = (c_fitness - h_fitness) / d_phi_max
+        elif 0 < hunter_prey_diff_fitness < d_phi_max:
+            p = hunter_prey_diff_fitness / d_phi_max
         else:
             p = 1
 
         return np.random.random() < p
+
+    def will_migrate(self):
+        """This method calculates the probability of moving to a
+        habitable neighbour cell. This takes in consideration the
+        parameter 'mu' times the animal fitness. Both species have the
+        chance of migrating, once a year, to north, south, west and east.
+
+        * Note: If np.random.random() number is less than the migrating
+        probability, then an animal migrates, else does not.
+
+        Returns
+        ----------
+            True if an animal migrates else False.
+        """
+        return np.random.random() < self.parameters['mu'] * self.fitness
+
+    def get_old(self):  # tested
+        """This method increases the age of the animal, in yearly
+        basis, by 1 year."""
+        self.age += 1
+
+    def lose_weight(self):  # eta or xi ?
+        """This method decreases the weight of the animal, in yearly
+        basis, according to the weight_loss_rate.
+
+        * Formulas: weight_loss_rate:       'eta' * 'weight'
+                    yearly_weight_loss:     'weight' - 'weight_loss_rate'
+
+        * Notes: After the weight is decreased, the fitness of the
+        animal is updated by the method 'update_fitness()'.
+        """
+        self.weight -= self.parameters['eta'] * self.weight
+        self.update_fitness()
+
+    def will_die(self):
+        """An animal dies:
+         1. If its fitness is 0, or
+         2. With probability if 'omega' * (1 - animal_fitness).
+
+        * Note: If np.random.random() number is less than the die
+        probability, then an animal dies, else does not.
+
+        Returns
+        ----------
+            True if the animal dies else False.
+         """
+        return True if self.fitness is 0 else \
+            np.random.random() < self.parameters['omega'] * (
+                    1 - self.fitness)
+
+
+class Herbivore(Population):
+    parameters = {'w_birth': 8.0, 'sigma_birth': 1.5, 'beta': 0.9,
+                  'eta': 0.05, 'a_half': 40.0, 'phi_age': 0.2,
+                  'w_half': 10., 'phi_weight': 0.1, 'mu': 0.25,
+                  'lambda': 1, 'gamma': 0.2, 'zeta': 3.5, 'xi': 1.2,
+                  'omega': 0.4, 'F': 10.0}
+
+    def __init__(self, age=0, weight=None):
+        super().__init__(age, weight)
+
+
+class Carnivore(Population):
+    parameters = {'w_birth': 6.0, 'sigma_birth': 1.0, 'beta': 0.75,
+                  'eta': 0.125, 'a_half': 60.0, 'phi_age': 0.4,
+                  'w_half': 4.0, 'phi_weight': 0.4, 'mu': 0.4,
+                  'lambda': 1, 'gamma': 0.8, 'zeta': 3.5, 'xi': 1.1,
+                  'omega': 0.9, 'F': 50.0, 'DeltaPhiMax': 10.0}
+
+    def __init__(self, age=0, weight=None):
+        super().__init__(age, weight)

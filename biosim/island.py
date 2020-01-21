@@ -9,10 +9,8 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import textwrap
-from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
-    Desert
-from biosim.fauna import Herbivore, Carnivore
-import numpy as np
+from .geography import Ocean, Savannah, Mountain, Jungle, Desert
+from .fauna import Herbivore, Carnivore
 
 
 class Island:

@@ -15,10 +15,10 @@ import pandas as pd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.colors as color
+from .island import Island
 import matplotlib.colors as mcolors
 import matplotlib.patches as mpatches
-from .island import Island
-
 matplotlib.use('macosx')
 
 # update these variables to point to your ffmpeg and convert binaries

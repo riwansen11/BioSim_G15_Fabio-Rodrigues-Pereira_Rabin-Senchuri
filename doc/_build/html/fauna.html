@@ -4,16 +4,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Fauna Module &#8212; BioSim 2020 0.0.1 documentation</title>
+    <title>Fauna Module &#8212; BioLab 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Geography Module" href="geography.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -34,6 +35,279 @@
 <span id="fauna-module"></span><h1>Fauna Module<a class="headerlink" href="#module-biosim.fauna" title="Permalink to this headline">¶</a></h1>
 <p>This is the Fauna model which functions with the BioSim package written
 for the INF200 project January 2019.</p>
+<dl class="class">
+<dt id="biosim.fauna.Carnivore">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.fauna.</code><code class="sig-name descname">Carnivore</code><span class="sig-paren">(</span><em class="sig-param">age=0</em>, <em class="sig-param">weight=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Carnivore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Carnivore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#biosim.fauna.Population" title="biosim.fauna.Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">biosim.fauna.Population</span></code></a></p>
+<p>The carnivores prey on herbivores in savannah, jungle and
+desert.</p>
+<p>Constructor for Carnivore class.</p>
+<dl class="attribute">
+<dt id="biosim.fauna.Carnivore.parameters">
+<code class="sig-name descname">parameters</code><em class="property"> = {'DeltaPhiMax': 10.0, 'F': 50.0, 'a_half': 60.0, 'beta': 0.75, 'eta': 0.125, 'gamma': 0.8, 'lambda': 1, 'mu': 0.4, 'omega': 0.9, 'phi_age': 0.4, 'phi_weight': 0.4, 'sigma_birth': 1.0, 'w_birth': 6.0, 'w_half': 4.0, 'xi': 1.1, 'zeta': 3.5}</em><a class="headerlink" href="#biosim.fauna.Carnivore.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="biosim.fauna.Herbivore">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.fauna.</code><code class="sig-name descname">Herbivore</code><span class="sig-paren">(</span><em class="sig-param">age=0</em>, <em class="sig-param">weight=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Herbivore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Herbivore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#biosim.fauna.Population" title="biosim.fauna.Population"><code class="xref py py-class docutils literal notranslate"><span class="pre">biosim.fauna.Population</span></code></a></p>
+<p>The herbivores find fodder in savannah and jungle, although
+they can reside in desert also.</p>
+<p>Constructor for Herbivore class.</p>
+<dl class="attribute">
+<dt id="biosim.fauna.Herbivore.parameters">
+<code class="sig-name descname">parameters</code><em class="property"> = {'F': 10.0, 'a_half': 40.0, 'beta': 0.9, 'eta': 0.05, 'gamma': 0.2, 'lambda': 1, 'mu': 0.25, 'omega': 0.4, 'phi_age': 0.2, 'phi_weight': 0.1, 'sigma_birth': 1.5, 'w_birth': 8.0, 'w_half': 10.0, 'xi': 1.2, 'zeta': 3.5}</em><a class="headerlink" href="#biosim.fauna.Herbivore.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="biosim.fauna.Population">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.fauna.</code><code class="sig-name descname">Population</code><span class="sig-paren">(</span><em class="sig-param">age=0</em>, <em class="sig-param">weight=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Constructor for the animals’s population.</p>
+<dl class="method">
+<dt id="biosim.fauna.Population.birth">
+<code class="sig-name descname">birth</code><span class="sig-paren">(</span><em class="sig-param">number_specie_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.birth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.birth" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates the probability of giving birth
+according to the following conditions:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>-&gt; If the number of animals of a species is 1, then the</dt><dd><p>probability is 0;</p>
+</dd>
+<dt>-&gt; The probability is also 0 if the weight of the animal is</dt><dd><p>less than ‘zeta’ * (‘w_birth’ + ‘sigma_birth’);</p>
+</dd>
+<dt>-&gt; Else, the probability is the minimum between 1 or</dt><dd><p>‘gamma’ * the animal fitness * (number of animals of
+the specie - 1);</p>
+</dd>
+<dt>-&gt; The rd.random() is used to get a random number and</dt><dd><p>check if is less than the probability of birth, then,
+if True, there is a offspring, else there is not.</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>number_specie_objects: int or float</p>
+</div></blockquote>
+<blockquote>
+<div><p>True if the animal gives birth else False.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.calculate_fitness">
+<em class="property">classmethod </em><code class="sig-name descname">calculate_fitness</code><span class="sig-paren">(</span><em class="sig-param">age</em>, <em class="sig-param">weight</em>, <em class="sig-param">parameters</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.calculate_fitness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.calculate_fitness" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates and returns the overall physical
+condition (fitness) of an animal which is based on age and
+weight using the formula:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>phi = if ‘omega’ &lt;= 0: 0</dt><dd><dl class="simple">
+<dt>else: fit_formula(‘age’, ‘age_1/2’, ‘phi_age’) X</dt><dd><p>fit_formula(-‘weight’, ‘weight_1/2’, ‘phi_weight’)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>age: int or float</p>
+<p>weight:  int or float</p>
+<p>parameters: str</p>
+</div></blockquote>
+<blockquote>
+<div><p>phi: int or float</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.check__phi_borders">
+<em class="property">classmethod </em><code class="sig-name descname">check__phi_borders</code><span class="sig-paren">(</span><em class="sig-param">phi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.check__phi_borders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.check__phi_borders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the _phi calculated by the method
+‘calculate_fitness()’ is inside of its required result
+borders ‘0 &lt;= phi &lt;= 1’ and raises a ValueError if necessary.</p>
+<blockquote>
+<div><p>phi: int or float</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.check_unknown_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">check_unknown_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.check_unknown_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.check_unknown_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks unknown parameters and raises a ValueError
+if necessary.</p>
+<blockquote>
+<div><p>params: dict</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.eat_herb">
+<code class="sig-name descname">eat_herb</code><span class="sig-paren">(</span><em class="sig-param">herbivores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.eat_herb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.eat_herb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.fauna.Population.fit_formula">
+<code class="sig-name descname">fit_formula</code><a class="reference internal" href="_modules/biosim/fauna.html#Population.fit_formula"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.fit_formula" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the fitness formula used to calculate
+the physical condition (fitness) of an animal (pop_object).</p>
+<p>1.0 / (1 + e^{pm * phi * (x - x_{1/2} )})</p>
+<blockquote>
+<div><dl class="simple">
+<dt>sign: int or float</dt><dd><p>The sign with identifies age (+) or weight (-);</p>
+</dd>
+<dt>x:  int or float</dt><dd><p>This is age or weight;</p>
+</dd>
+<dt>x_half: int or float</dt><dd><p>This is the parameter ‘age_half’ or ‘weight_half’;</p>
+</dd>
+<dt>phi_x: int or float</dt><dd><p>This is the parameter ‘phi_age’ or ‘phi_weight’.</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>The fitness formula calculated in float type.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.gain_weight">
+<code class="sig-name descname">gain_weight</code><span class="sig-paren">(</span><em class="sig-param">amount_eaten</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.gain_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.gain_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method increases the weight of the animal, in yearly
+basis, by the amount eaten times ‘beta’.</p>
+<blockquote>
+<div><p>amount_eaten: int or float</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.get_old">
+<code class="sig-name descname">get_old</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.get_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.get_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method increases the age of the animal, in yearly
+basis, by 1 year.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.lose_weight">
+<code class="sig-name descname">lose_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.lose_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.lose_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method decreases the weight of the animal, in yearly
+basis, according to the weight_loss_rate.</p>
+<blockquote>
+<div><p>-&gt; weight_loss_rate: ‘eta’ * ‘weight’;
+-&gt; yearly_weight_loss: ‘weight’ - ‘weight_loss_rate’;
+-&gt; After the weight is decreased, the fitness of the</p>
+<blockquote>
+<div><p>animal is updated by the method ‘update_fitness()’.</p>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.fauna.Population.parameters">
+<code class="sig-name descname">parameters</code><em class="property"> = {}</em><a class="headerlink" href="#biosim.fauna.Population.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.set_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">set_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.set_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.set_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method sets the parameters for the animals.</p>
+<blockquote>
+<div><p>params: dict</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.update_fitness">
+<code class="sig-name descname">update_fitness</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.update_fitness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.update_fitness" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method updates the calculation of the parameter
+fitness of the animal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.update_weight_after_birth">
+<code class="sig-name descname">update_weight_after_birth</code><span class="sig-paren">(</span><em class="sig-param">newborn_weight</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.update_weight_after_birth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.update_weight_after_birth" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method, when called, updates the with of the animal
+after gives birth, according to the formula: ‘xi’ * the baby
+weight. Then it updates the fitness.</p>
+<blockquote>
+<div><p>newborn_weight: int or float</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.will_die">
+<code class="sig-name descname">will_die</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.will_die"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.will_die" title="Permalink to this definition">¶</a></dt>
+<dd><p>An animal dies:</p>
+<blockquote>
+<div><p>-&gt; If its fitness is 0, or
+-&gt; With probability if ‘omega’ * (1 - animal_fitness).
+-&gt; If np.random.random() number is less than the die</p>
+<blockquote>
+<div><p>probability, then an animal dies, else does not.</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>True if the animal dies else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.will_kill">
+<code class="sig-name descname">will_kill</code><span class="sig-paren">(</span><em class="sig-param">prey_fitness</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.will_kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.will_kill" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method decides if a Carnivore will kill a prey
+(Herbivore) according to the following conditions:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>-&gt; If fitness of the carnivore &lt;= fitness of the herbivore,</dt><dd><p>then p = 0;</p>
+</dd>
+<dt>-&gt; If 0 &lt; (‘fitness of the carnivore’ -  ‘fitness of the</dt><dd><p>herbivore’) &lt; ‘DeltaPhiMax’, then p = (‘fitness of the
+carnivore’ - ‘fitness of the herbivore’) / ‘DeltaPhiMax’;</p>
+</dd>
+</dl>
+<p>-&gt; Otherwise: p =   1.
+-&gt; The rd.random() is used to get a random number and</p>
+<blockquote>
+<div><p>check if is less than p, then a herbivore is killed or
+the herbivore escapes.</p>
+</div></blockquote>
+</div></blockquote>
+<blockquote>
+<div><p>prey_fitness: int or float</p>
+</div></blockquote>
+<blockquote>
+<div><p>True if herbivore is killer else False.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.fauna.Population.will_migrate">
+<code class="sig-name descname">will_migrate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/fauna.html#Population.will_migrate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.fauna.Population.will_migrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates the probability of moving to a
+habitable neighbour cell. This takes in consideration the
+parameter ‘mu’ times the animal fitness. Both species have the
+chance of migrating, once a year, to north, south, west and east.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>-&gt; If np.random.random() number is less than the migrating</dt><dd><p>probability, then an animal migrates, else does not.</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>True if an animal migrates else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -43,7 +317,7 @@ for the INF200 project January 2019.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">BioSim 2020</a></h1>
+<h1 class="logo"><a href="index.html">BioLab</a></h1>
 
 
 
@@ -53,14 +327,18 @@ for the INF200 project January 2019.</p>
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="island.html">Island Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geography.html">Geography Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Fauna Module</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="geography.html" title="previous chapter">Geography Module</a></li>
   </ul></li>
 </ul>
 </div>
@@ -73,7 +351,7 @@ for the INF200 project January 2019.</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -87,10 +365,10 @@ for the INF200 project January 2019.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, Rabin, Fabio.
+      &copy;2018, Hans Ekkehard Plesser.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0+/08bbd52</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

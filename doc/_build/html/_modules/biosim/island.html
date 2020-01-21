@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>biosim.island &#8212; BioLab 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for biosim.island</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the Island model which functions with the BioSim package written</span>
+<span class="sd">for the INF200 project January 2019.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Fábio Rodrigues Pereira and Rabin Senchuri&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no&quot;</span>
+
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">.geography</span> <span class="kn">import</span> <span class="n">Ocean</span><span class="p">,</span> <span class="n">Savannah</span><span class="p">,</span> <span class="n">Mountain</span><span class="p">,</span> <span class="n">Jungle</span><span class="p">,</span> \
+    <span class="n">Desert</span>
+<span class="kn">from</span> <span class="nn">.fauna</span> <span class="kn">import</span> <span class="n">Herbivore</span><span class="p">,</span> <span class="n">Carnivore</span>
+
+
+<div class="viewcode-block" id="Island"><a class="viewcode-back" href="../../island.html#biosim.island.Island">[docs]</a><span class="k">class</span> <span class="nc">Island</span><span class="p">:</span>
+    <span class="n">habitable_geos</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="n">Savannah</span><span class="p">,</span> <span class="s1">&#39;J&#39;</span><span class="p">:</span> <span class="n">Jungle</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">Desert</span><span class="p">}</span>
+
+    <span class="n">fauna_classes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">:</span> <span class="n">Herbivore</span><span class="p">,</span> <span class="s1">&#39;Carnivore&#39;</span><span class="p">:</span> <span class="n">Carnivore</span><span class="p">}</span>
+
+    <span class="n">geo_classes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="n">Ocean</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="n">Savannah</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">:</span> <span class="n">Mountain</span><span class="p">,</span>
+                   <span class="s1">&#39;J&#39;</span><span class="p">:</span> <span class="n">Jungle</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="n">Desert</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">island_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the Island class.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_geo_cells</span><span class="p">(</span><span class="n">island_map</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_invalid_line_lengths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_invalid_boundary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_invalid_character</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_cells</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Island.check_string_instance"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_string_instance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_string_instance</span><span class="p">(</span><span class="n">argument</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks if the argument given by the user is a</span>
+<span class="sd">        string and raises a TypeError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            argument: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argument</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument *</span><span class="si">{}</span><span class="s1">* must be provided as &#39;</span>
+                            <span class="s1">&#39;string&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">argument</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Island.check_list_instance"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_list_instance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_list_instance</span><span class="p">(</span><span class="n">argument</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks if the argument given by the user is a</span>
+<span class="sd">        list and raises a TypeError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            argument: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argument</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument *</span><span class="si">{}</span><span class="s1">* must be provided as &#39;</span>
+                            <span class="s1">&#39;list&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">argument</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Island.check_dict_instance"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_dict_instance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_dict_instance</span><span class="p">(</span><span class="n">argument</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks if the argument given by the user is a</span>
+<span class="sd">        dictionary and raises a TypeError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            argument: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argument</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument *</span><span class="si">{}</span><span class="s1">* must be provided as &#39;</span>
+                            <span class="s1">&#39;dictionary&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">argument</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Island.list_geo_cells"><a class="viewcode-back" href="../../island.html#biosim.island.Island.list_geo_cells">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">list_geo_cells</span><span class="p">(</span><span class="n">island_map</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method makes a multiline-string accessible and</span>
+<span class="sd">        compatible to the others method.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            island_map: str</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            List of landscapes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">geos</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">island_map</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">geos</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Island.check_invalid_line_lengths"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_invalid_line_lengths">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_invalid_line_lengths</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks the length of each line of the map given</span>
+<span class="sd">        by the user and raises a ValueError if not the same.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            geos: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">length_count</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">geos</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">length_count</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">length_count</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Different line lengths detected&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Island.check_invalid_boundary"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_invalid_boundary">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_invalid_boundary</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks the boundary of the island that</span>
+<span class="sd">        must be only ocean and raises a ValueError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            geos: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">north</span> <span class="ow">in</span> <span class="n">geos</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">south</span> <span class="ow">in</span> <span class="n">geos</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">north</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;O&#39;</span> <span class="ow">or</span> <span class="n">south</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The boundary is not Ocean&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">geos</span><span class="p">:</span>
+            <span class="n">west</span><span class="p">,</span> <span class="n">east</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">west</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;O&#39;</span> <span class="ow">or</span> <span class="n">east</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The boundary is not Ocean&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Island.check_invalid_character"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_invalid_character">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_invalid_character</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">geos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks any invalid caracterer and raises a</span>
+<span class="sd">        ValueError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            geos: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">geos</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">letter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">geo_classes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid character identified&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Island.check_coordinates_exists"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_coordinates_exists">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_coordinates_exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">cells</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks if the coordinates exists and raises a</span>
+<span class="sd">        ValueError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            coordinates: tuple</span>
+
+<span class="sd">            geos: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">check_dict_instance</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">coordinates</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cells</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;These *</span><span class="si">{}</span><span class="s1">* coordinates are not &#39;</span>
+                             <span class="s1">&#39;found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coordinates</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Island.check_habitability"><a class="viewcode-back" href="../../island.html#biosim.island.Island.check_habitability">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_habitability</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">cells</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks if the coordinates are habitable and</span>
+<span class="sd">        raises a ValueError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            coordinates: tuple</span>
+
+<span class="sd">            cells: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">check_dict_instance</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cells</span><span class="p">[</span><span class="n">coordinates</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> \
+                <span class="bp">cls</span><span class="o">.</span><span class="n">habitable_geos</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;This *</span><span class="si">{}</span><span class="s1">* area is not &#39;</span>
+                            <span class="s1">&#39;habitable&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coordinates</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Island.create_cells"><a class="viewcode-back" href="../../island.html#biosim.island.Island.create_cells">[docs]</a>    <span class="k">def</span> <span class="nf">create_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method creates a dictionary with the coordinates on</span>
+<span class="sd">        keys and landscape objects on values.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geos</span><span class="p">))</span>
+               <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geos</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span>
+        <span class="n">geo</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_classes</span><span class="p">[</span><span class="n">geo</span><span class="p">]()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geos</span><span class="p">))</span>
+               <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geos</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">geo</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">habitable_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method creates a dictionary with only the coordinates</span>
+<span class="sd">        that are habitable and store the coordinates on keys and</span>
+<span class="sd">        landscape objects on values.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coordinates</span><span class="p">,</span> <span class="n">geo_objects</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">coordinate</span><span class="p">,</span> <span class="n">geo_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">geo_object</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">habitable_geos</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">coordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coordinate</span><span class="p">)</span>
+                <span class="n">geo_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">geo_object</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">geo_objects</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Island.set_parameters"><a class="viewcode-back" href="../../island.html#biosim.island.Island.set_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_key</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method sets the parameter for the landscapes and animals.</span>
+
+<span class="sd">        Parameter:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            param_key: str</span>
+
+<span class="sd">            params: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_string_instance</span><span class="p">(</span><span class="n">param_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_dict_instance</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">merged_classes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">fauna_classes</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_classes</span><span class="p">)</span>
+        <span class="n">merged_classes</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Island.add_population"><a class="viewcode-back" href="../../island.html#biosim.island.Island.add_population">[docs]</a>    <span class="k">def</span> <span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">given_pop</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method creates the population objects inside the</span>
+<span class="sd">        cells.</span>
+
+<span class="sd">        Parameter:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            given_pop: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_list_instance</span><span class="p">(</span><span class="n">given_pop</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">given_pop</span><span class="p">:</span>
+            <span class="n">coordinate</span> <span class="o">=</span> <span class="n">population</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span>
+            <span class="n">geo_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="n">coordinate</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_coordinates_exists</span><span class="p">(</span><span class="n">coordinate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_habitability</span><span class="p">(</span><span class="n">coordinate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pop_unit</span> <span class="ow">in</span> <span class="n">population</span><span class="p">[</span><span class="s1">&#39;pop&#39;</span><span class="p">]:</span>
+                <span class="n">species</span> <span class="o">=</span> <span class="n">pop_unit</span><span class="p">[</span><span class="s1">&#39;species&#39;</span><span class="p">]</span>
+                <span class="n">age_weight</span> <span class="o">=</span> <span class="p">(</span><span class="n">pop_unit</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">],</span> <span class="n">pop_unit</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
+                <span class="n">pop_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fauna_classes</span><span class="p">[</span><span class="n">species</span><span class="p">](</span><span class="o">*</span><span class="n">age_weight</span><span class="p">)</span>
+                <span class="n">geo_object</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">pop_object</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">pop_object</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Island.neighbour_cells"><a class="viewcode-back" href="../../island.html#biosim.island.Island.neighbour_cells">[docs]</a>    <span class="k">def</span> <span class="nf">neighbour_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method localizes the neighbour cells (north, south,</span>
+<span class="sd">        west and east), checks if they are habitable and returns a</span>
+<span class="sd">        list with the landscape objects.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            List with the habitable neighbours.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">neighbours_loc</span> <span class="o">=</span> <span class="p">[(</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                          <span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">neighbours</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">habitable_cells</span><span class="p">[</span><span class="n">coordinates</span><span class="p">]</span> <span class="k">for</span>
+                      <span class="n">coordinates</span> <span class="ow">in</span> <span class="n">neighbours_loc</span> <span class="k">if</span> <span class="n">coordinates</span> <span class="ow">in</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">habitable_cells</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">neighbours</span></div>
+
+<div class="viewcode-block" id="Island.yearly_cycle"><a class="viewcode-back" href="../../island.html#biosim.island.Island.yearly_cycle">[docs]</a>    <span class="k">def</span> <span class="nf">yearly_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method calls, in order, the methods that compound</span>
+<span class="sd">        the yearly cycle dynamics of the island, such that:</span>
+
+<span class="sd">            1. Growing of fodder;</span>
+<span class="sd">            2. Animal&#39;s feeding;</span>
+<span class="sd">            3. Animals&#39;s birth;</span>
+<span class="sd">            4. Animal&#39;s migration;</span>
+<span class="sd">            5. Animal&#39;s aging;</span>
+<span class="sd">            6. Animal&#39;s weight loss;</span>
+<span class="sd">            7. Animal&#39;s death.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">coord</span><span class="p">,</span> <span class="n">geo_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">habitable_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">geo_object</span><span class="o">.</span><span class="n">grow_fodder_and_feed</span><span class="p">()</span>
+            <span class="n">geo_object</span><span class="o">.</span><span class="n">add_newborns</span><span class="p">()</span>
+            <span class="n">geo_object</span><span class="o">.</span><span class="n">migrate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbour_cells</span><span class="p">(</span><span class="n">coord</span><span class="p">))</span>
+            <span class="n">geo_object</span><span class="o">.</span><span class="n">add_new_migrated</span><span class="p">()</span>
+            <span class="n">geo_object</span><span class="o">.</span><span class="n">lose_weight</span><span class="p">()</span>
+            <span class="n">geo_object</span><span class="o">.</span><span class="n">get_old</span><span class="p">()</span>
+            <span class="n">geo_object</span><span class="o">.</span><span class="n">die</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Island.get_population_numbers"><a class="viewcode-back" href="../../island.html#biosim.island.Island.get_population_numbers">[docs]</a>    <span class="k">def</span> <span class="nf">get_population_numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks the population number of each specie, by</span>
+<span class="sd">        coordinates, store them and returns a dictionary with {&#39;Row&#39;: [</span>
+<span class="sd">        ], &#39;Col&#39;: [], &#39;Herbivore&#39;: [], &#39;Carnivore&#39;: []}.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            Dictionary with the population numbers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Row&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Col&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Herbivore&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                      <span class="s1">&#39;Carnivore&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="k">for</span> <span class="n">loc</span><span class="p">,</span> <span class="n">geo_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">population</span><span class="p">[</span><span class="s1">&#39;Row&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">population</span><span class="p">[</span><span class="s1">&#39;Col&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">geo_object</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">]))</span>
+            <span class="n">population</span><span class="p">[</span><span class="s1">&#39;Carnivore&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">geo_object</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Carnivore&#39;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">population</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">BioLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../island.html">Island Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../geography.html">Geography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fauna.html">Fauna Module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Hans Ekkehard Plesser.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0+/08bbd52</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

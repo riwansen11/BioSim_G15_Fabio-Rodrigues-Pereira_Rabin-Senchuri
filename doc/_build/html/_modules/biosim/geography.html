@@ -1,0 +1,556 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>biosim.geography &#8212; BioLab 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for biosim.geography</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the Geography model which functions with the BioSim package</span>
+<span class="sd">written for the INF200 project January 2019.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Fábio Rodrigues Pereira and Rabin Senchuri&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.fauna</span> <span class="kn">import</span> <span class="n">Herbivore</span><span class="p">,</span> <span class="n">Carnivore</span>
+
+
+<div class="viewcode-block" id="Cells"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells">[docs]</a><span class="k">class</span> <span class="nc">Cells</span><span class="p">:</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the landscape cells.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Carnivore&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_population</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Carnivore&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Cells.cumsum"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.cumsum">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cumsum</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span> <span class="n">neighbours</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method generates a list with the probabilities of</span>
+<span class="sd">        migrating of a given animal according to its neighbours.</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            Prob = propensity / sum([all_propensities])</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            migrating_specie: str</span>
+<span class="sd">                String with &#39;Herbivore&#39; or &#39;Carnivore&#39;;</span>
+
+<span class="sd">            neighbour: list</span>
+<span class="sd">                List with, i.e., [Jungle, Savannah, ...].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            List with probabilities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">propensities</span> <span class="o">=</span> <span class="p">[</span><span class="n">neighbour</span><span class="o">.</span><span class="n">propensities</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span>
+                                               <span class="n">neighbour</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">neighbour</span> <span class="ow">in</span> <span class="n">neighbours</span><span class="p">]</span>
+
+        <span class="n">prob</span> <span class="o">=</span> <span class="p">[</span><span class="n">propensity</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">propensities</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">propensity</span> <span class="ow">in</span> <span class="n">propensities</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Cells.propensities"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.propensities">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">propensities</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method calculates the propensity (phi_i_j) of a given</span>
+<span class="sd">        animal to move to a &#39;J&#39;, &#39;S&#39; or &#39;D&#39; landscapes.</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            phi_i_j =   0 if mountain or ocean, or</span>
+<span class="sd">                        exp(&#39;lambda&#39; * &#39;e_k&#39;) if &#39;J&#39;, &#39;S&#39; or &#39;D&#39;</span>
+
+<span class="sd">        for:</span>
+<span class="sd">            -&gt; &#39;lambda&#39; = 0: all possible destination cells will be</span>
+<span class="sd">                chosen with equal probability;</span>
+<span class="sd">            -&gt; &#39;lambda&#39; &gt; 0: The animal prefers cells with the greater</span>
+<span class="sd">                abundance of food;</span>
+<span class="sd">            -&gt; &#39;lambda&#39; &lt; 0: The animal turn away from food.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            migrating_specie: str</span>
+<span class="sd">                String with &#39;Herbivore&#39; or &#39;Carnivore&#39;;</span>
+
+<span class="sd">            neighbour: &lt;class &#39;type&#39;&gt;</span>
+<span class="sd">                The landscape neighbour object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            Int with the propensity of a given specie in a landscape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">e_k</span> <span class="o">=</span> <span class="n">neighbour</span><span class="o">.</span><span class="n">relative_abundance</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">migrating_specie</span> <span class="ow">is</span> <span class="s1">&#39;Herbivore&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Herbivore</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;lambda&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">e_k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Carnivore</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;lambda&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">e_k</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Cells.relative_abundance"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.relative_abundance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">relative_abundance</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is the relative abundance of fodder (e_k) that is used to</span>
+<span class="sd">        calculated the propensity in the method &#39;propensity()&#39;.</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        e_k = f_k / [(n_k + 1) * F]</span>
+
+<span class="sd">        where:</span>
+<span class="sd">            -&gt; f_k: The amount of relevant fodder available in cell k,</span>
+<span class="sd">                    given by the method &#39;relevant_fodder()&#39;;</span>
+<span class="sd">            -&gt; n_k: The number of animals of the same species in cell k;</span>
+<span class="sd">            -&gt; F: The &#39;appetite&#39; of the animal.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            migrating_specie: str</span>
+<span class="sd">                String with &#39;Herbivore&#39; or &#39;Carnivore&#39;;</span>
+
+<span class="sd">            neighbour: &lt;class &#39;type&#39;&gt;</span>
+<span class="sd">                The landscape neighbour object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            Int with the relative abundance of a given specie.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f_k</span> <span class="o">=</span> <span class="n">neighbour</span><span class="o">.</span><span class="n">relevant_fodder</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">)</span>
+        <span class="n">n_k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">neighbour</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">migrating_specie</span><span class="p">]</span> <span class="o">+</span>
+                  <span class="n">neighbour</span><span class="o">.</span><span class="n">new_population</span><span class="p">[</span><span class="n">migrating_specie</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">migrating_specie</span> <span class="ow">is</span> <span class="s1">&#39;Herbivore&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f_k</span> <span class="o">/</span> <span class="p">((</span><span class="n">n_k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Herbivore</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;F&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f_k</span> <span class="o">/</span> <span class="p">((</span><span class="n">n_k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Carnivore</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;F&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Cells.relevant_fodder"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.relevant_fodder">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">relevant_fodder</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is the relevant fodder (f_k) that is used to calculated</span>
+<span class="sd">        the relative abundance in the method &#39;relative_abundance()&#39;.</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            -&gt; The amount of plant fodder available if the migrating</span>
+<span class="sd">                animal is &#39;Herbivore&#39;;</span>
+<span class="sd">            -&gt; The total weight of all herbivores in cell k if the</span>
+<span class="sd">                migrating animal is &#39;Carnivore&#39;.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            migrating_specie: str</span>
+<span class="sd">                String with &#39;Herbivore&#39; or &#39;Carnivore&#39;;</span>
+
+<span class="sd">            neighbour: &lt;class &#39;type&#39;&gt;</span>
+<span class="sd">                The landscape neighbour object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            Int with the relevant fodder of a give specie.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">migrating_specie</span> <span class="ow">is</span> <span class="s1">&#39;Herbivore&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">neighbour</span><span class="o">.</span><span class="n">fodder</span>
+        <span class="k">elif</span> <span class="n">migrating_specie</span> <span class="ow">is</span> <span class="s1">&#39;Carnivore&#39;</span><span class="p">:</span>
+            <span class="n">f_k</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">herbivores</span> <span class="o">=</span> <span class="n">neighbour</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">]</span>
+            <span class="n">migrated_herbivores</span> <span class="o">=</span> <span class="n">neighbour</span><span class="o">.</span><span class="n">new_population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">herbivore</span> <span class="ow">in</span> <span class="n">herbivores</span> <span class="o">+</span> <span class="n">migrated_herbivores</span><span class="p">:</span>
+                <span class="n">f_k</span> <span class="o">+=</span> <span class="n">herbivore</span><span class="o">.</span><span class="n">weight</span>
+
+            <span class="k">return</span> <span class="n">f_k</span></div>
+
+<div class="viewcode-block" id="Cells.check_unknown_parameters"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.check_unknown_parameters">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_unknown_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks any unknown parameter given by the user</span>
+<span class="sd">        and raises a ValueError if necessary.</span>
+
+<span class="sd">        Parameter:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            params: list</span>
+<span class="sd">                List with the landscape&#39;s parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">parameter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown parameter provided: &quot;</span>
+                                 <span class="s2">&quot;*</span><span class="si">{}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parameter</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Cells.check_non_negative_parameters"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.check_non_negative_parameters">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_non_negative_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">param_key</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method checks any non-negative parameter given by the</span>
+<span class="sd">        user and raises a ValueError if necessary.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            param_key: str</span>
+<span class="sd">                String with the parameter key;</span>
+
+<span class="sd">            params: list</span>
+<span class="sd">                List with the landscape&#39;s parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># check here and others restrictions</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The parameter *</span><span class="si">{}</span><span class="s2">* must be &quot;</span>
+                             <span class="s2">&quot;non-negative&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param_key</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Cells.set_parameters"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.set_parameters">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method sets the parameter for the landscapes.</span>
+
+<span class="sd">        Parameter:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            params: list</span>
+<span class="sd">                List with the landscape&#39;s parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">check_unknown_parameters</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">check_non_negative_parameters</span><span class="p">(</span><span class="s1">&#39;f_max&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Cells.herbivore_feed"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.herbivore_feed">[docs]</a>    <span class="k">def</span> <span class="nf">herbivore_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method organizes the population of herbivores in order</span>
+<span class="sd">        of greatest fitness (those who eat first) to worst. Then,</span>
+<span class="sd">        per animal, it is applied the herbivore eating rules,</span>
+<span class="sd">        as following:</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            -&gt; &#39;F&#39;: Animal´s appetite;</span>
+<span class="sd">            -&gt; &#39;f&#39;: Available amount of fodder.</span>
+<span class="sd">            -&gt; if &#39;F&#39; &lt;= &#39;f&#39;, then the animal eats &#39;F&#39;;</span>
+<span class="sd">            -&gt; elif 0 &lt; &#39;f&#39; &lt; &#39;F&#39;, then the animal eats &#39;f&#39; - &#39;F&#39;;</span>
+<span class="sd">            -&gt; elif &#39;f&#39; = 0, then the animal does not eat.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="n">h</span><span class="o">.</span><span class="n">fitness</span><span class="p">,</span>
+                                          <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">herbivore</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">]:</span>
+            <span class="n">amount_eaten</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">h_appetite</span> <span class="o">=</span> <span class="n">herbivore</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span>
+            <span class="n">available_fodder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span>
+            <span class="k">if</span> <span class="n">h_appetite</span> <span class="o">&lt;=</span> <span class="n">available_fodder</span><span class="p">:</span>
+                <span class="n">available_fodder</span> <span class="o">-=</span> <span class="n">h_appetite</span>
+                <span class="n">amount_eaten</span> <span class="o">+=</span> <span class="n">h_appetite</span>
+            <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">available_fodder</span> <span class="o">&lt;</span> <span class="n">h_appetite</span><span class="p">:</span>
+                <span class="n">available_fodder</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">amount_eaten</span> <span class="o">+=</span> <span class="n">h_appetite</span> <span class="o">-</span> <span class="n">available_fodder</span>
+            <span class="n">herbivore</span><span class="o">.</span><span class="n">gain_weight</span><span class="p">(</span><span class="n">amount_eaten</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span> <span class="o">=</span> <span class="n">available_fodder</span></div>
+
+<div class="viewcode-block" id="Cells.carnivore_feed"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.carnivore_feed">[docs]</a>    <span class="k">def</span> <span class="nf">carnivore_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method organizes the population of carnivore in order</span>
+<span class="sd">        of greatest fitness (those who eat first) to worst. Then,</span>
+<span class="sd">        organizes the population of herbivore in order of worst fitness</span>
+<span class="sd">        (those who are hunt first) to greatest. Then, per each animal,</span>
+<span class="sd">        it is applied the carnivore eating rules, as following:</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            -&gt; Carnivores prey on herbivores on Jungle, Savannah and</span>
+<span class="sd">               Desert landscapes, and do not prey on each oder;</span>
+<span class="sd">            -&gt; A carnivore tries to kill a herbivore per time, beginning</span>
+<span class="sd">               with the herbivore with worst fitness, and then to the</span>
+<span class="sd">               next herbivore until has eaten an amount &#39;F&#39; of</span>
+<span class="sd">               herbivore weight;</span>
+<span class="sd">            -&gt; The probability to kill a herbivore is given by the method</span>
+<span class="sd">               &#39;will_kill()&#39;;</span>
+<span class="sd">            -&gt; The carnivore weight increases by the method</span>
+<span class="sd">               &#39;gain_weight()&#39; which also updates its fitness;</span>
+<span class="sd">            -&gt; Every herbivore killed is removed from the population</span>
+<span class="sd">               by the python&#39;s built-in method &#39;.remove()&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">carnivore</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Carnivore&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">carnivore</span><span class="o">.</span><span class="n">eat_herb</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="s1">&#39;Herbivore&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Cells.add_newborns"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.add_newborns">[docs]</a>    <span class="k">def</span> <span class="nf">add_newborns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method extend a specie population adding their</span>
+<span class="sd">        offspring.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">newborns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">animal</span> <span class="ow">in</span> <span class="n">species</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">animal</span><span class="o">.</span><span class="n">birth</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">species</span><span class="p">)):</span>
+                    <span class="n">newborn</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">animal</span><span class="p">)()</span>
+                    <span class="n">animal</span><span class="o">.</span><span class="n">update_weight_after_birth</span><span class="p">(</span><span class="n">newborn</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+                    <span class="n">newborns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newborn</span><span class="p">)</span>
+            <span class="n">species</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">newborns</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Cells.migrate"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.migrate">[docs]</a>    <span class="k">def</span> <span class="nf">migrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">neighbours</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method carries out the migration of the island,</span>
+<span class="sd">        according to the followings:</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            -&gt; The animals migrate ate least once a year;</span>
+<span class="sd">            -&gt; The migration depends on animals fitness and availability</span>
+<span class="sd">               of fodder in the neighboring cells;</span>
+<span class="sd">            -&gt; Animals can only move to north, south, west and east,</span>
+<span class="sd">               according to the cells provided by the method</span>
+<span class="sd">               &#39;neighbour_cells()&#39;;</span>
+<span class="sd">            -&gt; The decision to move is given by the method &#39;will_move()&#39;;</span>
+<span class="sd">            -&gt; The propensity of an animal to move to a habitable</span>
+<span class="sd">               neighbour is given by the method &#39;propensities()&#39;;</span>
+<span class="sd">            -&gt; The propensities depends on the &#39;Relevant fodder&#39; and</span>
+<span class="sd">               &#39;Relative abundance&#39; given by the methods</span>
+<span class="sd">               &#39;relevant_fodder()&#39; and &#39;relative_abundance()&#39;,</span>
+<span class="sd">               respectively;</span>
+<span class="sd">            -&gt; The cumulative probabilities is given by the method</span>
+<span class="sd">                &#39;cumsum()&#39;;</span>
+<span class="sd">            -&gt; The decision of migrating to a specifically neighbour</span>
+<span class="sd">               is given when the &#39;np.random.random()&#39; number is equal</span>
+<span class="sd">               or lager then the cumulative probability.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">migrating_specie</span><span class="p">,</span> <span class="n">animals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neighbours</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">animals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">animal</span> <span class="ow">in</span> <span class="n">animals</span><span class="p">:</span>
+                    <span class="n">cum_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">migrating_specie</span><span class="p">,</span>
+                                           <span class="n">neighbours</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">animal</span><span class="o">.</span><span class="n">will_migrate</span><span class="p">():</span>
+                        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">cum_prob</span><span class="p">[</span><span class="n">n</span><span class="p">]:</span>
+                            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">neighbours</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">new_population</span><span class="p">[</span>
+                            <span class="n">migrating_specie</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">animal</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">migrating_specie</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">animal</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Cells.add_new_migrated"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.add_new_migrated">[docs]</a>    <span class="k">def</span> <span class="nf">add_new_migrated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method adds the migrated animals to the population of</span>
+<span class="sd">        each landscape cell, according to its specie, and empty the</span>
+<span class="sd">        list in &#39;new_population&#39;, also according to its specie.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">specie_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_population</span><span class="p">[</span><span class="n">species</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">species</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">specie_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_population</span><span class="p">[</span><span class="n">species</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Cells.get_old"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.get_old">[docs]</a>    <span class="k">def</span> <span class="nf">get_old</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method identifies each specie of animals and communicates</span>
+<span class="sd">        to the method &#39;get_old()&#39; in fauna in order to apply the aging</span>
+<span class="sd">        for each animal.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">specie_objects</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">animal</span> <span class="ow">in</span> <span class="n">specie_objects</span><span class="p">:</span>
+                <span class="n">animal</span><span class="o">.</span><span class="n">get_old</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Cells.lose_weight"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.lose_weight">[docs]</a>    <span class="k">def</span> <span class="nf">lose_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method identifies each specie of animals and communicates</span>
+<span class="sd">        to the method &#39;lose_weight()&#39; in fauna in order to apply the</span>
+<span class="sd">        weight loss for each animal.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">specie_objects</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">animal</span> <span class="ow">in</span> <span class="n">specie_objects</span><span class="p">:</span>
+                <span class="n">animal</span><span class="o">.</span><span class="n">lose_weight</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Cells.die"><a class="viewcode-back" href="../../geography.html#biosim.geography.Cells.die">[docs]</a>    <span class="k">def</span> <span class="nf">die</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method determines if an animal will die according to</span>
+<span class="sd">        the probability in the method &#39;will_die()&#39; in fauna.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">specie_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">survivors</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">animal</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">specie_type</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">animal</span><span class="o">.</span><span class="n">will_die</span><span class="p">():</span>
+                    <span class="n">survivors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">animal</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">specie_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">survivors</span></div></div>
+
+
+<div class="viewcode-block" id="Jungle"><a class="viewcode-back" href="../../geography.html#biosim.geography.Jungle">[docs]</a><span class="k">class</span> <span class="nc">Jungle</span><span class="p">(</span><span class="n">Cells</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The jungle landscape cells offer fodder for Herbivores and</span>
+<span class="sd">    Carnivores can prey on Herbivore in this cell.&quot;&quot;&quot;</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;f_max&#39;</span><span class="p">:</span> <span class="mf">800.0</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the desert.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;f_max&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Jungle.grow_fodder_and_feed"><a class="viewcode-back" href="../../geography.html#biosim.geography.Jungle.grow_fodder_and_feed">[docs]</a>    <span class="k">def</span> <span class="nf">grow_fodder_and_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method increases the amount of fodder growth from the</span>
+<span class="sd">        previous year to now and then calls the methods</span>
+<span class="sd">        &#39;herbivore_feed()&#39; and &#39;carnivore_feed()&#39;, respectively,</span>
+<span class="sd">        in order to execute the animals eating conditions and rules.</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            -&gt; The yearly amount of fodder in the jungle landscape</span>
+<span class="sd">               cells is always restored to the max (&#39;f_max&#39;):</span>
+
+<span class="sd">        &#39;f&#39; = &#39;f_max&#39;</span>
+
+<span class="sd">        where :</span>
+<span class="sd">            -&gt; &#39;f_max&#39;: The maximum possible amount of fodder in</span>
+<span class="sd">                        the landscape;</span>
+<span class="sd">            -&gt; &#39;f&#39;:     The remainder available amount of fodder</span>
+<span class="sd">                        from previous year..</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;f_max&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">herbivore_feed</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">carnivore_feed</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Savannah"><a class="viewcode-back" href="../../geography.html#biosim.geography.Savannah">[docs]</a><span class="k">class</span> <span class="nc">Savannah</span><span class="p">(</span><span class="n">Cells</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The savannah landscape cells offer fodder for Herbivores,</span>
+<span class="sd">    but in limited quantity and sensitive to overgrazing. Carnivores</span>
+<span class="sd">    can prey on Herbivore in this cell.&quot;&quot;&quot;</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;f_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the desert.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;f_max&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Savannah.grow_fodder_and_feed"><a class="viewcode-back" href="../../geography.html#biosim.geography.Savannah.grow_fodder_and_feed">[docs]</a>    <span class="k">def</span> <span class="nf">grow_fodder_and_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method increases the amount of fodder growth from the</span>
+<span class="sd">        previous year to now and then calls the methods</span>
+<span class="sd">        &#39;herbivore_feed()&#39; and &#39;carnivore_feed()&#39;, respectively,</span>
+<span class="sd">        in order to execute the animals eating conditions and rules.</span>
+
+<span class="sd">        Formula and conditions:</span>
+<span class="sd">        ----------</span>
+<span class="sd">            -&gt; The yearly amount of fodder in the savannah landscape</span>
+<span class="sd">               cells is always calculated by the following formula:</span>
+
+<span class="sd">        &#39;alpha&#39; * (&#39;f_max&#39; - f)</span>
+
+<span class="sd">        where :</span>
+<span class="sd">            -&gt; &#39;alpha&#39;: The growth rate of fodder;</span>
+<span class="sd">            -&gt; &#39;f_max&#39;: The maximum possible amount of fodder in</span>
+<span class="sd">                        the landscape;</span>
+<span class="sd">            -&gt; &#39;f&#39;:     The remainder available amount of fodder</span>
+<span class="sd">                        from previous year.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">]</span>
+        <span class="n">f_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;f_max&#39;</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span> <span class="o">+=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">f_max</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">herbivore_feed</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">carnivore_feed</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Desert"><a class="viewcode-back" href="../../geography.html#biosim.geography.Desert">[docs]</a><span class="k">class</span> <span class="nc">Desert</span><span class="p">(</span><span class="n">Cells</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The desert landscape cells receives animals, but there is no</span>
+<span class="sd">    fodder available for the animal Herbivore. Although Carnivores can</span>
+<span class="sd">    prey on Herbivore in this cell.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the desert.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Desert.grow_fodder_and_feed"><a class="viewcode-back" href="../../geography.html#biosim.geography.Desert.grow_fodder_and_feed">[docs]</a>    <span class="k">def</span> <span class="nf">grow_fodder_and_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method increases the amount of fodder growth,</span>
+<span class="sd">        although, for desert landscape cells, there is no fodder</span>
+<span class="sd">        growth, then fodder is always equal to zero.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fodder</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">herbivore_feed</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">carnivore_feed</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Ocean"><a class="viewcode-back" href="../../geography.html#biosim.geography.Ocean">[docs]</a><span class="k">class</span> <span class="nc">Ocean</span><span class="p">(</span><span class="n">Cells</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Passive cells of this type, because, in this project,</span>
+<span class="sd">    the landscape ocean does not receive the animals neither</span>
+<span class="sd">    Herbivore or Carnivore.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the ocean.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Mountain"><a class="viewcode-back" href="../../geography.html#biosim.geography.Mountain">[docs]</a><span class="k">class</span> <span class="nc">Mountain</span><span class="p">(</span><span class="n">Cells</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Passive cells of this type, because, in this project,</span>
+<span class="sd">    the landscape mountain does not receive the animals neither</span>
+<span class="sd">    Herbivore or Carnivore.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the mountain.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">BioLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../simulation.html">Simulation Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../island.html">Island Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../geography.html">Geography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fauna.html">Fauna Module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Hans Ekkehard Plesser.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0+/08bbd52</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

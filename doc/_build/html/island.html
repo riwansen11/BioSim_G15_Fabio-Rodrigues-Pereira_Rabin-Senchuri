@@ -4,17 +4,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Island Module &#8212; BioSim 2020 0.0.1 documentation</title>
+    <title>Island Module &#8212; BioLab 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Welcome to BioSim 2020’s documentation!" href="index.html" />
+    <link rel="next" title="Geography Module" href="geography.html" />
+    <link rel="prev" title="Simulation Module" href="simulation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -35,6 +36,204 @@
 <span id="island-module"></span><h1>Island Module<a class="headerlink" href="#module-biosim.island" title="Permalink to this headline">¶</a></h1>
 <p>This is the Island model which functions with the BioSim package written
 for the INF200 project January 2019.</p>
+<dl class="class">
+<dt id="biosim.island.Island">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.island.</code><code class="sig-name descname">Island</code><span class="sig-paren">(</span><em class="sig-param">island_map</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Constructor for the Island class.</p>
+<dl class="method">
+<dt id="biosim.island.Island.add_population">
+<code class="sig-name descname">add_population</code><span class="sig-paren">(</span><em class="sig-param">given_pop</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.add_population"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.add_population" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the population objects inside the
+cells.</p>
+<blockquote>
+<div><p>given_pop: list</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_coordinates_exists">
+<em class="property">classmethod </em><code class="sig-name descname">check_coordinates_exists</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em>, <em class="sig-param">cells</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_coordinates_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_coordinates_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks if the coordinates exists and raises a
+ValueError if necessary.</p>
+<blockquote>
+<div><p>coordinates: tuple</p>
+<p>geos: list</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_dict_instance">
+<em class="property">static </em><code class="sig-name descname">check_dict_instance</code><span class="sig-paren">(</span><em class="sig-param">argument</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_dict_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_dict_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks if the argument given by the user is a
+dictionary and raises a TypeError if necessary.</p>
+<blockquote>
+<div><p>argument: str</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_habitability">
+<em class="property">classmethod </em><code class="sig-name descname">check_habitability</code><span class="sig-paren">(</span><em class="sig-param">coordinates</em>, <em class="sig-param">cells</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_habitability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_habitability" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks if the coordinates are habitable and
+raises a ValueError if necessary.</p>
+<blockquote>
+<div><p>coordinates: tuple</p>
+<p>cells: dict</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_invalid_boundary">
+<em class="property">static </em><code class="sig-name descname">check_invalid_boundary</code><span class="sig-paren">(</span><em class="sig-param">geos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_invalid_boundary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_invalid_boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks the boundary of the island that
+must be only ocean and raises a ValueError if necessary.</p>
+<blockquote>
+<div><p>geos: list</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_invalid_character">
+<em class="property">classmethod </em><code class="sig-name descname">check_invalid_character</code><span class="sig-paren">(</span><em class="sig-param">geos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_invalid_character"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_invalid_character" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks any invalid caracterer and raises a
+ValueError if necessary.</p>
+<blockquote>
+<div><p>geos: list</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_invalid_line_lengths">
+<em class="property">static </em><code class="sig-name descname">check_invalid_line_lengths</code><span class="sig-paren">(</span><em class="sig-param">geos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_invalid_line_lengths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_invalid_line_lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks the length of each line of the map given
+by the user and raises a ValueError if not the same.</p>
+<blockquote>
+<div><p>geos: list</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_list_instance">
+<em class="property">static </em><code class="sig-name descname">check_list_instance</code><span class="sig-paren">(</span><em class="sig-param">argument</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_list_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_list_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks if the argument given by the user is a
+list and raises a TypeError if necessary.</p>
+<blockquote>
+<div><p>argument: str</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.check_string_instance">
+<em class="property">static </em><code class="sig-name descname">check_string_instance</code><span class="sig-paren">(</span><em class="sig-param">argument</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.check_string_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.check_string_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks if the argument given by the user is a
+string and raises a TypeError if necessary.</p>
+<blockquote>
+<div><p>argument: str</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.create_cells">
+<code class="sig-name descname">create_cells</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.create_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.create_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a dictionary with the coordinates on
+keys and landscape objects on values.</p>
+<blockquote>
+<div><p>dict</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.island.Island.fauna_classes">
+<code class="sig-name descname">fauna_classes</code><em class="property"> = {'Carnivore': &lt;class 'biosim.fauna.Carnivore'&gt;, 'Herbivore': &lt;class 'biosim.fauna.Herbivore'&gt;}</em><a class="headerlink" href="#biosim.island.Island.fauna_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.island.Island.geo_classes">
+<code class="sig-name descname">geo_classes</code><em class="property"> = {'D': &lt;class 'biosim.geography.Desert'&gt;, 'J': &lt;class 'biosim.geography.Jungle'&gt;, 'M': &lt;class 'biosim.geography.Mountain'&gt;, 'O': &lt;class 'biosim.geography.Ocean'&gt;, 'S': &lt;class 'biosim.geography.Savannah'&gt;}</em><a class="headerlink" href="#biosim.island.Island.geo_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.get_population_numbers">
+<code class="sig-name descname">get_population_numbers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.get_population_numbers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.get_population_numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks the population number of each specie, by
+coordinates, store them and returns a dictionary with {‘Row’: [
+], ‘Col’: [], ‘Herbivore’: [], ‘Carnivore’: []}.</p>
+<blockquote>
+<div><p>Dictionary with the population numbers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.habitable_cells">
+<em class="property">property </em><code class="sig-name descname">habitable_cells</code><a class="headerlink" href="#biosim.island.Island.habitable_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a dictionary with only the coordinates
+that are habitable and store the coordinates on keys and
+landscape objects on values.</p>
+<blockquote>
+<div><p>dict</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.island.Island.habitable_geos">
+<code class="sig-name descname">habitable_geos</code><em class="property"> = {'D': &lt;class 'biosim.geography.Desert'&gt;, 'J': &lt;class 'biosim.geography.Jungle'&gt;, 'S': &lt;class 'biosim.geography.Savannah'&gt;}</em><a class="headerlink" href="#biosim.island.Island.habitable_geos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.list_geo_cells">
+<em class="property">static </em><code class="sig-name descname">list_geo_cells</code><span class="sig-paren">(</span><em class="sig-param">island_map</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.list_geo_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.list_geo_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method makes a multiline-string accessible and
+compatible to the others method.</p>
+<blockquote>
+<div><p>island_map: str</p>
+</div></blockquote>
+<blockquote>
+<div><p>List of landscapes.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.neighbour_cells">
+<code class="sig-name descname">neighbour_cells</code><span class="sig-paren">(</span><em class="sig-param">loc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.neighbour_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.neighbour_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method localizes the neighbour cells (north, south,
+west and east), checks if they are habitable and returns a
+list with the landscape objects.</p>
+<blockquote>
+<div><p>List with the habitable neighbours.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.set_parameters">
+<code class="sig-name descname">set_parameters</code><span class="sig-paren">(</span><em class="sig-param">param_key</em>, <em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.set_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.set_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method sets the parameter for the landscapes and animals.</p>
+<blockquote>
+<div><p>param_key: str</p>
+<p>params: list</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.island.Island.yearly_cycle">
+<code class="sig-name descname">yearly_cycle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/island.html#Island.yearly_cycle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.island.Island.yearly_cycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calls, in order, the methods that compound
+the yearly cycle dynamics of the island, such that:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Growing of fodder;</p></li>
+<li><p>Animal’s feeding;</p></li>
+<li><p>Animals’s birth;</p></li>
+<li><p>Animal’s migration;</p></li>
+<li><p>Animal’s aging;</p></li>
+<li><p>Animal’s weight loss;</p></li>
+<li><p>Animal’s death.</p></li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -44,7 +243,7 @@ for the INF200 project January 2019.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">BioSim 2020</a></h1>
+<h1 class="logo"><a href="index.html">BioLab</a></h1>
 
 
 
@@ -55,14 +254,18 @@ for the INF200 project January 2019.</p>
 
 <h3>Navigation</h3>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Island Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geography.html">Geography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fauna.html">Fauna Module</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to BioSim 2020’s documentation!</a></li>
+      <li>Previous: <a href="simulation.html" title="previous chapter">Simulation Module</a></li>
+      <li>Next: <a href="geography.html" title="next chapter">Geography Module</a></li>
   </ul></li>
 </ul>
 </div>
@@ -75,7 +278,7 @@ for the INF200 project January 2019.</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -89,10 +292,10 @@ for the INF200 project January 2019.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, Rabin, Fabio.
+      &copy;2018, Hans Ekkehard Plesser.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0+/08bbd52</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

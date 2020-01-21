@@ -202,39 +202,3 @@ def animal_propensity():
     herbovore = Herbivore(10, 20)
     assert ocean.propensity(herbovore) == 0
 
-
-# def test_propensity_list():
-#     """test probability of propensity to move to neighbouring cell
-#     from current cell"""
-#     island_map = "OMO\nJJS\nODO"
-#     ini_herbs = [
-#         {
-#             "loc": (1, 1),
-#             "pop": [
-#                 {"species": "Herbivore", "age": 5, "weight": rd.randint(1, 5)}
-#                 for _ in range(5)
-#             ],
-#         }
-#     ]
-#     ini_carns = [
-#         {
-#             "loc": (1, 1),
-#             "pop": [
-#                 {"species": "Carnivore", "age": 5, "weight": rd.randint(1, 5)}
-#                 for _ in range(5)
-#             ],
-#         }
-#     ]
-#     t = BioSim(island_map, ini_herbs, None)
-#     t.add_population(ini_carns)
-#     loc = (1, 1)
-#     cell_object = t.island.cells[loc]
-#     left_neighboir = Jungle()
-#     right_neighbour = Savannah()
-#     top_neightbour = Mountain()
-#     down_neighbour = Desert()
-
-
-
-def test_animal_migration():
-    pass

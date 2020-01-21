@@ -4,16 +4,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Geography Module &#8212; BioSim 2020 0.0.1 documentation</title>
+    <title>Geography Module &#8212; BioLab 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Fauna Module" href="fauna.html" />
+    <link rel="prev" title="Island Module" href="island.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -34,6 +36,402 @@
 <span id="geography-module"></span><h1>Geography Module<a class="headerlink" href="#module-biosim.geography" title="Permalink to this headline">¶</a></h1>
 <p>This is the Geography model which functions with the BioSim package
 written for the INF200 project January 2019.</p>
+<dl class="class">
+<dt id="biosim.geography.Cells">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.geography.</code><code class="sig-name descname">Cells</code><a class="reference internal" href="_modules/biosim/geography.html#Cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Constructor for the landscape cells.</p>
+<dl class="method">
+<dt id="biosim.geography.Cells.add_new_migrated">
+<code class="sig-name descname">add_new_migrated</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.add_new_migrated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.add_new_migrated" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method adds the migrated animals to the population of
+each landscape cell, according to its specie, and empty the
+list in ‘new_population’, also according to its specie.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.add_newborns">
+<code class="sig-name descname">add_newborns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.add_newborns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.add_newborns" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method extend a specie population adding their
+offspring.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.carnivore_feed">
+<code class="sig-name descname">carnivore_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.carnivore_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.carnivore_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method organizes the population of carnivore in order
+of greatest fitness (those who eat first) to worst. Then,
+organizes the population of herbivore in order of worst fitness
+(those who are hunt first) to greatest. Then, per each animal,
+it is applied the carnivore eating rules, as following:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>-&gt; Carnivores prey on herbivores on Jungle, Savannah and</dt><dd><p>Desert landscapes, and do not prey on each oder;</p>
+</dd>
+<dt>-&gt; A carnivore tries to kill a herbivore per time, beginning</dt><dd><p>with the herbivore with worst fitness, and then to the
+next herbivore until has eaten an amount ‘F’ of
+herbivore weight;</p>
+</dd>
+<dt>-&gt; The probability to kill a herbivore is given by the method</dt><dd><p>‘will_kill()’;</p>
+</dd>
+<dt>-&gt; The carnivore weight increases by the method</dt><dd><p>‘gain_weight()’ which also updates its fitness;</p>
+</dd>
+<dt>-&gt; Every herbivore killed is removed from the population</dt><dd><p>by the python’s built-in method ‘.remove()’.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.check_non_negative_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">check_non_negative_parameters</code><span class="sig-paren">(</span><em class="sig-param">param_key</em>, <em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.check_non_negative_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.check_non_negative_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks any non-negative parameter given by the
+user and raises a ValueError if necessary.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>param_key: str</dt><dd><p>String with the parameter key;</p>
+</dd>
+<dt>params: list</dt><dd><p>List with the landscape’s parameters.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.check_unknown_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">check_unknown_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.check_unknown_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.check_unknown_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method checks any unknown parameter given by the user
+and raises a ValueError if necessary.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>params: list</dt><dd><p>List with the landscape’s parameters.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.cumsum">
+<em class="property">static </em><code class="sig-name descname">cumsum</code><span class="sig-paren">(</span><em class="sig-param">migrating_specie</em>, <em class="sig-param">neighbours</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.cumsum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.cumsum" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method generates a list with the probabilities of
+migrating of a given animal according to its neighbours.</p>
+<blockquote>
+<div><p>Prob = propensity / sum([all_propensities])</p>
+</div></blockquote>
+<blockquote>
+<div><dl class="simple">
+<dt>migrating_specie: str</dt><dd><p>String with ‘Herbivore’ or ‘Carnivore’;</p>
+</dd>
+<dt>neighbour: list</dt><dd><p>List with, i.e., [Jungle, Savannah, …].</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>List with probabilities.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.die">
+<code class="sig-name descname">die</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.die"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.die" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method determines if an animal will die according to
+the probability in the method ‘will_die()’ in fauna.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.get_old">
+<code class="sig-name descname">get_old</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.get_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.get_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method identifies each specie of animals and communicates
+to the method ‘get_old()’ in fauna in order to apply the aging
+for each animal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.herbivore_feed">
+<code class="sig-name descname">herbivore_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.herbivore_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.herbivore_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method organizes the population of herbivores in order
+of greatest fitness (those who eat first) to worst. Then,
+per animal, it is applied the herbivore eating rules,
+as following:</p>
+<blockquote>
+<div><p>-&gt; ‘F’: Animal´s appetite;
+-&gt; ‘f’: Available amount of fodder.
+-&gt; if ‘F’ &lt;= ‘f’, then the animal eats ‘F’;
+-&gt; elif 0 &lt; ‘f’ &lt; ‘F’, then the animal eats ‘f’ - ‘F’;
+-&gt; elif ‘f’ = 0, then the animal does not eat.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.lose_weight">
+<code class="sig-name descname">lose_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.lose_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.lose_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method identifies each specie of animals and communicates
+to the method ‘lose_weight()’ in fauna in order to apply the
+weight loss for each animal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.migrate">
+<code class="sig-name descname">migrate</code><span class="sig-paren">(</span><em class="sig-param">neighbours</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.migrate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.migrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method carries out the migration of the island,
+according to the followings:</p>
+<blockquote>
+<div><p>-&gt; The animals migrate ate least once a year;
+-&gt; The migration depends on animals fitness and availability</p>
+<blockquote>
+<div><p>of fodder in the neighboring cells;</p>
+</div></blockquote>
+<dl class="simple">
+<dt>-&gt; Animals can only move to north, south, west and east,</dt><dd><p>according to the cells provided by the method
+‘neighbour_cells()’;</p>
+</dd>
+</dl>
+<p>-&gt; The decision to move is given by the method ‘will_move()’;
+-&gt; The propensity of an animal to move to a habitable</p>
+<blockquote>
+<div><p>neighbour is given by the method ‘propensities()’;</p>
+</div></blockquote>
+<dl class="simple">
+<dt>-&gt; The propensities depends on the ‘Relevant fodder’ and</dt><dd><p>‘Relative abundance’ given by the methods
+‘relevant_fodder()’ and ‘relative_abundance()’,
+respectively;</p>
+</dd>
+<dt>-&gt; The cumulative probabilities is given by the method</dt><dd><p>‘cumsum()’;</p>
+</dd>
+<dt>-&gt; The decision of migrating to a specifically neighbour</dt><dd><p>is given when the ‘np.random.random()’ number is equal
+or lager then the cumulative probability.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.geography.Cells.parameters">
+<code class="sig-name descname">parameters</code><em class="property"> = {}</em><a class="headerlink" href="#biosim.geography.Cells.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.propensities">
+<em class="property">static </em><code class="sig-name descname">propensities</code><span class="sig-paren">(</span><em class="sig-param">migrating_specie</em>, <em class="sig-param">neighbour</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.propensities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.propensities" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates the propensity (phi_i_j) of a given
+animal to move to a ‘J’, ‘S’ or ‘D’ landscapes.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>phi_i_j =   0 if mountain or ocean, or</dt><dd><p>exp(‘lambda’ * ‘e_k’) if ‘J’, ‘S’ or ‘D’</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt>for:</dt><dd><dl class="simple">
+<dt>-&gt; ‘lambda’ = 0: all possible destination cells will be</dt><dd><p>chosen with equal probability;</p>
+</dd>
+<dt>-&gt; ‘lambda’ &gt; 0: The animal prefers cells with the greater</dt><dd><p>abundance of food;</p>
+</dd>
+</dl>
+<p>-&gt; ‘lambda’ &lt; 0: The animal turn away from food.</p>
+</dd>
+</dl>
+<blockquote>
+<div><dl class="simple">
+<dt>migrating_specie: str</dt><dd><p>String with ‘Herbivore’ or ‘Carnivore’;</p>
+</dd>
+<dt>neighbour: &lt;class ‘type’&gt;</dt><dd><p>The landscape neighbour object.</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>Int with the propensity of a given specie in a landscape.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.relative_abundance">
+<em class="property">static </em><code class="sig-name descname">relative_abundance</code><span class="sig-paren">(</span><em class="sig-param">migrating_specie</em>, <em class="sig-param">neighbour</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.relative_abundance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.relative_abundance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the relative abundance of fodder (e_k) that is used to
+calculated the propensity in the method ‘propensity()’.</p>
+<p>e_k = f_k / [(n_k + 1) * F]</p>
+<dl>
+<dt>where:</dt><dd><dl class="simple">
+<dt>-&gt; f_k: The amount of relevant fodder available in cell k,</dt><dd><p>given by the method ‘relevant_fodder()’;</p>
+</dd>
+</dl>
+<p>-&gt; n_k: The number of animals of the same species in cell k;
+-&gt; F: The ‘appetite’ of the animal.</p>
+</dd>
+</dl>
+<blockquote>
+<div><dl class="simple">
+<dt>migrating_specie: str</dt><dd><p>String with ‘Herbivore’ or ‘Carnivore’;</p>
+</dd>
+<dt>neighbour: &lt;class ‘type’&gt;</dt><dd><p>The landscape neighbour object.</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>Int with the relative abundance of a given specie.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.relevant_fodder">
+<em class="property">static </em><code class="sig-name descname">relevant_fodder</code><span class="sig-paren">(</span><em class="sig-param">migrating_specie</em>, <em class="sig-param">neighbour</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.relevant_fodder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.relevant_fodder" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the relevant fodder (f_k) that is used to calculated
+the relative abundance in the method ‘relative_abundance()’.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>-&gt; The amount of plant fodder available if the migrating</dt><dd><p>animal is ‘Herbivore’;</p>
+</dd>
+<dt>-&gt; The total weight of all herbivores in cell k if the</dt><dd><p>migrating animal is ‘Carnivore’.</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><dl class="simple">
+<dt>migrating_specie: str</dt><dd><p>String with ‘Herbivore’ or ‘Carnivore’;</p>
+</dd>
+<dt>neighbour: &lt;class ‘type’&gt;</dt><dd><p>The landscape neighbour object.</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>Int with the relevant fodder of a give specie.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="biosim.geography.Cells.set_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">set_parameters</code><span class="sig-paren">(</span><em class="sig-param">params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Cells.set_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Cells.set_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method sets the parameter for the landscapes.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>params: list</dt><dd><p>List with the landscape’s parameters.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="biosim.geography.Desert">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.geography.</code><code class="sig-name descname">Desert</code><a class="reference internal" href="_modules/biosim/geography.html#Desert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Desert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#biosim.geography.Cells" title="biosim.geography.Cells"><code class="xref py py-class docutils literal notranslate"><span class="pre">biosim.geography.Cells</span></code></a></p>
+<p>The desert landscape cells receives animals, but there is no
+fodder available for the animal Herbivore. Although Carnivores can
+prey on Herbivore in this cell.</p>
+<p>Constructor for the desert.</p>
+<dl class="method">
+<dt id="biosim.geography.Desert.grow_fodder_and_feed">
+<code class="sig-name descname">grow_fodder_and_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Desert.grow_fodder_and_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Desert.grow_fodder_and_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method increases the amount of fodder growth,
+although, for desert landscape cells, there is no fodder
+growth, then fodder is always equal to zero.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="biosim.geography.Jungle">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.geography.</code><code class="sig-name descname">Jungle</code><a class="reference internal" href="_modules/biosim/geography.html#Jungle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Jungle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#biosim.geography.Cells" title="biosim.geography.Cells"><code class="xref py py-class docutils literal notranslate"><span class="pre">biosim.geography.Cells</span></code></a></p>
+<p>The jungle landscape cells offer fodder for Herbivores and
+Carnivores can prey on Herbivore in this cell.</p>
+<p>Constructor for the desert.</p>
+<dl class="method">
+<dt id="biosim.geography.Jungle.grow_fodder_and_feed">
+<code class="sig-name descname">grow_fodder_and_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Jungle.grow_fodder_and_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Jungle.grow_fodder_and_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method increases the amount of fodder growth from the
+previous year to now and then calls the methods
+‘herbivore_feed()’ and ‘carnivore_feed()’, respectively,
+in order to execute the animals eating conditions and rules.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>-&gt; The yearly amount of fodder in the jungle landscape</dt><dd><p>cells is always restored to the max (‘f_max’):</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘f’ = ‘f_max’</p>
+<dl class="simple">
+<dt>where :</dt><dd><dl class="simple">
+<dt>-&gt; ‘f_max’: The maximum possible amount of fodder in</dt><dd><p>the landscape;</p>
+</dd>
+<dt>-&gt; ‘f’:     The remainder available amount of fodder</dt><dd><p>from previous year..</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.geography.Jungle.parameters">
+<code class="sig-name descname">parameters</code><em class="property"> = {'alpha': None, 'f_max': 800.0}</em><a class="headerlink" href="#biosim.geography.Jungle.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="biosim.geography.Mountain">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.geography.</code><code class="sig-name descname">Mountain</code><a class="reference internal" href="_modules/biosim/geography.html#Mountain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Mountain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#biosim.geography.Cells" title="biosim.geography.Cells"><code class="xref py py-class docutils literal notranslate"><span class="pre">biosim.geography.Cells</span></code></a></p>
+<p>Passive cells of this type, because, in this project,
+the landscape mountain does not receive the animals neither
+Herbivore or Carnivore.</p>
+<p>Constructor for the mountain.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="biosim.geography.Ocean">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.geography.</code><code class="sig-name descname">Ocean</code><a class="reference internal" href="_modules/biosim/geography.html#Ocean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Ocean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#biosim.geography.Cells" title="biosim.geography.Cells"><code class="xref py py-class docutils literal notranslate"><span class="pre">biosim.geography.Cells</span></code></a></p>
+<p>Passive cells of this type, because, in this project,
+the landscape ocean does not receive the animals neither
+Herbivore or Carnivore.</p>
+<p>Constructor for the ocean.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="biosim.geography.Savannah">
+<em class="property">class </em><code class="sig-prename descclassname">biosim.geography.</code><code class="sig-name descname">Savannah</code><a class="reference internal" href="_modules/biosim/geography.html#Savannah"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Savannah" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#biosim.geography.Cells" title="biosim.geography.Cells"><code class="xref py py-class docutils literal notranslate"><span class="pre">biosim.geography.Cells</span></code></a></p>
+<p>The savannah landscape cells offer fodder for Herbivores,
+but in limited quantity and sensitive to overgrazing. Carnivores
+can prey on Herbivore in this cell.</p>
+<p>Constructor for the desert.</p>
+<dl class="method">
+<dt id="biosim.geography.Savannah.grow_fodder_and_feed">
+<code class="sig-name descname">grow_fodder_and_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/biosim/geography.html#Savannah.grow_fodder_and_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#biosim.geography.Savannah.grow_fodder_and_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method increases the amount of fodder growth from the
+previous year to now and then calls the methods
+‘herbivore_feed()’ and ‘carnivore_feed()’, respectively,
+in order to execute the animals eating conditions and rules.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>-&gt; The yearly amount of fodder in the savannah landscape</dt><dd><p>cells is always calculated by the following formula:</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>‘alpha’ * (‘f_max’ - f)</p>
+<dl>
+<dt>where :</dt><dd><p>-&gt; ‘alpha’: The growth rate of fodder;
+-&gt; ‘f_max’: The maximum possible amount of fodder in</p>
+<blockquote>
+<div><p>the landscape;</p>
+</div></blockquote>
+<dl class="simple">
+<dt>-&gt; ‘f’:     The remainder available amount of fodder</dt><dd><p>from previous year.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="biosim.geography.Savannah.parameters">
+<code class="sig-name descname">parameters</code><em class="property"> = {'alpha': 0.3, 'f_max': 300.0}</em><a class="headerlink" href="#biosim.geography.Savannah.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -43,7 +441,7 @@ written for the INF200 project January 2019.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">BioSim 2020</a></h1>
+<h1 class="logo"><a href="index.html">BioLab</a></h1>
 
 
 
@@ -53,14 +451,19 @@ written for the INF200 project January 2019.</p>
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="island.html">Island Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Geography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fauna.html">Fauna Module</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="island.html" title="previous chapter">Island Module</a></li>
+      <li>Next: <a href="fauna.html" title="next chapter">Fauna Module</a></li>
   </ul></li>
 </ul>
 </div>
@@ -73,7 +476,7 @@ written for the INF200 project January 2019.</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -87,10 +490,10 @@ written for the INF200 project January 2019.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, Rabin, Fabio.
+      &copy;2018, Hans Ekkehard Plesser.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0+/08bbd52</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

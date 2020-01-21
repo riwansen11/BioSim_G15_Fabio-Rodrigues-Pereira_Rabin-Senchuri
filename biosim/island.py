@@ -138,7 +138,7 @@ class Island:
                 geo_object.population[type(pop_object).__name__].append(
                     pop_object)
 
-    def neighbour_cell(self, loc):  # tested
+    def neighbour_cells(self, loc):  # tested
         """This method localizes the neighbour cells (north, south,
         west and east), checks if they are habitable and returns a
         list with the landscape objects.
@@ -163,14 +163,14 @@ class Island:
                     5. Animal's aging;
                     6. Animal's weight loss;
                     7. Animal's death.
-                    """
-        for coordinate, geo_object in self.habitable_cells.items():
+        """
+        for coord, geo_object in self.habitable_cells.items():
             geo_object.grow_fodder_and_feed()
             geo_object.add_newborns()
-            geo_object.migrate(self.neighbour_cell(coordinate))
+            geo_object.migrate(self.neighbour_cells(coord))
             geo_object.add_new_migrated()
-            geo_object.get_old()
             geo_object.lose_weight()
+            geo_object.get_old()
             geo_object.die()
 
     def get_population_numbers(self):  # tested

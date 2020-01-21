@@ -176,7 +176,7 @@ def test_animal_death():
     t.add_population(ini_carns)
     loc = (1, 1)
     cell_object = t.island.cells[loc]
-    cell_object.die()
+    cell_object.will_die()
     assert len(cell_object.population["Carnivore"]) < 40
     assert len(cell_object.population["Herbivore"]) < 150
 

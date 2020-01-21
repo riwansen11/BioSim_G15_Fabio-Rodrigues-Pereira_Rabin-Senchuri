@@ -162,7 +162,7 @@ def test_animal_death():
     """
     animal = Herbivore(10, 50)
     animal.fitness = 0
-    assert animal.die() is True
+    assert animal.will_die() is True
 
 
 def test_animal_migration_chances():

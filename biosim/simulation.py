@@ -5,8 +5,8 @@ This is the Simulation model which functions with the BioSim package
 written for the INF200 project January 2019.
 """
 
-author = "Fábio Rodrigues Pereira and Rabin Senchuri"
-email = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
+__author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
+__email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import os
 import subprocess
@@ -15,21 +15,18 @@ import pandas as pd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.colors as color
-from biosim.island import Island
-
-matplotlib.use('macosx')
 import matplotlib.colors as mcolors
 import matplotlib.patches as mpatches
+from .island import Island
+
+matplotlib.use('macosx')
 
 # update these variables to point to your ffmpeg and convert binaries
 FFMPEG_BINARY = 'ffmpeg'
 CONVERT_BINARY = 'magick'
 
-# update this to the directory and file-name beginning
-# for the graphics files
-DEFAULT_GRAPHICS_DIR = os.path.join('..', 'data')
-DEFAULT_GRAPHICS_NAME = 'BioSim'
+DEFAULT_IMAGE_BASE = os.path.join('..', 'BioSim')
+DEFAULT_IMAGE_FORMAT = 'png'
 DEFAULT_MOVIE_FORMAT = 'gif'
 
 
@@ -58,10 +55,8 @@ class BioSim:
                  seed,
                  ymax_animals=None,
                  cmax_animals=None,
-                 img_base=None,
-                 img_dir=DEFAULT_GRAPHICS_DIR,
-                 img_name=DEFAULT_GRAPHICS_NAME,
-                 img_fmt='png'):
+                 img_base=DEFAULT_IMAGE_BASE,
+                 img_fmt=DEFAULT_IMAGE_FORMAT):
         """
         BioSims package constructor.
 
@@ -108,11 +103,14 @@ class BioSim:
         self.island = Island(self._map)
         self.island.add_population(ini_pop)
         np.random.seed(seed)
-
+        self.last_year = 0
         self.year_num = 0
         self.final_year = None
-        self.fig = None
+        self.img_base = img_base
+        self.img_nums = 0
+        self.img_fmt = img_fmt
 
+        self.fig = None
         self._island_map = None
         self._img_axis = None
         self._mean_ax = None
@@ -122,11 +120,6 @@ class BioSim:
         self._carn_dist = None
         self._herb_img_axis = None
         self._carn_img_axis = None
-
-        self.img_base = os.path.join(img_dir, img_name)
-
-        self.img_ctr = 0
-        self.img_fmt = img_fmt
 
     @property
     def generate_map_array(self):
@@ -147,8 +140,8 @@ class BioSim:
             map_array.append([])
             if num_cells != len(line):
                 raise ValueError(
-                    "All lines in the map must have the same number of cells."
-                )
+                    'All lines in the map must have the same number of '
+                    'cells.')
             for letter in line:
                 if letter not in self.map_colors:
                     raise ValueError(
@@ -165,8 +158,7 @@ class BioSim:
 
         Returns
         ----------
-
-
+            Int with the total number of population in the Island.
         """
         pop = self.island.get_population_numbers()
         return sum(pop['Herbivore']) + sum(pop['Carnivore'])
@@ -177,10 +169,9 @@ class BioSim:
 
         Returns
         ----------
-
-
+            int
         """
-        return self.final_year
+        return self.last_year
 
     @property
     def num_animals_per_species(self):
@@ -188,8 +179,8 @@ class BioSim:
 
         Returns
         ----------
-
-
+            -> Dictionary with the species as keys and number of each
+               population as values.
         """
         pop = self.island.get_population_numbers()
         return {'Herbivore': sum(pop['Herbivore']),
@@ -264,8 +255,9 @@ class BioSim:
         if img_years is None:
             img_years = vis_years
 
+        self.last_year += num_years
         self.final_year = self.year_num + num_years
-        self._setup_graphics()
+        self.setup_graphics()
 
         while self.year_num < self.final_year:
 
@@ -273,40 +265,35 @@ class BioSim:
                 break
 
             if self.year_num % vis_years is 0:
-                self._update_graphics()
+                self.update_graphics()
 
             if self.year_num % img_years is 0:
-                self._save_graphics()
+                self.save_graphics()
 
             self.island.yearly_cycle()
             self.year_num += 1
 
-    def make_movie(self, m_fmt=DEFAULT_MOVIE_FORMAT):
+    def make_movie(self, mov_fmt=DEFAULT_MOVIE_FORMAT):
         """
+        This method returns makes the movie in gif format.
 
         Parameters
         ----------
-        m_fmt: 'gif'
+        mov_fmt: 'gif'
             DEFAULT_MOVIE_FORMAT = 'gif'
         """
-        if self.img_base is None:
-            raise RuntimeError("No filename defined.")
+        try:
+            subprocess.check_call([CONVERT_BINARY,
+                                   '-delay', '1',
+                                   '-loop', '0',
+                                   '{}_*.png'.format(self.img_base),
+                                   '{}.{}'.format(self.img_base,
+                                                  mov_fmt)])
 
-        if m_fmt is 'gif':
-            try:
-                subprocess.check_call([CONVERT_BINARY,
-                                       '-delay', '1',
-                                       '-loop', '0',
-                                       '{}_*.png'.format(self.img_base),
-                                       '{}.{}'.format(self.img_base,
-                                                      m_fmt)])
-            except subprocess.CalledProcessError as err:
-                raise RuntimeError('Convert failed with: {}'.format(err))
+        except subprocess.CalledProcessError as err:
+            raise RuntimeError('Convert failed with: {}'.format(err))
 
-        else:
-            raise ValueError('Movie format has to be gif')
-
-    def _setup_graphics(self):
+    def setup_graphics(self):
         if self.fig is None:
             self.fig = plt.figure(figsize=[12, 7])
             self.fig.canvas.set_window_title('BioSim Window')
@@ -368,8 +355,10 @@ class BioSim:
         self._island_map = self.fig.add_subplot(2, 2, 1)
         self._island_map.imshow(self.generate_map_array)
         patches = []
-        for i, (landscape, l_color) in enumerate(self.map_colors.items()):
-            patch = mpatches.Patch(color=l_color, label=self.map_labels[landscape])
+        for i, (landscape, l_color) in enumerate(
+                self.map_colors.items()):
+            patch = mpatches.Patch(color=l_color,
+                                   label=self.map_labels[landscape])
             patches.append(patch)
         self._island_map.legend(handles=patches)
 
@@ -420,7 +409,8 @@ class BioSim:
                        cmap="Spectral")
             plt.colorbar(self._carn_img_axis, ax=self._carn_dist)
             self._carn_dist.set_xticks(range(0,
-                                             len(self.generate_map_array[0]), 5))
+                                             len(self.generate_map_array[
+                                                     0]), 5))
             self._carn_dist.set_xticklabels(range(1, 1 + len(
                 self.generate_map_array[0]), 5))
 
@@ -432,26 +422,29 @@ class BioSim:
 
             self._carn_dist.set_title('Carnivore distribution')
 
-    def _update_graphics(self):
+    def update_graphics(self):
+        """This method updates the simulated graphics with the data
+        provided by the Pandas DataFrame."""
         animal_count = self.animal_distribution
-        row, col = len(self.generate_map_array), len(self.generate_map_array[0])
+        row = len(self.generate_map_array)
+        col = len(self.generate_map_array[0])
 
         self._update_count_graph(self.num_animals_per_species)
 
         self._update_herb_dist(
-            np.array(animal_count.herbivores).reshape(row, col))
+            np.array(animal_count.Herbivore).reshape(row, col))
 
         self._update_carn_dist(
-            np.array(animal_count.carnivores).reshape(row, col))
+            np.array(animal_count.Carnivore).reshape(row, col))
 
         plt.pause(1e-6)
 
-        self.fig.suptitle('Year: {}'.format(self.year_num + 1), x=0.027, fontsize=12)
+        self.fig.suptitle('Year: {}'.format(self.year_num + 1), x=0.027,
+                          fontsize=10)
 
-    def _save_graphics(self):
-        if self.img_base is None:
-            return
+    def save_graphics(self):
+        """This method saves the simulated graphics."""
         plt.savefig('{base}_{num:05d}.{type}'.format(base=self.img_base,
-                                                     num=self.img_ctr,
+                                                     num=self.img_nums,
                                                      type=self.img_fmt))
-        self.img_ctr += 1
+        self.img_nums += 1

@@ -9,7 +9,7 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import numpy as np
-from biosim.fauna import Herbivore, Carnivore
+from .fauna import Herbivore, Carnivore
 
 
 class Cells:

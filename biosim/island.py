@@ -12,6 +12,7 @@ import textwrap
 from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
 from biosim.fauna import Herbivore, Carnivore
+import numpy as np
 
 
 class Island:
@@ -169,8 +170,8 @@ class Island:
             geo_object.add_newborns()
             geo_object.migrate(self.neighbour_cell(coordinate))
             geo_object.add_new_migrated()
-            geo_object.get_old()
             geo_object.lose_weight()
+            geo_object.get_old()
             geo_object.die()
 
     def get_population_numbers(self):  # tested

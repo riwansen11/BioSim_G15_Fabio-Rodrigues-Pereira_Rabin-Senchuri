@@ -160,7 +160,7 @@ class Population:
         """This method, when called, updates the with of the animal
         after gives birth, according to the formula: 'xi' * the baby
         weight. Then it updates the fitness."""
-        self.weight = self.parameters['xi'] * baby_weight
+        self.weight -= self.parameters['xi'] * baby_weight
         self.update_fitness()
 
     def migration_chances(self):

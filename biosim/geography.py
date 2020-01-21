@@ -255,32 +255,9 @@ class Cells:
             -> Every herbivore killed is removed from the population
                by the python's built-in method '.remove()'.
         """
-        self.population['Carnivore'].sort(key=lambda h: h.fitness,
-                                          reverse=True)
-
-        self.population['Herbivore'].sort(key=lambda h: h.fitness)
-
         for carnivore in self.population['Carnivore']:
-            appetite = carnivore.parameters['F']
-            amount_eaten = 0
-
-            for herbivore in self.population['Herbivore']:
-
-                if amount_eaten >= appetite:
-                    break
-
-                elif carnivore.will_kill(herbivore.fitness):
-                    food_wanted = appetite - amount_eaten
-
-                    if herbivore.weight <= food_wanted:
-                        amount_eaten += herbivore.weight
-                        self.population['Herbivore'].remove(herbivore)
-
-                    elif herbivore.weight > food_wanted:
-                        amount_eaten += food_wanted
-                        self.population['Herbivore'].remove(herbivore)
-
-            carnivore.gain_weight(amount_eaten)
+            self.population['Herbivore'] = carnivore.eat_herb(
+                self.population['Herbivore'])
 
     def add_newborns(self):
         """This method extend a specie population adding their

@@ -19,6 +19,8 @@ import matplotlib.colors as color
 from biosim.island import Island
 
 matplotlib.use('macosx')
+import matplotlib.colors as mcolors
+import matplotlib.patches as mpatches
 
 # update these variables to point to your ffmpeg and convert binaries
 FFMPEG_BINARY = 'ffmpeg'
@@ -34,6 +36,21 @@ DEFAULT_MOVIE_FORMAT = 'gif'
 class BioSim:
     """Responsible to provide to the user an interface for simulation as
     well as visualization."""
+
+    map_colors = {
+        "O": mcolors.to_rgba("navy"),
+        "J": mcolors.to_rgba("forestgreen"),
+        "S": mcolors.to_rgba("#e1ab62"),
+        "D": mcolors.to_rgba("salmon"),
+        "M": mcolors.to_rgba("lightslategrey"),
+    }
+    map_labels = {
+        "O": "Ocean",
+        "J": "Jungle",
+        "S": "Savannah",
+        "D": "Desert",
+        "M": "Mountain",
+    }
 
     def __init__(self,
                  island_map,
@@ -112,7 +129,7 @@ class BioSim:
         self.img_fmt = img_fmt
 
     @property
-    def map_colors(self):
+    def generate_map_array(self):
         """
 
         Returns
@@ -120,17 +137,27 @@ class BioSim:
 
 
         """
-        geo_type_color = {'O': color.to_rgb('aqua'),
-                          'M': color.to_rgb('darkgray'),
-                          'J': color.to_rgb('forestgreen'),
-                          'S': color.to_rgb('yellowgreen'),
-                          'D': color.to_rgb('khaki')}
+        lines = textwrap.dedent(self._map).splitlines()
+        if len(lines[-1]) == 0:
+            lines = lines[:-1]
 
-        map_compatible = textwrap.dedent(self._map).splitlines()
-        map_colors = [[geo_type_color[col] for col in row]
-                      for row in map_compatible]
+        num_cells = len(lines[0])
+        map_array = []
+        for line in lines:
+            map_array.append([])
+            if num_cells != len(line):
+                raise ValueError(
+                    "All lines in the map must have the same number of cells."
+                )
+            for letter in line:
+                if letter not in self.map_colors:
+                    raise ValueError(
+                        f"'{letter}' is not a valid landscape type. "
+                        f"Must be one of {set(self.map_colors.keys())}"
+                    )
+                map_array[-1].append(self.map_colors[letter])
 
-        return map_colors
+        return map_array
 
     @property
     def num_animals(self):
@@ -281,7 +308,7 @@ class BioSim:
 
     def _setup_graphics(self):
         if self.fig is None:
-            self.fig = plt.figure()
+            self.fig = plt.figure(figsize=[12, 7])
             self.fig.canvas.set_window_title('BioSim Window')
             # mng = plt.get_current_fig_manager()
             # mng.window.resizable(False, False)
@@ -339,17 +366,12 @@ class BioSim:
 
     def _make_static_map(self):
         self._island_map = self.fig.add_subplot(2, 2, 1)
-        self._island_map.imshow(self.map_colors, interpolation='nearest')
-
-        self._island_map.set_xticks(
-            range(0, len(self.map_colors[0]), 5))
-        self._island_map.set_xticklabels(range(1, 1 + len(
-            self.map_colors[0]), 5))
-
-        self._island_map.set_yticks(
-            range(0, len(self.map_colors), 5))
-        self._island_map.set_yticklabels(range(1, 1 + len(
-            self.map_colors), 5))
+        self._island_map.imshow(self.generate_map_array)
+        patches = []
+        for i, (landscape, l_color) in enumerate(self.map_colors.items()):
+            patch = mpatches.Patch(color=l_color, label=self.map_labels[landscape])
+            patches.append(patch)
+        self._island_map.legend(handles=patches)
 
     def _update_count_graph(self, island_animal_count):
         herb_count, carn_count = list(island_animal_count.values())
@@ -374,14 +396,14 @@ class BioSim:
                 cmap="Spectral")
             plt.colorbar(self._herb_img_axis, ax=self._herb_dist)
             self._herb_dist.set_xticks(
-                range(0, len(self.map_colors[0]), 5))
+                range(0, len(self.generate_map_array[0]), 5))
             self._herb_dist.set_xticklabels(range(1, 1 + len(
-                self.map_colors[0]), 5))
+                self.generate_map_array[0]), 5))
 
             self._herb_dist.set_yticks(
-                range(0, len(self.map_colors), 5))
+                range(0, len(self.generate_map_array), 5))
             self._herb_dist.set_yticklabels(range(1, 1 + len(
-                self.map_colors), 5))
+                self.generate_map_array), 5))
             self._herb_dist.set_title('Herbivore distribution')
 
     def _update_carn_dist(self, carn_dist):
@@ -398,21 +420,21 @@ class BioSim:
                        cmap="Spectral")
             plt.colorbar(self._carn_img_axis, ax=self._carn_dist)
             self._carn_dist.set_xticks(range(0,
-                                             len(self.map_colors[0]), 5))
+                                             len(self.generate_map_array[0]), 5))
             self._carn_dist.set_xticklabels(range(1, 1 + len(
-                self.map_colors[0]), 5))
+                self.generate_map_array[0]), 5))
 
             self._carn_dist.set_yticks(
-                range(0, len(self.map_colors), 5))
+                range(0, len(self.generate_map_array), 5))
 
             self._carn_dist.set_yticklabels(range(1, 1 + len(
-                self.map_colors), 5))
+                self.generate_map_array), 5))
 
             self._carn_dist.set_title('Carnivore distribution')
 
     def _update_graphics(self):
         animal_count = self.animal_distribution
-        row, col = len(self.map_colors), len(self.map_colors[0])
+        row, col = len(self.generate_map_array), len(self.generate_map_array[0])
 
         self._update_count_graph(self.num_animals_per_species)
 
@@ -424,7 +446,7 @@ class BioSim:
 
         plt.pause(1e-6)
 
-        self.fig.suptitle('Year: {}'.format(self.year_num + 1), x=0.105)
+        self.fig.suptitle('Year: {}'.format(self.year_num + 1), x=0.027, fontsize=12)
 
     def _save_graphics(self):
         if self.img_base is None:

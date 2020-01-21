@@ -15,18 +15,18 @@ import pandas as pd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.colors as color
 from .island import Island
 import matplotlib.colors as mcolors
 import matplotlib.patches as mpatches
+
 matplotlib.use('macosx')
 
 # update these variables to point to your ffmpeg and convert binaries
 FFMPEG_BINARY = 'ffmpeg'
 CONVERT_BINARY = 'magick'
 
-DEFAULT_IMAGE_BASE = os.path.join('..', 'BioSim')
-DEFAULT_IMAGE_FORMAT = 'png'
+DEFAULT_GRAPHICS_DIR = os.path.join('../testfigroot')
+DEFAULT_GRAPHICS_NAME = 'testfigroot'
 DEFAULT_MOVIE_FORMAT = 'gif'
 
 
@@ -55,8 +55,8 @@ class BioSim:
                  seed,
                  ymax_animals=None,
                  cmax_animals=None,
-                 img_base=DEFAULT_IMAGE_BASE,
-                 img_fmt=DEFAULT_IMAGE_FORMAT):
+                 img_base=DEFAULT_GRAPHICS_NAME,
+                 img_fmt='png'):
         """
         BioSims package constructor.
 
@@ -85,19 +85,23 @@ class BioSim:
         img_fmt:
             String with file type for figures, e.g. ’png’.
 
+        Notes
+        ----------
+            -> If ymax_animals is None, the y-axis limit should be
+               adjusted automatically.
 
-        * If ymax_animals is None, the y-axis limit should be adjusted
-        automatically.
+            -> If cmax_animals is None, sensible, fixed default values
+               should be used. cmax_animals is a dict mapping species
+               names to numbers, e.g., {’Herbivore’: 50, ’Carnivore’:
+               20}.
 
-        * If cmax_animals is None, sensible, fixed default values should
-        be used. cmax_animals is a dict mapping species names to numbers,
-        e.g., {’Herbivore’: 50, ’Carnivore’: 20}.
+            -> If img_base is None, no figures are written to file.
+               Filenames are formed as ’{}_{:05d}.{}’.format(img_base,
+               img_no, img_fmt) where img_no are consecutive image
+               numbers starting from 0.
 
-        * If img_base is None, no figures are written to file. Filenames
-        are formed as ’{}_{:05d}.{}’.format(img_base, img_no, img_fmt)
-        where img_no are consecutive image numbers starting from 0.
-
-        * img_base should contain a path and beginning of a file name.
+            -> img_base should contain a path and beginning of a file
+               name.
         """
         self._map = island_map
         self.island = Island(self._map)
@@ -105,51 +109,53 @@ class BioSim:
         np.random.seed(seed)
         self.last_year = 0
         self.year_num = 0
+        self.img_no = 0
         self.final_year = None
-        self.img_base = img_base
-        self.img_nums = 0
         self.img_fmt = img_fmt
-
         self.fig = None
         self._island_map = None
         self._img_axis = None
         self._mean_ax = None
         self._herbivore_line = None
         self._carnivore_line = None
-        self._herb_dist = None
-        self._carn_dist = None
+        self.herb_pop = None
+        self.carn_pop = None
         self._herb_img_axis = None
         self._carn_img_axis = None
+        
+        self.img_base = os.path.join(DEFAULT_GRAPHICS_DIR, img_base)
+
+        self.ymax_animals = None if ymax_animals is None \
+            else ymax_animals
+
+        self.cmax_animals = None if ymax_animals is None \
+            else cmax_animals
 
     @property
     def generate_map_array(self):
-        """
+        """This method generates the colored island map array.
 
         Returns
         ----------
-
-
+            Array with the map colors.
         """
         lines = textwrap.dedent(self._map).splitlines()
-        if len(lines[-1]) == 0:
+        if len(lines[-1]) is 0:
             lines = lines[:-1]
 
         num_cells = len(lines[0])
         map_array = []
         for line in lines:
             map_array.append([])
-            if num_cells != len(line):
-                raise ValueError(
-                    'All lines in the map must have the same number of '
-                    'cells.')
+            if num_cells is not len(line):
+                raise ValueError('All lines in the map must have the '
+                                 'same number of cells.')
             for letter in line:
                 if letter not in self.map_colors:
                     raise ValueError(
                         f"'{letter}' is not a valid landscape type. "
-                        f"Must be one of {set(self.map_colors.keys())}"
-                    )
+                        f"Must be one of {set(self.map_colors.keys())}")
                 map_array[-1].append(self.map_colors[letter])
-
         return map_array
 
     @property
@@ -256,19 +262,21 @@ class BioSim:
             img_years = vis_years
 
         self.last_year += num_years
-        self.final_year = self.year_num + num_years
+        self.final_year = self.year_num + num_years + 1
         self.setup_graphics()
 
         while self.year_num < self.final_year:
-
             if self.num_animals is 0:
                 break
 
             if self.year_num % vis_years is 0:
                 self.update_graphics()
 
-            if self.year_num % img_years is 0:
-                self.save_graphics()
+            if self.year_num % vis_years is 0:
+                plt.savefig('{}_{:05d}.{}'.format(self.img_base,
+                                                  self.img_no,
+                                                  self.img_fmt))
+                self.img_no += 1
 
             self.island.yearly_cycle()
             self.year_num += 1
@@ -297,8 +305,6 @@ class BioSim:
         if self.fig is None:
             self.fig = plt.figure(figsize=[12, 7])
             self.fig.canvas.set_window_title('BioSim Window')
-            # mng = plt.get_current_fig_manager()
-            # mng.window.resizable(False, False)
 
         if self._island_map is None:
             self._make_static_map()
@@ -311,23 +317,23 @@ class BioSim:
         self._make_herbivore_line()
         self._make_carnivore_line()
 
-        if self._herb_dist is None:
-            self._herb_dist = self.fig.add_subplot(2, 2, 3)
+        if self.herb_pop is None:
+            self.herb_pop = self.fig.add_subplot(2, 2, 3)
             self._herb_img_axis = None
 
-        if self._carn_dist is None:
-            self._carn_dist = self.fig.add_subplot(2, 2, 4)
+        if self.carn_pop is None:
+            self.carn_pop = self.fig.add_subplot(2, 2, 4)
             self._carn_img_axis = None
 
         self.fig.tight_layout()
 
     def _make_herbivore_line(self):
         if self._herbivore_line is None:
-            herbivore_plot = self._mean_ax.plot(
+            plot = self._mean_ax.plot(
                 np.arange(0, self.final_year),
                 np.nan * np.ones(
                     self.final_year))
-            self._herbivore_line = herbivore_plot[0]
+            self._herbivore_line = plot[0]
         else:
             xdata, ydata = self._herbivore_line.get_data()
             xnew = np.arange(xdata[-1] + 1, self.final_year)
@@ -362,89 +368,74 @@ class BioSim:
             patches.append(patch)
         self._island_map.legend(handles=patches)
 
-    def _update_count_graph(self, island_animal_count):
-        herb_count, carn_count = list(island_animal_count.values())
+    def update_counter_graph(self, pop_count):
+        herb_count, carn_count = list(pop_count.values())
 
-        herb_ydata = self._herbivore_line.get_ydata()
-        herb_ydata[self.year_num] = herb_count
-        self._herbivore_line.set_ydata(herb_ydata)
+        herb = self._herbivore_line.get_ydata()
+        herb[self.year_num] = herb_count
+        self._herbivore_line.set_ydata(herb)
 
-        carn_ydata = self._carnivore_line.get_ydata()
-        carn_ydata[self.year_num] = carn_count
-        self._carnivore_line.set_ydata(carn_ydata)
+        carn = self._carnivore_line.get_ydata()
+        carn[self.year_num] = carn_count
+        self._carnivore_line.set_ydata(carn)
 
-    def _update_herb_dist(self, herb_dist):
+    def update_herb(self, pop):
         if self._herb_img_axis is not None:
-            self._herb_img_axis.set_data(herb_dist)
+            self._herb_img_axis.set_data(pop)
         else:
-            self._herb_img_axis = self._herb_dist.imshow(
-                herb_dist, vmin=0,
+            self._herb_img_axis = self.herb_pop.imshow(
+                pop, vmin=0,
                 vmax=200,
                 interpolation='nearest',
                 aspect='auto',
                 cmap="Spectral")
-            plt.colorbar(self._herb_img_axis, ax=self._herb_dist)
-            self._herb_dist.set_xticks(
+            plt.colorbar(self._herb_img_axis, ax=self.herb_pop)
+            self.herb_pop.set_xticks(
                 range(0, len(self.generate_map_array[0]), 5))
-            self._herb_dist.set_xticklabels(range(1, 1 + len(
+            self.herb_pop.set_xticklabels(range(1, 1 + len(
                 self.generate_map_array[0]), 5))
 
-            self._herb_dist.set_yticks(
+            self.herb_pop.set_yticks(
                 range(0, len(self.generate_map_array), 5))
-            self._herb_dist.set_yticklabels(range(1, 1 + len(
+            self.herb_pop.set_yticklabels(range(1, 1 + len(
                 self.generate_map_array), 5))
-            self._herb_dist.set_title('Herbivore distribution')
+            self.herb_pop.set_title('Herbivore distribution')
 
-    def _update_carn_dist(self, carn_dist):
+    def update_carn(self, distribution):
+        """This method updates the Carnivore population distribution."""
         if self._carn_img_axis is not None:
-            self._carn_img_axis.set_data(carn_dist)
+            self._carn_img_axis.set_data(distribution)
 
         else:
-            self._carn_img_axis = self._carn_dist. \
-                imshow(carn_dist,
-                       vmin=0,
-                       vmax=200,
-                       interpolation='nearest',
-                       aspect='auto',
-                       cmap="Spectral")
-            plt.colorbar(self._carn_img_axis, ax=self._carn_dist)
-            self._carn_dist.set_xticks(range(0,
-                                             len(self.generate_map_array[
-                                                     0]), 5))
-            self._carn_dist.set_xticklabels(range(1, 1 + len(
+            self._carn_img_axis = self.carn_pop.imshow(
+                distribution, vmin=0, vmax=200, interpolation='nearest',
+                aspect='auto', cmap="Spectral")
+
+            plt.colorbar(self._carn_img_axis, ax=self.carn_pop)
+            self.carn_pop.set_xticks(range(0,
+                                           len(self.generate_map_array[
+                                                   0]), 5))
+            self.carn_pop.set_xticklabels(range(1, 1 + len(
                 self.generate_map_array[0]), 5))
 
-            self._carn_dist.set_yticks(
+            self.carn_pop.set_yticks(
                 range(0, len(self.generate_map_array), 5))
 
-            self._carn_dist.set_yticklabels(range(1, 1 + len(
+            self.carn_pop.set_yticklabels(range(1, 1 + len(
                 self.generate_map_array), 5))
 
-            self._carn_dist.set_title('Carnivore distribution')
+            self.carn_pop.set_title('Carnivore distribution')
 
     def update_graphics(self):
-        """This method updates the simulated graphics with the data
+        """This method updates the graphics with the simulated data
         provided by the Pandas DataFrame."""
-        animal_count = self.animal_distribution
+        counter = self.animal_distribution
         row = len(self.generate_map_array)
         col = len(self.generate_map_array[0])
 
-        self._update_count_graph(self.num_animals_per_species)
-
-        self._update_herb_dist(
-            np.array(animal_count.Herbivore).reshape(row, col))
-
-        self._update_carn_dist(
-            np.array(animal_count.Carnivore).reshape(row, col))
-
+        self.update_counter_graph(self.num_animals_per_species)
+        self.update_herb(np.array(counter.Herbivore).reshape(row, col))
+        self.update_carn(np.array(counter.Carnivore).reshape(row, col))
         plt.pause(1e-6)
-
-        self.fig.suptitle('Year: {}'.format(self.year_num + 1), x=0.027,
-                          fontsize=10)
-
-    def save_graphics(self):
-        """This method saves the simulated graphics."""
-        plt.savefig('{base}_{num:05d}.{type}'.format(base=self.img_base,
-                                                     num=self.img_nums,
-                                                     type=self.img_fmt))
-        self.img_nums += 1
+        self.fig.suptitle('Year: {}'.format(self.year_num),
+                          x=0.025, fontsize=10)

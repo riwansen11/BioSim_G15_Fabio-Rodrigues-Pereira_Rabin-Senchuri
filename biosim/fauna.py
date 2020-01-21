@@ -109,7 +109,7 @@ class Population:
                 raise ValueError("Unknown parameter provided: "
                                  "*{}*".format(parameter))
 
-    @classmethod  # tested
+    @classmethod
     def set_parameters(cls, params):
         """This method sets the parameters for the animals.
 

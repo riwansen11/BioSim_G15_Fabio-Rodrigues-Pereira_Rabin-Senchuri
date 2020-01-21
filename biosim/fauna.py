@@ -15,6 +15,16 @@ import numpy as np
 class Population:
     parameters = {}
 
+    def __init__(self, age=0, weight=None):
+        """Constructor for the animals's population."""
+        self.age = age
+        self.weight = np.random.normal(self.parameters['w_birth'],
+                                       self.parameters['sigma_birth']) \
+            if self.age is 0 else weight
+
+        self.fitness = self.calculate_fitness(self.age, self.weight,
+                                              self.parameters)
+
     @staticmethod
     @numba.jit
     def fit_formula(sign, x, x_half, phi_x):
@@ -119,16 +129,6 @@ class Population:
         """
         cls.check_unknown_parameters(params)
         cls.parameters.update(params)
-
-    def __init__(self, age=0, weight=None):
-        """Constructor for the animals's population."""
-        self.age = age
-        self.weight = np.random.normal(self.parameters['w_birth'],
-                                       self.parameters['sigma_birth']) \
-            if self.age is 0 else weight
-
-        self.fitness = self.calculate_fitness(self.age, self.weight,
-                                              self.parameters)
 
     def gain_weight(self, amount_eaten):
         """This method increases the weight of the animal, in yearly

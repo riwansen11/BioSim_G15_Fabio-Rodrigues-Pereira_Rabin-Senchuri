@@ -128,13 +128,13 @@ def test_neighbour_cells():
     for island_map in island_maps:
         t = BioSim(island_map, ini_pop, None)
         neighbours = [type(neighbour).__name__ for neighbour
-                      in t.island.neighbour_cell(loc=(2, 2))]
+                      in t.island.neighbour_cells(loc=(2, 2))]
         assert 'Desert' in neighbours
         assert len(neighbours) is 1
     island_map = ("OOOOO\nOJDJO\nOOJJO\nOJSJO\nOOOOO")
     t = BioSim(island_map, ini_pop, None)
     neighbours = [type(neighbour).__name__ for neighbour
-                  in t.island.neighbour_cell(loc=(2, 2))]
+                  in t.island.neighbour_cells(loc=(2, 2))]
     assert 'Jungle' in neighbours
     assert 'Savannah' in neighbours
     assert 'Desert' in neighbours

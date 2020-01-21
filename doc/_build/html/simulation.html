@@ -4,16 +4,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Simulation Module &#8212; BioSim 2020 0.0.1 documentation</title>
+    <title>Simulation Module &#8212; BioLab 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Island Module" href="island.html" />
+    <link rel="prev" title="Welcome to Rabin’s documentation!" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -88,7 +90,20 @@ where img_no are consecutive image numbers starting from 0.</p>
 <em class="property">property </em><code class="sig-name descname">animal_distribution</code><a class="headerlink" href="#biosim.simulation.BioSim.animal_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pandas DataFrame with animal count per species for each cell
 on island.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Pandas DataFrame with the simulated data.</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="biosim.simulation.BioSim.generate_map_array">
+<em class="property">property </em><code class="sig-name descname">generate_map_array</code><a class="headerlink" href="#biosim.simulation.BioSim.generate_map_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="biosim.simulation.BioSim.make_movie">
@@ -99,11 +114,6 @@ on island.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="method">
-<dt id="biosim.simulation.BioSim.map_colors">
-<em class="property">property </em><code class="sig-name descname">map_colors</code><a class="headerlink" href="#biosim.simulation.BioSim.map_colors" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="biosim.simulation.BioSim.num_animals">
@@ -176,7 +186,7 @@ on island.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">BioSim 2020</a></h1>
+<h1 class="logo"><a href="index.html">BioLab</a></h1>
 
 
 
@@ -186,14 +196,19 @@ on island.</p>
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Simulation Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="island.html">Island Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geography.html">Geography Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fauna.html">Fauna Module</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Rabin’s documentation!</a></li>
+      <li>Next: <a href="island.html" title="next chapter">Island Module</a></li>
   </ul></li>
 </ul>
 </div>
@@ -206,7 +221,7 @@ on island.</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -220,10 +235,10 @@ on island.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, Rabin, Fabio.
+      &copy;2018, Hans Ekkehard Plesser.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0+/08bbd52</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

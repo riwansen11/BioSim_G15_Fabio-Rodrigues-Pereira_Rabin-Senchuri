@@ -9,11 +9,17 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import numpy as np
-from biosim.fauna import Herbivore, Carnivore
+from .fauna import Herbivore, Carnivore
 
 
 class Cells:
     parameters = {}
+
+    def __init__(self):
+        """Constructor for the landscape cells."""
+        self.population = {'Herbivore': [], 'Carnivore': []}
+        self.new_population = {'Herbivore': [], 'Carnivore': []}
+        self.fodder = 0
 
     @staticmethod
     def cumsum(migrating_specie, neighbours):
@@ -197,12 +203,6 @@ class Cells:
         cls.check_unknown_parameters(params)
         cls.check_non_negative_parameters('f_max', params)
         cls.parameters.update(params)
-
-    def __init__(self):
-        """Constructor for the landscape cells."""
-        self.population = {'Herbivore': [], 'Carnivore': []}
-        self.new_population = {'Herbivore': [], 'Carnivore': []}
-        self.fodder = 0
 
     def herbivore_feed(self):
         """This method organizes the population of herbivores in order

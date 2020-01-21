@@ -9,10 +9,8 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import textwrap
-from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
-    Desert
-from biosim.fauna import Herbivore, Carnivore
-import numpy as np
+from .geography import Ocean, Savannah, Mountain, Jungle, Desert
+from .fauna import Herbivore, Carnivore
 
 
 class Island:
@@ -22,6 +20,14 @@ class Island:
 
     geo_classes = {'O': Ocean, 'S': Savannah, 'M': Mountain,
                    'J': Jungle, 'D': Desert}
+
+    def __init__(self, island_map):
+        """Constructor for the Island class."""
+        self.geos = self.list_geo_cells(island_map)
+        self.check_invalid_line_lengths(self.geos)
+        self.check_invalid_boundary(self.geos)
+        self.check_invalid_character(self.geos)
+        self.cells = self.create_cells()
 
     @staticmethod
     def check_string_instance(argument):
@@ -156,14 +162,6 @@ class Island:
                 cls.habitable_geos.values():
             raise TypeError('This *{}* area is not '
                             'habitable'.format(coordinates))
-
-    def __init__(self, island_map):
-        """Constructor for the Island class."""
-        self.geos = self.list_geo_cells(island_map)
-        self.check_invalid_line_lengths(self.geos)
-        self.check_invalid_boundary(self.geos)
-        self.check_invalid_character(self.geos)
-        self.cells = self.create_cells()
 
     def create_cells(self):
         """This method creates a dictionary with the coordinates on

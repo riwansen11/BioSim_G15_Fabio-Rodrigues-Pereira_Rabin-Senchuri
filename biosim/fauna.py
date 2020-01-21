@@ -21,12 +21,23 @@ class Population:
         """This method returns the fitness formula used to calculate
         the physical condition (fitness) of an animal (pop_object).
 
+        Formula and conditions:
+        ----------
+        q = 1.0 / (1 + \e^{\pm * \phi * (x - x_{1/2} )})
+
+        Parameters
+        ----------
+
         * Parameters:   x:          int or float:   'age'
                                                     'weight'
                         x_half:     int or float:   'age_half'
                                                     'weight_half'
                         phi_x:   int or float:      'phi_age'
                                                     'phi_weight'
+
+        Returns:
+        ----------
+
 
         * Formula: 1 / {1 + exp[phi_x('x' - 'x_1/2')]}.
 

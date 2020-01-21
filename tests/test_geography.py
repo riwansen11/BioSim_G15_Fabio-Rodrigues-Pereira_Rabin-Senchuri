@@ -138,7 +138,7 @@ def test_animal_number_increases_after_birth():
         {
             "loc": (1, 1),
             "pop": [
-                {"species": "Herbivore", "age": 5, "weight": 40}
+                {"species": "Carnivore", "age": 5, "weight": 40}
                 for _ in range(150)
             ],
         }
@@ -146,10 +146,10 @@ def test_animal_number_increases_after_birth():
     t = BioSim(island_map, ini_herbs, None)
     loc = (1, 1)
     cell_object = t.island.cells[loc]
-    before_birth_t0tal_animal = len(cell_object.population['Herbivore'])
+    before_birth_total_animal = len(cell_object.population['Carnivore'])
     cell_object.add_newborns()
 
-    assert len(cell_object.population['Herbivore']) > before_birth_t0tal_animal
+    assert len(cell_object.population['Carnivore']) - before_birth_total_animal > 0
 
 
 def test_animal_death():

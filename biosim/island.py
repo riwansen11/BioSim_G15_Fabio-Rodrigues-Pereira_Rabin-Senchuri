@@ -12,6 +12,7 @@ import textwrap
 from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
     Desert
 from biosim.fauna import Herbivore, Carnivore
+import numpy as np
 
 
 class Island:

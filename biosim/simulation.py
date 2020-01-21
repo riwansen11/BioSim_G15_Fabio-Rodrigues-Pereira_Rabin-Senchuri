@@ -17,6 +17,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as color
 from biosim.island import Island
+
 matplotlib.use('macosx')
 
 # update these variables to point to your ffmpeg and convert binaries
@@ -141,7 +142,7 @@ class BioSim:
 
         """
         pop = self.island.get_population_numbers()
-        return sum(pop['herbivore']) + sum(pop['carnivore'])
+        return sum(pop['Herbivore']) + sum(pop['Carnivore'])
 
     @property
     def year(self):
@@ -155,7 +156,7 @@ class BioSim:
         return self.final_year
 
     @property
-    def num_animals_per_species(self):  # tested
+    def num_animals_per_species(self):
         """Number of animals per species in island, as dictionary
 
         Returns
@@ -164,8 +165,8 @@ class BioSim:
 
         """
         pop = self.island.get_population_numbers()
-        return {'herbivore': sum(pop['herbivore']),
-                'carnivore': sum(pop['carnivore'])}
+        return {'Herbivore': sum(pop['Herbivore']),
+                'Carnivore': sum(pop['Carnivore'])}
 
     @property
     def animal_distribution(self):
@@ -174,27 +175,13 @@ class BioSim:
 
         Returns
         ----------
-
-
+            Pandas DataFrame with the simulated data.
         """
-        """pop = self.island.get_population_numbers()
-        df = pd.DataFrame(pop)
-        export_csv = df.to_csv(r'fabiorodp_biosin_data.csv',
-                               index=None,
-                               header=True)
-        return df"""
-        square_count = []
-
-        island = self.island.cells
-        for loc, geo in island.items():
-            square_count.append({'x': loc[0], 'y': loc[1],
-                                 'herbivores': len(geo.population[
-                                                       'Herbivore']),
-                                 'carnivores': len(geo.population[
-                                                       'Carnivore'])})
-        return pd.DataFrame(square_count, columns=['x', 'y',
-                                                   'herbivores',
-                                                   'carnivores'])
+        data = self.island.get_population_numbers()
+        return pd.DataFrame(data, columns=['Row',
+                                           'Carnivore',
+                                           'Col',
+                                           'Herbivore'])
 
     def set_animal_parameters(self, species, params):
         """

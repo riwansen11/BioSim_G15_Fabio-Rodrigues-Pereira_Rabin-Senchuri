@@ -172,7 +172,7 @@ def test_animal_migration_chances():
     """
     animal = Herbivore(10, 50)
     animal.fitness = 0
-    assert not animal.migration_chances()
+    assert not animal.will_migrate()
 
 
 def test__animal_birth_probability():

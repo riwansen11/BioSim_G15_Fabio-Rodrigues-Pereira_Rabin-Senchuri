@@ -20,12 +20,8 @@ import matplotlib.patches as mpatches
 
 matplotlib.use('macosx')
 
-# update these variables to point to your ffmpeg and convert binaries
 FFMPEG_BINARY = 'ffmpeg'
 CONVERT_BINARY = 'magick'
-
-DEFAULT_GRAPHICS_DIR = os.path.join('../figures')
-DEFAULT_GRAPHICS_NAME = 'testfigroot'
 DEFAULT_MOVIE_FORMAT = 'gif'
 
 
@@ -54,7 +50,7 @@ class BioSim:
                  seed,
                  ymax_animals=None,
                  cmax_animals=None,
-                 img_base=DEFAULT_GRAPHICS_NAME,
+                 img_base=None,
                  img_fmt='png'):
         """
         BioSims package constructor.
@@ -123,7 +119,7 @@ class BioSim:
         self._carn_img_axis = None
 
         if img_base is None:
-            self.img_base = DEFAULT_GRAPHICS_DIR
+            self.img_base = os.path.join('..', 'figure')
         else:
             self.img_base = img_base
 
@@ -275,8 +271,9 @@ class BioSim:
 
             if self.year_num % img_years is 0:
                 plt.savefig('{}_{:05d}.{}'.format(self.img_base,
-                                                  self.year_num,
+                                                  self.img_no,
                                                   self.img_fmt))
+                self.img_no += 1
             self.year_num += 1
 
     def create_gif(self, mov_fmt=DEFAULT_MOVIE_FORMAT):

@@ -10,11 +10,8 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import pytest
 from biosim.simulation import BioSim
-from biosim.island import Island
-from biosim.geography import Ocean, Savannah, Mountain, Jungle, \
-    Desert
 import numpy as np
-from biosim.fauna import Population, Herbivore, Carnivore
+from biosim.fauna import Herbivore, Carnivore
 import random as rd
 
 rd.seed(123456)
@@ -65,7 +62,17 @@ def test_calculate_fitness_and_formula():
     """Test if the method 'calculate_fitness()' correctly communicates to
     the method 'fit_formula()' and returns the correct fitness of the
     animal (pop_object)'"""
-    pass
+
+    herbivore = Herbivore(10, 20)
+    carnivore = Carnivore(15, 30)
+    assert pytest.approx(herbivore.calculate_fitness(herbivore.age,
+                                                     herbivore.weight,
+                                                     herbivore.parameters),
+                         0.7292)
+    assert pytest.approx(carnivore.calculate_fitness(carnivore.age,
+                                                     carnivore.weight,
+                                                     carnivore.parameters),
+                         0.999969)
 
 
 def test_check__phi_borders():
@@ -103,16 +110,6 @@ def test_animal_non_neagtive_weight():
     c = Carnivore()
     assert h.weight >= 0
     assert c.weight >= 0
-
-
-def test_default_parameters():
-    """
-    test that default parameters has keys as string and values as float
-    """
-    h = Herbivore()
-    for key, value in h.parameters.items():
-        assert isinstance(key, str)
-        assert isinstance(value, float)
 
 
 def test_animal_aging():
@@ -172,7 +169,7 @@ def test_animal_migration_chances():
     """
     animal = Herbivore(10, 50)
     animal.fitness = 0
-    assert not animal.migration_chances()
+    assert not animal.will_migrate()
 
 
 def test__animal_birth_probability():
@@ -204,7 +201,7 @@ def test_update_weight_after_birth():
     assert animal.weight < weight_before_birth
 
 
-def test_carnivore_kill():
+def test_carnivore_kill(mocker):
     """
     Test that carnivore kills herbivore if
         1. carnivore fitness is greater than
@@ -214,5 +211,10 @@ def test_carnivore_kill():
         by DeltaPhiMax parameter is greater
         than random value.
     """
-    pass
+    mocker.patch('numpy.random.random', return_value=0.05)
+    herbivore = Herbivore()
+    carnivore = Carnivore()
+    herbivore.fitness = 0.3
+    carnivore.fitness = 0.9
+    assert carnivore.will_kill(herbivore.fitness)
 

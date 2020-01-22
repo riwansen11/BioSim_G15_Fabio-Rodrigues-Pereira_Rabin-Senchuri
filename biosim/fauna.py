@@ -2,7 +2,7 @@
 
 """
 This is the Fauna model which functions with the BioSim package written
-for the INF200 project January 2019.
+for the INF200 project January 2019..
 """
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"

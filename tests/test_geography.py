@@ -11,9 +11,7 @@ __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 import pytest
 import random as rd
 from biosim.simulation import BioSim
-from biosim.geography import Cells, Jungle, Savannah, Desert, \
-    Ocean, Mountain
-from biosim.fauna import Herbivore, Carnivore
+from biosim.geography import Jungle, Savannah
 import numpy as np
 
 
@@ -181,24 +179,25 @@ def test_animal_death():
     assert len(cell_object.population["Herbivore"]) < 150
 
 
-def animal_propensity():
-    """
-    test  propensity to move to neighbouring cell
-    """
-    jungle = Jungle()
-
-    herbovore = Herbivore(10, 20)
-    assert jungle.propensity(herbovore) == pytest.approx(np.exp(120))
-
-    savannah = Savannah()
-    carnivore = Carnivore(10, 20)
-    assert savannah.propensity(carnivore) == pytest.approx(np.exp(60))
-
-    desert = Desert()
-    herbovore = Herbivore(10, 20)
-    assert desert.propensity(herbovore) == 1
-
-    ocean = Ocean()
-    herbovore = Herbivore(10, 20)
-    assert ocean.propensity(herbovore) == 0
+def test_animal_loose_weight():
+    """Test if the method 'lose_weight()' correctly looses the weight
+    of the animal"""
+    island_map = "OOOOO\nOJJJO\nOOOOO"
+    ini_pop = [
+        {
+            "loc": (1, 2),
+            "pop": [{"species": "Herbivore", "age": 5, "weight": 20},
+                    {"species": "Herbivore", "age": 2, "weight": 20}],
+        }]
+    t, loc = BioSim(island_map, ini_pop, None), (1, 2)
+    geo_object = t.island.habitable_cells[loc]
+    herb_object_1 = geo_object.population['Herbivore'][0]
+    herb_object_2 = geo_object.population['Herbivore'][1]
+    before_weight_herb1 = herb_object_1.weight
+    before_weight_herb2 = herb_object_2.weight
+    geo_object.lose_weight()
+    after_weight_herb1 = herb_object_1.weight
+    after_weight_herb2 = herb_object_2.weight
+    assert before_weight_herb1 > after_weight_herb1
+    assert before_weight_herb2 > after_weight_herb2
 

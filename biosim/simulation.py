@@ -2,7 +2,7 @@
 
 """
 This is the Simulation model which functions with the BioSim package
-written for the INF200 project January 2019.
+written for the INF200 project January 2019..
 """
 
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
@@ -325,7 +325,7 @@ class BioSim:
             self._mean_ax = self.fig.add_subplot(2, 2, 2)
             self._mean_ax.set_ylim(0, 20000)
 
-        self._mean_ax.set_xlim(0, self.final_year + 1)
+        self._mean_ax.set_xlim(0, self.final_year)
         self.herbivore_line()
         self.carnivore_line()
 

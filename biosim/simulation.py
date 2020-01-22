@@ -9,7 +9,6 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import os
-import subprocess
 import textwrap
 import pandas as pd
 import numpy as np
@@ -25,7 +24,7 @@ matplotlib.use('macosx')
 FFMPEG_BINARY = 'ffmpeg'
 CONVERT_BINARY = 'magick'
 
-DEFAULT_GRAPHICS_DIR = os.path.join('../testfigroot')
+DEFAULT_GRAPHICS_DIR = os.path.join('../figures')
 DEFAULT_GRAPHICS_NAME = 'testfigroot'
 DEFAULT_MOVIE_FORMAT = 'gif'
 
@@ -122,8 +121,11 @@ class BioSim:
         self.carn_pop = None
         self._herb_img_axis = None
         self._carn_img_axis = None
-        
-        self.img_base = os.path.join(DEFAULT_GRAPHICS_DIR, img_base)
+
+        if img_base is None:
+            self.img_base = DEFAULT_GRAPHICS_DIR
+        else:
+            self.img_base = img_base
 
         self.ymax_animals = None if ymax_animals is None \
             else ymax_animals
@@ -266,40 +268,26 @@ class BioSim:
         self.setup_graphics()
 
         while self.year_num < self.final_year:
-            if self.num_animals is 0:
-                break
+            self.island.yearly_cycle()
 
             if self.year_num % vis_years is 0:
                 self.update_graphics()
 
-            if self.year_num % vis_years is 0:
+            if self.year_num % img_years is 0:
                 plt.savefig('{}_{:05d}.{}'.format(self.img_base,
-                                                  self.img_no,
+                                                  self.year_num,
                                                   self.img_fmt))
-                self.img_no += 1
-
-            self.island.yearly_cycle()
             self.year_num += 1
 
-    def make_movie(self, mov_fmt=DEFAULT_MOVIE_FORMAT):
-        """
-        This method returns makes the movie in gif format.
+    def create_gif(self, mov_fmt=DEFAULT_MOVIE_FORMAT):
+        """This method creates a gif from the plots.
 
         Parameters
         ----------
         mov_fmt: 'gif'
             DEFAULT_MOVIE_FORMAT = 'gif'
         """
-        try:
-            subprocess.check_call([CONVERT_BINARY,
-                                   '-delay', '1',
-                                   '-loop', '0',
-                                   '{}_*.png'.format(self.img_base),
-                                   '{}.{}'.format(self.img_base,
-                                                  mov_fmt)])
-
-        except subprocess.CalledProcessError as err:
-            raise RuntimeError('Convert failed with: {}'.format(err))
+        pass
 
     def setup_graphics(self):
         if self.fig is None:

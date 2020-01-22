@@ -9,6 +9,7 @@ __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
 import textwrap
+import subprocess
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -20,8 +21,7 @@ import matplotlib.patches as mpatches
 matplotlib.use('macosx')
 
 FFMPEG_BINARY = 'ffmpeg'
-CONVERT_BINARY = 'magick'
-DEFAULT_MOVIE_FORMAT = 'gif'
+DEFAULT_MOVIE_FORMAT = 'mp4'
 
 
 class BioSim:
@@ -284,15 +284,33 @@ class BioSim:
                                               self.img_fmt))
             self.img_no += 1
 
-    def create_gif(self, mov_fmt=DEFAULT_MOVIE_FORMAT):
-        """This method creates a gif from the plots.
-
-        Parameters
-        ----------
-        mov_fmt: 'gif'
-            DEFAULT_MOVIE_FORMAT = 'gif'
+    def create_mp4(self, mov_fmt=DEFAULT_MOVIE_FORMAT):
         """
-        pass
+                This method creates a movie from the images obtained
+                from the visualization plots.
+
+                Parameters
+                ----------
+                mov_fmt: 'mp4'
+                    DEFAULT_MOVIE_FORMAT = 'mp4'
+        """
+        if self.img_base is None:
+            raise RuntimeError("No Image base defined.")
+
+        if mov_fmt is 'mp4':
+            try:
+                subprocess.check_call([FFMPEG_BINARY,
+                                       '-i',
+                                       '{}_%05d.png'.format(
+                                           self.img_base),
+                                       '-y',
+                                       '-profile:v', 'baseline',
+                                       '-level', '3.0',
+                                       '-pix_fmt', 'yuv420p',
+                                       '{}.{}'.format(self.img_base,
+                                                      mov_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError('ffmpeg failed: {}'.format(err))
 
     def setup_graphics(self):
         """This method setups the graphics of the visualization."""
@@ -301,15 +319,15 @@ class BioSim:
             self.fig.canvas.set_window_title('BioSim Window')
 
         if self._island_map is None:
-            self._make_static_map()
+            self.static_map()
 
         if self._mean_ax is None:
             self._mean_ax = self.fig.add_subplot(2, 2, 2)
             self._mean_ax.set_ylim(0, 20000)
 
         self._mean_ax.set_xlim(0, self.final_year + 1)
-        self._make_herbivore_line()
-        self._make_carnivore_line()
+        self.herbivore_line()
+        self.carnivore_line()
 
         if self.herb_pop is None:
             self.herb_pop = self.fig.add_subplot(2, 2, 3)
@@ -321,7 +339,7 @@ class BioSim:
 
         self.fig.tight_layout()
 
-    def _make_herbivore_line(self):
+    def herbivore_line(self):
         """This method creates the herbivore line on the graphic."""
         if self._herbivore_line is None:
             plot = self._mean_ax.plot(
@@ -337,7 +355,7 @@ class BioSim:
                 self._herbivore_line.set_data(np.hstack((xdata, xnew)),
                                               np.hstack((ydata, ynew)))
 
-    def _make_carnivore_line(self):
+    def carnivore_line(self):
         """This method creates the carnivore line on the graphic."""
         if self._carnivore_line is None:
             carnivore_plot = self._mean_ax.plot(
@@ -353,7 +371,7 @@ class BioSim:
                 self._carnivore_line.set_data(np.hstack((xdata, xnew)),
                                               np.hstack((ydata, ynew)))
 
-    def _make_static_map(self):
+    def static_map(self):
         """This method creates the static map on the visualization."""
         self._island_map = self.fig.add_subplot(2, 2, 1)
         self._island_map.imshow(self.generate_map_array)

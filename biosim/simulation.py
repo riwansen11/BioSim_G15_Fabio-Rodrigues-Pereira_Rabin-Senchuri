@@ -8,7 +8,6 @@ written for the INF200 project January 2019.
 __author__ = "Fábio Rodrigues Pereira and Rabin Senchuri"
 __email__ = "fabio.rodrigues.pereira@nmbu.no and rabin.senchuri@nmbu.no"
 
-import os
 import textwrap
 import pandas as pd
 import numpy as np
@@ -119,7 +118,7 @@ class BioSim:
         self._carn_img_axis = None
 
         if img_base is None:
-            self.img_base = os.path.join('..', 'figure')
+            self.img_base = None
         else:
             self.img_base = img_base
 
@@ -245,7 +244,7 @@ class BioSim:
         self.island.add_population(population)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
-        """
+        """This method is the simulation procedures.
 
         Parameters
         ----------
@@ -260,7 +259,7 @@ class BioSim:
             img_years = vis_years
 
         self.last_year += num_years
-        self.final_year = self.year_num + num_years + 1
+        self.final_year = self.year_num + num_years
         self.setup_graphics()
 
         while self.year_num < self.final_year:
@@ -270,11 +269,20 @@ class BioSim:
                 self.update_graphics()
 
             if self.year_num % img_years is 0:
-                plt.savefig('{}_{:05d}.{}'.format(self.img_base,
-                                                  self.img_no,
-                                                  self.img_fmt))
-                self.img_no += 1
+                self.save_figures()
+
             self.year_num += 1
+
+    def save_figures(self):
+        """This method saves the simulated graphic figures on a
+        given image base."""
+        if self.img_base is None:
+            pass
+        else:
+            plt.savefig('{}_{:05d}.{}'.format(self.img_base,
+                                              self.img_no,
+                                              self.img_fmt))
+            self.img_no += 1
 
     def create_gif(self, mov_fmt=DEFAULT_MOVIE_FORMAT):
         """This method creates a gif from the plots.
@@ -287,6 +295,7 @@ class BioSim:
         pass
 
     def setup_graphics(self):
+        """This method setups the graphics of the visualization."""
         if self.fig is None:
             self.fig = plt.figure(figsize=[12, 7])
             self.fig.canvas.set_window_title('BioSim Window')
@@ -313,6 +322,7 @@ class BioSim:
         self.fig.tight_layout()
 
     def _make_herbivore_line(self):
+        """This method creates the herbivore line on the graphic."""
         if self._herbivore_line is None:
             plot = self._mean_ax.plot(
                 np.arange(0, self.final_year),
@@ -328,6 +338,7 @@ class BioSim:
                                               np.hstack((ydata, ynew)))
 
     def _make_carnivore_line(self):
+        """This method creates the carnivore line on the graphic."""
         if self._carnivore_line is None:
             carnivore_plot = self._mean_ax.plot(
                 np.arange(0, self.final_year),
@@ -343,6 +354,7 @@ class BioSim:
                                               np.hstack((ydata, ynew)))
 
     def _make_static_map(self):
+        """This method creates the static map on the visualization."""
         self._island_map = self.fig.add_subplot(2, 2, 1)
         self._island_map.imshow(self.generate_map_array)
         patches = []
@@ -354,6 +366,8 @@ class BioSim:
         self._island_map.legend(handles=patches)
 
     def update_counter_graph(self, pop_count):
+        """This method updates the population counter for herbivore
+        and carnivore."""
         herb_count, carn_count = list(pop_count.values())
 
         herb = self._herbivore_line.get_ydata()
@@ -365,6 +379,8 @@ class BioSim:
         self._carnivore_line.set_ydata(carn)
 
     def update_herb(self, pop):
+        """This method updates the herbivore population on the
+        graphic."""
         if self._herb_img_axis is not None:
             self._herb_img_axis.set_data(pop)
         else:
@@ -387,7 +403,8 @@ class BioSim:
             self.herb_pop.set_title('Herbivore distribution')
 
     def update_carn(self, distribution):
-        """This method updates the Carnivore population distribution."""
+        """This method updates the Carnivore population on the
+        graphic."""
         if self._carn_img_axis is not None:
             self._carn_img_axis.set_data(distribution)
 

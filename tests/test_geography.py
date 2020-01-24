@@ -92,7 +92,7 @@ def test_herbivore_feed():
 
 def test_carnivore_feed():
     """Many testes for the method 'carnivore_feed()':
-    1. Test carnivore weight increases after feeding hrbivor
+    1. Test carnivore weight increases after feeding herbivore
     """
     island_map = "OOO\nOJO\nOOO"
     ini_herbs = [
@@ -147,7 +147,8 @@ def test_animal_number_increases_after_birth():
     before_birth_total_animal = len(cell_object.population['Carnivore'])
     cell_object.add_newborns()
 
-    assert len(cell_object.population['Carnivore']) - before_birth_total_animal > 0
+    assert len(cell_object.population[
+                   'Carnivore']) - before_birth_total_animal > 0
 
 
 def test_animal_death():
@@ -156,7 +157,8 @@ def test_animal_death():
         {
             "loc": (1, 1),
             "pop": [
-                {"species": "Herbivore", "age": 5, "weight": rd.randint(1, 5)}
+                {"species": "Herbivore", "age": 5,
+                 "weight": rd.randint(1, 5)}
                 for _ in range(150)
             ],
         }
@@ -165,7 +167,8 @@ def test_animal_death():
         {
             "loc": (1, 1),
             "pop": [
-                {"species": "Carnivore", "age": 5, "weight": rd.randint(1, 5)}
+                {"species": "Carnivore", "age": 5,
+                 "weight": rd.randint(1, 5)}
                 for _ in range(40)
             ],
         }
@@ -201,3 +204,33 @@ def test_animal_loose_weight():
     assert before_weight_herb1 > after_weight_herb1
     assert before_weight_herb2 > after_weight_herb2
 
+
+def test_migration():
+    """This tests the migration method checking if the animals have
+    moved to the all 4th neighbour cells."""
+    island_map = "OOOOO\nOMJMO\nOJDJO\nOMJMO\nOOOOO"
+    ini_pop = [
+        {
+            "loc": (2, 2),
+            "pop": [
+                {"species": "Herbivore", "age": np.random. randint(1, 5),
+                 "weight": np.random.randint(20, 40)}
+                for _ in range(1000)], }]
+
+    t, loc = BioSim(island_map, ini_pop, 1), (2, 2)
+
+    for k, v in t.island.habitable_cells.items():
+        v.migrate(t.island.neighbour_cells(k))
+
+    for k, v in t.island.habitable_cells.items():
+        v.add_new_migrated()
+
+    north_neighbour = t.island.cells[(1, 2)].population['Herbivore']
+    south_neighbour = t.island.cells[(3, 2)].population['Herbivore']
+    west_neighbour = t.island.cells[(2, 1)].population['Herbivore']
+    east_neighbour = t.island.cells[(2, 3)].population['Herbivore']
+
+    assert north_neighbour is not 0
+    assert south_neighbour is not 0
+    assert west_neighbour is not 0
+    assert east_neighbour is not 0

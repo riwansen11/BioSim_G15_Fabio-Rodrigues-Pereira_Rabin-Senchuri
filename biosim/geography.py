@@ -187,7 +187,7 @@ class Cells:
             params: list
                 List with the landscape's parameters.
         """
-        if params[param_key] < 0:  # check here and others restrictions
+        if params[param_key] < 0:
             raise ValueError("The parameter *{}* must be "
                              "non-negative".format(param_key))
 
@@ -255,9 +255,32 @@ class Cells:
             -> Every herbivore killed is removed from the population
                by the python's built-in method '.remove()'.
         """
+        self.population['Carnivore'].sort(key=lambda h: h.fitness,
+                                          reverse=True)
+
+        self.population['Herbivore'].sort(key=lambda h: h.fitness)
+
         for carnivore in self.population['Carnivore']:
-            self.population['Herbivore'] = carnivore.eat_herb(
-                self.population['Herbivore'])
+            appetite = carnivore.parameters['F']
+            amount_eaten = 0
+
+            for herbivore in self.population['Herbivore']:
+
+                if amount_eaten >= appetite:
+                    break
+
+                elif carnivore.will_kill(herbivore.fitness):
+                    food_wanted = appetite - amount_eaten
+
+                    if herbivore.weight <= food_wanted:
+                        amount_eaten += herbivore.weight
+                        self.population['Herbivore'].remove(herbivore)
+
+                    elif herbivore.weight > food_wanted:
+                        amount_eaten += food_wanted
+                        self.population['Herbivore'].remove(herbivore)
+
+            carnivore.gain_weight(amount_eaten)
 
     def add_newborns(self):
         """This method extend a specie population adding their
@@ -296,6 +319,7 @@ class Cells:
                is given when the 'np.random.random()' number is equal
                or lager then the cumulative probability.
         """
+        np.random.shuffle(neighbours)
         for migrating_specie, animals in self.population.items():
             if len(neighbours) > 0 and len(animals) > 0:
                 for animal in animals:
@@ -305,18 +329,19 @@ class Cells:
                         n = 0
                         while np.random.random() >= cum_prob[n]:
                             n += 1
-                        neighbours[n].new_population[
-                            migrating_specie].append(animal)
+                            n = 0 if n > 3 else n
+                        neighbours[n].new_population[migrating_specie].\
+                            append(animal)
                         self.population[migrating_specie].remove(animal)
 
     def add_new_migrated(self):
         """This method adds the migrated animals to the population of
         each landscape cell, according to its specie, and empty the
         list in 'new_population', also according to its specie."""
-        for species in self.population.keys():
-            specie_list = self.new_population[species]
-            self.population[species].extend(specie_list)
-            self.new_population[species] = []
+        for specie in self.population.keys():
+            specie_list = self.new_population[specie]
+            self.population[specie].extend(specie_list)
+            self.new_population[specie] = []
 
     def get_old(self):
         """This method identifies each specie of animals and communicates

@@ -233,30 +233,6 @@ class Population:
 
         return np.random.random() < p
 
-    def eat_herb(self, herbivores):
-        herbs_survived = []
-        feed = 0
-
-        for herbivore in herbivores[::-1]:
-            if feed < self.parameters["F"] \
-                    and self.will_kill(herbivore.fitness):
-                if feed + herbivore.weight > self.parameters["F"]:
-                    herbivore.weight = self.parameters["F"] - feed
-                    self.weight += (
-                            self.parameters["beta"] * herbivore.weight
-                    )
-                    weight_eaten = self.parameters["F"]
-
-                else:
-                    self.weight += (
-                            self.parameters["beta"] * herbivore.weight
-                    )
-                    feed += herbivore.weight
-            else:
-                herbs_survived.append(herbivore)
-
-        return herbs_survived
-
     def will_migrate(self):
         """This method calculates the probability of moving to a
         habitable neighbour cell. This takes in consideration the
@@ -338,5 +314,3 @@ class Carnivore(Population):
     def __init__(self, age=0, weight=None):
         """Constructor for Carnivore class."""
         super().__init__(age, weight)
-
-

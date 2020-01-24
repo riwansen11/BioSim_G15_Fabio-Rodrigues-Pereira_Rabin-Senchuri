@@ -2,5 +2,5 @@ numba
 matplotlib
 pandas
 numpy
-pytest
 tox
+pytest

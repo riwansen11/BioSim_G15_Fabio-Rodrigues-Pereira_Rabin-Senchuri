@@ -260,7 +260,7 @@ class BioSim:
 
         self.last_year += num_years
         self.final_year = self.year_num + num_years
-        self.setup_graphics()
+        self.setup_graphics(), self.update_graphics()
 
         while self.year_num < self.final_year:
             self.island.yearly_cycle()
@@ -344,8 +344,7 @@ class BioSim:
         if self._herbivore_line is None:
             plot = self._mean_ax.plot(
                 np.arange(0, self.final_year),
-                np.nan * np.ones(
-                    self.final_year))
+                np.nan * np.ones(self.final_year))
             self._herbivore_line = plot[0]
         else:
             xdata, ydata = self._herbivore_line.get_data()
@@ -360,8 +359,7 @@ class BioSim:
         if self._carnivore_line is None:
             carnivore_plot = self._mean_ax.plot(
                 np.arange(0, self.final_year),
-                np.nan * np.ones(
-                    self.final_year))
+                np.nan * np.ones(self.final_year))
             self._carnivore_line = carnivore_plot[0]
         else:
             xdata, ydata = self._carnivore_line.get_data()
